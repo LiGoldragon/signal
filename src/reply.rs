@@ -4,7 +4,7 @@
 //! QueryHit / ValidateResult). Multi-frame streams for
 //! subscriptions; every stream frame shares a `subscription_id`.
 //!
-//! Per `mentci-next/reports/070 §6.4`.
+//! Per `mentci/reports/070 §6.4`.
 
 use rkyv::{Archive, Deserialize as RkyvDeserialize, Serialize as RkyvSerialize};
 

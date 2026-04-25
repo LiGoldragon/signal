@@ -5,9 +5,9 @@
 //! `Patch` does field-level edits, `TxnBatch` wraps a sequence
 //! atomically. CAS via `expected_rev`. Forward-refs inside a
 //! transaction are not resolved (split into two transactions —
-//! see [reports/070 §4.3](mentci-next/reports/070-nexus-language-and-contract.md)).
+//! see [reports/070 §4.3](mentci/reports/070-nexus-language-and-contract.md)).
 //!
-//! Per [reports/070 §2, §6.2](mentci-next/reports/070-nexus-language-and-contract.md).
+//! Per [reports/070 §2, §6.2](mentci/reports/070-nexus-language-and-contract.md).
 
 use rkyv::{Archive, Deserialize as RkyvDeserialize, Serialize as RkyvSerialize};
 use serde::{Deserialize, Serialize};

@@ -10,7 +10,7 @@
 //! accepts a client with older minor); patch versions are
 //! ignored.
 //!
-//! Per `mentci-next/reports/077` §3 + §6 Q-S1.
+//! Per `mentci/reports/077` §3 + §6 Q-S1.
 
 use rkyv::{Archive, Deserialize as RkyvDeserialize, Serialize as RkyvSerialize};
 

@@ -4,7 +4,7 @@ The rkyv messaging schema between **nexus** and **criome**.
 Signal is the *rkyv form of nexus*: nexus parses nexus text into
 signal frames; criome processes signal frames and replies.
 
-Per [mentci-next/reports/077](https://github.com/LiGoldragon/mentci-next/blob/main/reports/077-nexus-and-signal.md):
+Per [mentci/reports/077](https://github.com/LiGoldragon/mentci/blob/main/reports/077-nexus-and-signal.md):
 
 > nexus (text) → nexus (translates) → signal (rkyv) → criome
 >
@@ -37,7 +37,7 @@ Per [mentci-next/reports/077](https://github.com/LiGoldragon/mentci-next/blob/ma
 
 Signal is **architecturally peer-shaped** to nexus text. The
 mechanical-translation rule (per
-[mentci-next/reports/070 §7](https://github.com/LiGoldragon/mentci-next/blob/main/reports/070-nexus-language-and-contract.md))
+[mentci/reports/070 §7](https://github.com/LiGoldragon/mentci/blob/main/reports/070-nexus-language-and-contract.md))
 guarantees the two forms agree, and a client that *can* compose
 rkyv frames directly is doing a legitimate thing.
 
@@ -63,7 +63,7 @@ your client can author.
 ## Wire format
 
 rkyv 0.8 with the canonical pinned feature set per
-[mentci-next/reports/074](https://github.com/LiGoldragon/mentci-next/blob/main/reports/074-portable-rkyv-discipline.md):
+[mentci/reports/074](https://github.com/LiGoldragon/mentci/blob/main/reports/074-portable-rkyv-discipline.md):
 `default-features = false, features = ["std", "bytecheck",
 "little_endian", "pointer_width_32", "unaligned"]`.
 

@@ -9,7 +9,7 @@
 //! know the rkyv schema, so a single `rkyv::to_bytes` /
 //! `rkyv::from_bytes` per Frame covers transport.
 //!
-//! Per `mentci-next/reports/070 §6.1` and `reports/074 §7`.
+//! Per `mentci/reports/070 §6.1` and `reports/074 §7`.
 
 use rkyv::{Archive, Deserialize as RkyvDeserialize, Serialize as RkyvSerialize};
 
@@ -47,7 +47,7 @@ impl Frame {
     /// Encode to rkyv-archive bytes for socket write.
     ///
     /// rkyv 0.8 portable feature set per
-    /// `mentci-next/reports/074` guarantees deterministic bytes
+    /// `mentci/reports/074` guarantees deterministic bytes
     /// across machines (little_endian + pointer_width_32 +
     /// unaligned).
     pub fn encode(&self) -> Vec<u8> {
