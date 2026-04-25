@@ -49,7 +49,7 @@ Does not own:
 ## Wire format
 
 rkyv 0.8 with the canonical pinned feature set per
-[mentci-next/reports/074](https://github.com/LiGoldragon/mentci-next/blob/main/reports/074-portable-rkyv-discipline.md):
+[mentci/reports/074](https://github.com/LiGoldragon/mentci/blob/main/reports/074-portable-rkyv-discipline.md):
 `default-features = false, features = ["std", "bytecheck",
 "little_endian", "pointer_width_32", "unaligned"]`.
 
@@ -108,8 +108,8 @@ src/
 ## Cross-cutting context
 
 - Naming history and three-layer messaging story:
-  [mentci-next/reports/077](https://github.com/LiGoldragon/mentci-next/blob/main/reports/077-nexus-and-signal.md)
+  [mentci/reports/077](https://github.com/LiGoldragon/mentci/blob/main/reports/077-nexus-and-signal.md)
 - Language design + signal contract spec:
-  [mentci-next/reports/070](https://github.com/LiGoldragon/mentci-next/blob/main/reports/070-nexus-language-and-contract.md)
+  [mentci/reports/070](https://github.com/LiGoldragon/mentci/blob/main/reports/070-nexus-language-and-contract.md)
 - Project-wide architecture:
-  [mentci-next/docs/architecture.md](https://github.com/LiGoldragon/mentci-next/blob/main/docs/architecture.md)
+  [criome/ARCHITECTURE.md](https://github.com/LiGoldragon/criome/blob/main/ARCHITECTURE.md)
