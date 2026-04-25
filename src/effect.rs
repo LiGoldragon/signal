@@ -7,11 +7,11 @@
 use rkyv::{Archive, Deserialize as RkyvDeserialize, Serialize as RkyvSerialize};
 
 
-use nexus_schema::diagnostic::Diagnostic;
-use nexus_schema::names::Hash;
-use nexus_schema::query::SortOrder;
-use nexus_schema::value::RawSegment;
-use nexus_schema::{RawOp, Revision, Slot};
+use crate::diagnostic::Diagnostic;
+use crate::names::Hash;
+use crate::query::SortOrder;
+use crate::value::RawSegment;
+use crate::{RawOp, Revision, Slot};
 
 use crate::reply::Bindings;
 
@@ -55,7 +55,7 @@ pub struct RejectedReply {
     /// For TxnBatch failures: the index of the op that failed.
     pub failed_at_op: Option<u32>,
     /// Slots where Diagnostic records were durably asserted in
-    /// sema (when criomed chose to persist them).
+    /// sema (when criome chose to persist them).
     pub diagnostic_records: Vec<Slot>,
 }
 
@@ -67,7 +67,7 @@ pub struct QueryHitReply {
     pub bindings: Vec<Bindings>,
     /// For purely-aggregating queries (e.g., `(Sum @v)`), the
     /// single aggregation result.
-    pub aggregation: Option<nexus_schema::value::RawValue>,
+    pub aggregation: Option<crate::value::RawValue>,
 }
 
 /// Execution plan returned by `Validate { explain: true }`.

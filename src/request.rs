@@ -1,5 +1,5 @@
 //! `Request` — what nexus (or any signal-speaking client) sends
-//! to criomed.
+//! to criome.
 //!
 //! After the handshake, every Frame body is `Body::Request(...)`
 //! or `Body::Reply(...)`. Edit verbs and query verbs use payload
@@ -11,8 +11,8 @@
 use rkyv::{Archive, Deserialize as RkyvDeserialize, Serialize as RkyvSerialize};
 
 
-use nexus_schema::edit::{AssertOp, MutateOp, PatchOp, RetractOp, TxnBatch, TxnOp};
-use nexus_schema::query::Selection;
+use crate::edit::{AssertOp, MutateOp, PatchOp, RetractOp, TxnBatch, TxnOp};
+use crate::query::Selection;
 
 use crate::handshake::HandshakeRequest;
 
@@ -51,7 +51,7 @@ pub enum Request {
 pub struct SubscribeOp {
     pub selection: Selection,
     /// Resume from this revision; `None` → start now.
-    pub from_revision: Option<nexus_schema::Revision>,
+    pub from_revision: Option<crate::Revision>,
     /// If true, the server emits the current matches as a
     /// `Reply::SubSnapshot` before live diffs begin.
     pub initial_snapshot: bool,

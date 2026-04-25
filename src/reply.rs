@@ -1,4 +1,4 @@
-//! `Reply` — what criomed sends back.
+//! `Reply` — what criome sends back.
 //!
 //! Single-frame replies for unary requests (Ok / Rejected /
 //! QueryHit / ValidateResult). Multi-frame streams for
@@ -9,9 +9,9 @@
 use rkyv::{Archive, Deserialize as RkyvDeserialize, Serialize as RkyvSerialize};
 
 
-use nexus_schema::diagnostic::Diagnostic;
-use nexus_schema::value::{RawRecord, RawValue};
-use nexus_schema::Slot;
+use crate::diagnostic::Diagnostic;
+use crate::value::{RawRecord, RawValue};
+use crate::Slot;
 
 use crate::effect::{ExecutionPlan, OkReply, QueryHitReply, RejectedReply};
 use crate::handshake::{HandshakeRejectionReason, HandshakeReply};

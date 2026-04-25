@@ -13,7 +13,7 @@
 use rkyv::{Archive, Deserialize as RkyvDeserialize, Serialize as RkyvSerialize};
 
 
-use nexus_schema::Slot;
+use crate::Slot;
 
 #[derive(
     Archive, RkyvSerialize, RkyvDeserialize, Debug, Clone, PartialEq, Eq,

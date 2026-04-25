@@ -159,17 +159,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "nexus-schema"
-version = "0.1.0"
-source = "git+https://github.com/LiGoldragon/nexus-schema?branch=main#17cd7d0a96fb0891bbccc7fc92a94c4c8e3a256d"
-dependencies = [
- "blake3",
- "rkyv",
- "serde",
- "thiserror",
-]
-
-[[package]]
 name = "once_cell"
 version = "1.21.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -307,7 +296,7 @@ checksum = "0fda2ff0d084019ba4d7c6f371c95d8fd75ce3524c3cb8fb653a3023f6323e64"
 name = "signal"
 version = "0.1.0"
 dependencies = [
- "nexus-schema",
+ "blake3",
  "rkyv",
  "serde",
  "thiserror",

@@ -1,6 +1,6 @@
 //! Handshake — first message of every signal connection.
 //!
-//! When a client (nexus, agent, tool) connects to criomed over
+//! When a client (nexus, agent, tool) connects to criome over
 //! UDS, it MUST send a [`Request::Handshake`] before any other
 //! request. The server replies with a [`Reply::HandshakeAccepted`]
 //! or [`Reply::HandshakeRejected`].
@@ -15,7 +15,7 @@
 use rkyv::{Archive, Deserialize as RkyvDeserialize, Serialize as RkyvSerialize};
 
 
-use nexus_schema::Slot;
+use crate::Slot;
 
 /// Current signal protocol version. Bump per semver: major for
 /// incompatible wire changes, minor for additive changes, patch
@@ -60,7 +60,7 @@ impl ProtocolVersion {
 pub struct HandshakeRequest {
     pub client_version: ProtocolVersion,
     /// Free-form client name for logs and diagnostics. Not
-    /// authoritative for any decision; criomed may log it.
+    /// authoritative for any decision; criome may log it.
     pub client_name: String,
 }
 
@@ -70,7 +70,7 @@ pub struct HandshakeRequest {
 )]
 pub struct HandshakeReply {
     pub server_version: ProtocolVersion,
-    /// criomed instance identity. For multi-instance setups this
+    /// criome instance identity. For multi-instance setups this
     /// is the slot of a `CriomedInstance` record in sema; for
     /// single-instance MVP it is `Slot(0)`.
     pub server_id: Slot,

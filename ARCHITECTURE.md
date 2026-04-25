@@ -1,13 +1,13 @@
 # ARCHITECTURE — signal
 
-The rkyv messaging schema between **nexus** and **criomed**.
+The rkyv messaging schema between **nexus** and **criome**.
 Signal is the *rkyv form of nexus*: nexus parses nexus text
-into signal frames; criomed processes signal frames and replies.
+into signal frames; criome processes signal frames and replies.
 
 ```
 nexus text ─┐                        ┌─ signal rkyv ─┐
             │                        │               │
-   client ──┴── client-msg ──> nexus ──> signal ──> criomed
+   client ──┴── client-msg ──> nexus ──> signal ──> criome
                                         <── reply ──
 ```
 
@@ -44,7 +44,7 @@ Does not own:
   [nexus-schema](https://github.com/LiGoldragon/nexus-schema).
   Signal imports payload types from there.
 - The nexus text language — [github.com/LiGoldragon/nexus](https://github.com/LiGoldragon/nexus).
-- Sema state — owned by criomed.
+- Sema state — owned by criome.
 
 ## Wire format
 
@@ -85,7 +85,7 @@ text. Practically:
   yet, not until llm models are trained using binary signal
   data."*
 
-Both paths arrive at criomed as signal frames.
+Both paths arrive at criome as signal frames.
 
 ## Code map
 

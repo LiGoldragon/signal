@@ -1,14 +1,14 @@
 # signal
 
-The rkyv messaging schema between **nexus** and **criomed**.
+The rkyv messaging schema between **nexus** and **criome**.
 Signal is the *rkyv form of nexus*: nexus parses nexus text into
-signal frames; criomed processes signal frames and replies.
+signal frames; criome processes signal frames and replies.
 
 Per [mentci-next/reports/077](https://github.com/LiGoldragon/mentci-next/blob/main/reports/077-nexus-and-signal.md):
 
-> nexus (text) → nexus (translates) → signal (rkyv) → criomed
+> nexus (text) → nexus (translates) → signal (rkyv) → criome
 >
-> criomed (response) → signal → nexus (translates) → nexus (text)
+> criome (response) → signal → nexus (translates) → nexus (text)
 
 ## What this crate defines
 
@@ -31,7 +31,7 @@ Per [mentci-next/reports/077](https://github.com/LiGoldragon/mentci-next/blob/ma
 - **The nexus text language itself** (the syntax humans type) —
   defined by the `nexus` grammar repo and parsed by
   `nota-serde-core`.
-- **Sema state** — owned by criomed.
+- **Sema state** — owned by criome.
 
 ## Direct authoring — architecturally permitted, practically narrow
 
@@ -57,7 +57,7 @@ rkyv frames directly is doing a legitimate thing.
 Per Li 2026-04-25: *"not yet, not until llm models are trained
 using binary signal data."*
 
-Both paths arrive at criomed as signal frames. Choose the path
+Both paths arrive at criome as signal frames. Choose the path
 your client can author.
 
 ## Wire format

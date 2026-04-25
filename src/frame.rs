@@ -5,7 +5,7 @@
 //! making the request), an optional auth proof, and a body
 //! (Request or Reply).
 //!
-//! The frame schema *is* the framing — both nexus and criomed
+//! The frame schema *is* the framing — both nexus and criome
 //! know the rkyv schema, so a single `rkyv::to_bytes` /
 //! `rkyv::from_bytes` per Frame covers transport.
 //!
@@ -14,7 +14,7 @@
 use rkyv::{Archive, Deserialize as RkyvDeserialize, Serialize as RkyvSerialize};
 
 
-use nexus_schema::Slot;
+use crate::Slot;
 
 use crate::auth::AuthProof;
 use crate::reply::Reply;

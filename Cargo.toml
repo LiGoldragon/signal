@@ -5,12 +5,12 @@ edition      = "2024"
 rust-version = "1.85"
 license      = "MIT OR Apache-2.0"
 repository   = "https://github.com/LiGoldragon/signal"
-description  = "Signal — rkyv messaging schema between nexus and criomed (the rkyv form of nexus)"
+description  = "signal — the criome binary language. Wire envelope (Frame, handshake) + language IR (RawPattern, RawOp, AssertOp, …) + sema record kinds (KindDecl, Struct, Enum, …). Anything criome is signal."
 
 [dependencies]
 rkyv = { version = "0.8", default-features = false, features = ["std", "bytecheck", "little_endian", "pointer_width_32", "unaligned"] }
 serde = { version = "1", features = ["derive"] }
-nexus-schema = { git = "https://github.com/LiGoldragon/nexus-schema", branch = "main" }
+blake3 = "1.5"
 thiserror = "2"
 
 [lints.rust]
