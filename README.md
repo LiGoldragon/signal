@@ -33,14 +33,32 @@ Per [mentci-next/reports/077](https://github.com/LiGoldragon/mentci-next/blob/ma
   `nota-serde-core`.
 - **Sema state** — owned by criomed.
 
-## Direct authoring
+## Direct authoring — architecturally permitted, practically narrow
 
-Agents and tools that prefer to skip nexus parsing may compose
-signal `Frame`s directly in rkyv and send them to nexusd. Signal
-is a peer to nexus text, not just its compiled form. The
+Signal is **architecturally peer-shaped** to nexus text. The
 mechanical-translation rule (per
 [mentci-next/reports/070 §7](https://github.com/LiGoldragon/mentci-next/blob/main/reports/070-nexus-language-and-contract.md))
-guarantees the two forms agree.
+guarantees the two forms agree, and a client that *can* compose
+rkyv frames directly is doing a legitimate thing.
+
+**But who can actually do that today?**
+
+- ✓ **Deterministic programmatic clients** — Rust code, scripts,
+  CI tools that generate transactional batches from program
+  structure. They compose `AssertOp` / `MutateOp` / `TxnBatch` in
+  rkyv directly and send.
+- ✗ **LLM agents** — current LLMs are trained on text and
+  cannot author rkyv binary structures directly. The practical
+  client interface for an LLM is **nexus text**, parsed into
+  signal by nexusd. Direct LLM signal authoring is a future
+  capability — it lands when LLM models are trained against
+  binary signal formats.
+
+Per Li 2026-04-25: *"not yet, not until llm models are trained
+using binary signal data."*
+
+Both paths arrive at criomed as signal frames. Choose the path
+your client can author.
 
 ## Wire format
 
