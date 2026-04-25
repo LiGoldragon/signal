@@ -5,7 +5,7 @@ edition      = "2024"
 rust-version = "1.85"
 license      = "MIT OR Apache-2.0"
 repository   = "https://github.com/LiGoldragon/signal"
-description  = "Signal — rkyv messaging schema between nexusd and criomed (the rkyv form of nexus)"
+description  = "Signal — rkyv messaging schema between nexus and criomed (the rkyv form of nexus)"
 
 [dependencies]
 rkyv = { version = "0.8", default-features = false, features = ["std", "bytecheck", "little_endian", "pointer_width_32", "unaligned"] }

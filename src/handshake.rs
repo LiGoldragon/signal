@@ -1,6 +1,6 @@
 //! Handshake — first message of every signal connection.
 //!
-//! When a client (nexusd, agent, tool) connects to criomed over
+//! When a client (nexus, agent, tool) connects to criomed over
 //! UDS, it MUST send a [`Request::Handshake`] before any other
 //! request. The server replies with a [`Reply::HandshakeAccepted`]
 //! or [`Reply::HandshakeRejected`].

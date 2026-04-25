@@ -1,13 +1,13 @@
 # ARCHITECTURE — signal
 
-The rkyv messaging schema between **nexusd** and **criomed**.
-Signal is the *rkyv form of nexus*: nexusd parses nexus text
+The rkyv messaging schema between **nexus** and **criomed**.
+Signal is the *rkyv form of nexus*: nexus parses nexus text
 into signal frames; criomed processes signal frames and replies.
 
 ```
 nexus text ─┐                        ┌─ signal rkyv ─┐
             │                        │               │
-   client ──┴── client-msg ──> nexusd ──> signal ──> criomed
+   client ──┴── client-msg ──> nexus ──> signal ──> criomed
                                         <── reply ──
 ```
 

@@ -1,5 +1,5 @@
 {
-  description = "Signal — rkyv messaging schema between nexusd and criomed";
+  description = "Signal — rkyv messaging schema between nexus and criomed";
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";

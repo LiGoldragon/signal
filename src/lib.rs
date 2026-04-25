@@ -1,10 +1,10 @@
-//! signal — rkyv messaging schema between nexusd and criomed.
+//! signal — rkyv messaging schema between nexus and criomed.
 //!
 //! Per [mentci-next/reports/077](https://github.com/LiGoldragon/mentci-next):
 //!
 //! ```text
-//! nexus (text) → nexusd (translates) → signal (rkyv) → criomed
-//! criomed (response) → signal → nexusd (translates) → nexus (text)
+//! nexus (text) → nexus (translates) → signal (rkyv) → criomed
+//! criomed (response) → signal → nexus (translates) → nexus (text)
 //! ```
 //!
 //! Signal is the rkyv form of nexus. Agents and tools may compose

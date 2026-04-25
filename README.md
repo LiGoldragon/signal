@@ -1,14 +1,14 @@
 # signal
 
-The rkyv messaging schema between **nexusd** and **criomed**.
-Signal is the *rkyv form of nexus*: nexusd parses nexus text into
+The rkyv messaging schema between **nexus** and **criomed**.
+Signal is the *rkyv form of nexus*: nexus parses nexus text into
 signal frames; criomed processes signal frames and replies.
 
 Per [mentci-next/reports/077](https://github.com/LiGoldragon/mentci-next/blob/main/reports/077-nexus-and-signal.md):
 
-> nexus (text) → nexusd (translates) → signal (rkyv) → criomed
+> nexus (text) → nexus (translates) → signal (rkyv) → criomed
 >
-> criomed (response) → signal → nexusd (translates) → nexus (text)
+> criomed (response) → signal → nexus (translates) → nexus (text)
 
 ## What this crate defines
 
@@ -50,7 +50,7 @@ rkyv frames directly is doing a legitimate thing.
 - ✗ **LLM agents** — current LLMs are trained on text and
   cannot author rkyv binary structures directly. The practical
   client interface for an LLM is **nexus text**, parsed into
-  signal by nexusd. Direct LLM signal authoring is a future
+  signal by nexus. Direct LLM signal authoring is a future
   capability — it lands when LLM models are trained against
   binary signal formats.
 

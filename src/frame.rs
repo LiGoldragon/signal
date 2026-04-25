@@ -5,7 +5,7 @@
 //! making the request), an optional auth proof, and a body
 //! (Request or Reply).
 //!
-//! The frame schema *is* the framing — both nexusd and criomed
+//! The frame schema *is* the framing — both nexus and criomed
 //! know the rkyv schema, so a single `rkyv::to_bytes` /
 //! `rkyv::from_bytes` per Frame covers transport.
 //!

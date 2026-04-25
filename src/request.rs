@@ -1,4 +1,4 @@
-//! `Request` — what nexusd (or any signal-speaking client) sends
+//! `Request` — what nexus (or any signal-speaking client) sends
 //! to criomed.
 //!
 //! After the handshake, every Frame body is `Body::Request(...)`
