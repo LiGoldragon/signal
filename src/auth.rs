@@ -8,7 +8,6 @@
 //!   signature) and `QuorumProof` (federated quorum proof
 //!   referring to a `CommittedMutation` record). Skeletons here.
 //!
-//! Per `mentci/reports/070 §6.1`.
 
 use rkyv::{Archive, Deserialize as RkyvDeserialize, Serialize as RkyvSerialize};
 

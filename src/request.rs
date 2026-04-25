@@ -6,7 +6,6 @@
 //! types from `nexus-schema` (the language IR is shared between
 //! signal-on-wire and sema-stored shapes).
 //!
-//! Per `mentci/reports/070 §6.2`.
 
 use rkyv::{Archive, Deserialize as RkyvDeserialize, Serialize as RkyvSerialize};
 

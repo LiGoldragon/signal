@@ -9,7 +9,6 @@
 //! expired-proposal / incomplete-quorum / invalid-signature /
 //! cascade.
 //!
-//! Per [reports/070 §4.1, §6.5](mentci/reports/070-nexus-language-and-contract.md).
 
 use rkyv::{Archive, Deserialize as RkyvDeserialize, Serialize as RkyvSerialize};
 use serde::{Deserialize, Serialize};

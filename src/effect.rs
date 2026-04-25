@@ -2,7 +2,6 @@
 //! ExecutionPlan, ExecutionStep — the outcome shapes carried in
 //! [`crate::Reply`].
 //!
-//! Per `mentci/reports/070 §6.4`.
 
 use rkyv::{Archive, Deserialize as RkyvDeserialize, Serialize as RkyvSerialize};
 

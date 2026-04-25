@@ -4,7 +4,6 @@
 //! Sema binds slots to content-addressed records via
 //! `SlotBinding`; revisions are the global write-clock.
 //!
-//! Per [reports/070 §6.6](mentci/reports/070-nexus-language-and-contract.md).
 //! When `criome-types` lands, these move there and nexus-schema
 //! re-exports.
 

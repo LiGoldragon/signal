@@ -6,7 +6,6 @@
 //! are matched by `RawListPattern`. Conjunctions join multiple
 //! patterns by shared bind names (datalog-style).
 //!
-//! Per [reports/070 §3, §6.3](mentci/reports/070-nexus-language-and-contract.md).
 
 use rkyv::{Archive, Deserialize as RkyvDeserialize, Serialize as RkyvSerialize};
 use serde::{Deserialize, Serialize};

@@ -36,10 +36,9 @@ Per [mentci/reports/077](https://github.com/LiGoldragon/mentci/blob/main/reports
 ## Direct authoring — architecturally permitted, practically narrow
 
 Signal is **architecturally peer-shaped** to nexus text. The
-mechanical-translation rule (per
-[mentci/reports/070 §7](https://github.com/LiGoldragon/mentci/blob/main/reports/070-nexus-language-and-contract.md))
-guarantees the two forms agree, and a client that *can* compose
-rkyv frames directly is doing a legitimate thing.
+mechanical-translation rule guarantees the two forms agree, and
+a client that *can* compose rkyv frames directly is doing a
+legitimate thing.
 
 **But who can actually do that today?**
 

@@ -9,7 +9,6 @@
 //! know the rkyv schema, so a single `rkyv::to_bytes` /
 //! `rkyv::from_bytes` per Frame covers transport.
 //!
-//! Per `mentci/reports/070 §6.1` and `reports/074 §7`.
 
 use rkyv::{Archive, Deserialize as RkyvDeserialize, Serialize as RkyvSerialize};
 

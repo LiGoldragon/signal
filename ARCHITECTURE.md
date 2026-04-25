@@ -107,9 +107,7 @@ src/
 
 ## Cross-cutting context
 
-- Naming history and three-layer messaging story:
+- Three-layer messaging story:
   [mentci/reports/077](https://github.com/LiGoldragon/mentci/blob/main/reports/077-nexus-and-signal.md)
-- Language design + signal contract spec:
-  [mentci/reports/070](https://github.com/LiGoldragon/mentci/blob/main/reports/070-nexus-language-and-contract.md)
 - Project-wide architecture:
   [criome/ARCHITECTURE.md](https://github.com/LiGoldragon/criome/blob/main/ARCHITECTURE.md)

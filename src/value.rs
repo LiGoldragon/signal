@@ -7,7 +7,6 @@
 //! `RawValue` is the recursive value tree; `RawLiteral` is the
 //! leaf literal type.
 //!
-//! Per [reports/070 §6.6](mentci/reports/070-nexus-language-and-contract.md).
 
 use rkyv::{Archive, Deserialize as RkyvDeserialize, Serialize as RkyvSerialize};
 use serde::{Deserialize, Serialize};
