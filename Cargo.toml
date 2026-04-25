@@ -1,0 +1,18 @@
+[package]
+name         = "signal"
+version      = "0.1.0"
+edition      = "2024"
+rust-version = "1.85"
+license      = "MIT OR Apache-2.0"
+repository   = "https://github.com/LiGoldragon/signal"
+description  = "Signal — rkyv messaging schema between nexusd and criomed (the rkyv form of nexus)"
+
+[dependencies]
+rkyv = { version = "0.8", default-features = false, features = ["std", "bytecheck", "little_endian", "pointer_width_32", "unaligned"] }
+serde = { version = "1", features = ["derive"] }
+nexus-schema = { git = "https://github.com/LiGoldragon/nexus-schema", branch = "main" }
+thiserror = "2"
+
+[lints.rust]
+unused = "allow"
+dead_code = "allow"
