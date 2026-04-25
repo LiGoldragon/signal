@@ -56,6 +56,10 @@ pub mod primitive;
 pub mod program;
 pub mod ty;
 
+// ─── Flow-graph kinds (criomed's first-milestone substrate —
+//     storing architectural specs as Mermaid-like records) ───
+pub mod flow;
+
 // ─── Wire envelope re-exports ───────────────────────────────
 pub use auth::AuthProof;
 pub use effect::{Effect, ExecutionPlan, ExecutionStep, OkReply, QueryHitReply, RejectedReply};
@@ -92,3 +96,6 @@ pub use origin::Origin;
 pub use primitive::Primitive;
 pub use program::Program;
 pub use ty::{GenericParam, TraitBound, Type, TypeApplication};
+
+// ─── Flow-graph re-exports ──────────────────────────────────
+pub use flow::{Edge, EdgeStyle, Graph, GraphDirection, Node, NodeShape, KNOWN_KINDS};
