@@ -98,4 +98,4 @@ pub use program::Program;
 pub use ty::{GenericParam, TraitBound, Type, TypeApplication};
 
 // ─── Flow-graph re-exports ──────────────────────────────────
-pub use flow::{Edge, EdgeStyle, Graph, GraphDirection, Node, NodeShape, KNOWN_KINDS};
+pub use flow::{Edge, Graph, Node, KNOWN_KINDS};

@@ -7,49 +7,35 @@
 //! for representing flow charts, but in fully typed binary) —
 //! that way we can start designing architecture in sema."*
 //!
+//! **Logic only, no styling.** Per Li 2026-04-25: *"the flow
+//! subset is only about representing logic, not concerning itself
+//! with rendering it."* No shape, edge-style, or graph-direction
+//! fields — those belong to a separate rendering layer if/when we
+//! ever need one.
+//!
 //! These types are baked into criomed's binary. The validator's
 //! schema-check matches incoming `RawRecord.kind_name` against
 //! `"Node" | "Edge" | "Graph"`; everything else returns `E0001`.
 //! No `KindDecl`/`FieldSpec` indirection — the Rust types ARE
 //! the schema for v0.0.1.
-//!
-//! Extension policy: add fields to existing structs only when
-//! Mermaid demands them; add new variants to `NodeShape` /
-//! `EdgeStyle` / `GraphDirection` as needed; new kinds (e.g.
-//! `Cluster`, `Swimlane`) land here as new sibling structs.
 
 use rkyv::{Archive, Deserialize as RkyvDeserialize, Serialize as RkyvSerialize};
 use serde::{Deserialize, Serialize};
 
 use crate::slot::Slot;
 
-/// A node in a flow-graph. Identified by a human-readable
-/// `id` (used in nexus text and in display); rendered with
-/// `label` text inside `shape`.
+/// A node in a flow-graph. `id` is the human-readable identifier
+/// used in nexus text; `label` is the human-readable name.
 #[derive(
     Archive, RkyvSerialize, RkyvDeserialize, Serialize, Deserialize, Debug, Clone, PartialEq, Eq, Hash,
 )]
 pub struct Node {
     pub id: String,
     pub label: String,
-    pub shape: NodeShape,
-}
-
-#[derive(
-    Archive, RkyvSerialize, RkyvDeserialize, Serialize, Deserialize, Debug, Clone, Copy, PartialEq, Eq, Hash,
-)]
-pub enum NodeShape {
-    Rect,
-    Round,
-    Diamond,
-    Cylinder,
-    Subroutine,
-    Hexagon,
-    Parallelogram,
 }
 
 /// A directed edge from one node to another. Optional `label`
-/// renders next to the arrow.
+/// names the relationship.
 #[derive(
     Archive, RkyvSerialize, RkyvDeserialize, Serialize, Deserialize, Debug, Clone, PartialEq, Eq, Hash,
 )]
@@ -57,40 +43,18 @@ pub struct Edge {
     pub from: Slot,
     pub to: Slot,
     pub label: Option<String>,
-    pub style: EdgeStyle,
 }
 
-#[derive(
-    Archive, RkyvSerialize, RkyvDeserialize, Serialize, Deserialize, Debug, Clone, Copy, PartialEq, Eq, Hash,
-)]
-pub enum EdgeStyle {
-    Solid,
-    Dashed,
-    Thick,
-    Bidirectional,
-}
-
-/// A flow-graph: a titled collection of nodes and edges, with a
-/// flow direction and optional nested subgraphs.
+/// A flow-graph: a titled collection of nodes and edges, with
+/// optional nested subgraphs.
 #[derive(
     Archive, RkyvSerialize, RkyvDeserialize, Serialize, Deserialize, Debug, Clone, PartialEq, Eq, Hash,
 )]
 pub struct Graph {
     pub title: String,
-    pub direction: GraphDirection,
     pub nodes: Vec<Slot>,
     pub edges: Vec<Slot>,
     pub subgraphs: Vec<Slot>,
-}
-
-#[derive(
-    Archive, RkyvSerialize, RkyvDeserialize, Serialize, Deserialize, Debug, Clone, Copy, PartialEq, Eq, Hash,
-)]
-pub enum GraphDirection {
-    TopDown,
-    LeftRight,
-    BottomTop,
-    RightLeft,
 }
 
 /// The kind names criomed accepts at v0.0.1. The validator's
