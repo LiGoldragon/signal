@@ -12,12 +12,9 @@
 
 use rkyv::{Archive, Deserialize as RkyvDeserialize, Serialize as RkyvSerialize};
 
-
 use crate::Slot;
 
-#[derive(
-    Archive, RkyvSerialize, RkyvDeserialize, Debug, Clone, PartialEq, Eq,
-)]
+#[derive(Archive, RkyvSerialize, RkyvDeserialize, Debug, Clone, PartialEq, Eq)]
 pub enum AuthProof {
     /// Trust established at the OS layer via SO_PEERCRED. No
     /// cryptographic proof. The MVP single-operator default.
@@ -33,17 +30,5 @@ pub enum AuthProof {
     QuorumProof { committed: Slot },
 }
 
-#[derive(
-    Archive,
-    RkyvSerialize,
-    RkyvDeserialize,
-   
-   
-    Debug,
-    Clone,
-    Copy,
-    PartialEq,
-    Eq,
-    Hash,
-)]
+#[derive(Archive, RkyvSerialize, RkyvDeserialize, Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub struct BlsG1(pub [u8; 48]);

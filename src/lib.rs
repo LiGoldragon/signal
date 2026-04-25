@@ -4,22 +4,20 @@
 //! on signal. anything criome is signal. nexus is just a frontend
 //! to it."*
 //!
-//! Three concentric layers, all rkyv:
+//! Two layers, all rkyv:
 //!
 //! 1. **Wire envelope** — `Frame`, `Body`, `Request`, `Reply`,
 //!    handshake, auth-proof, outcomes.
 //! 2. **Language IR** — `RawPattern`, `RawOp`, `AssertOp`,
 //!    `RawRecord`, `RawValue`, `Diagnostic`, `Slot`, `Revision`,
-//!    etc. The data shapes that nexus text translates *into* and
-//!    that programmatic clients author directly.
-//! 3. **Sema record kinds** — `KindDecl`/`FieldSpec`/`TypeRef`
-//!    (schema-of-schema), `Struct`/`Enum`/`Module`/`Program`/etc.
-//!    (Rust-source records). Plus name newtypes, primitives,
-//!    type expressions, origin annotations.
+//!    `Hash`. The shapes nexus text translates *into* and that
+//!    programmatic clients author directly.
 //!
-//! All three are signal. Layer 3 absorbed from the previously-
-//! separate `nexus-schema` crate (now SHELVED 2026-04-25 per Li
-//! "we should probably shelf it").
+//! Plus the **flow-graph kinds** (`Node`, `Edge`, `Graph`) — the
+//! v0.0.1 sema record category criomed handles end-to-end. Per
+//! Li 2026-04-25: *"first criomed usage to be for storing
+//! specification as flow-graphs ... so we can start designing
+//! architecture in sema."*
 //!
 //! ```text
 //! nexus (text) → nexus daemon (translates) → signal (rkyv) → criome
@@ -41,23 +39,13 @@ pub mod request;
 // ─── Language IR ────────────────────────────────────────────
 pub mod diagnostic;
 pub mod edit;
+pub mod hash;
 pub mod pattern;
 pub mod query;
 pub mod slot;
 pub mod value;
 
-// ─── Sema record kinds (Rust-source records absorbed from
-//     the former nexus-schema crate) ───────────────────────
-pub mod domain;
-pub mod module;
-pub mod names;
-pub mod origin;
-pub mod primitive;
-pub mod program;
-pub mod ty;
-
-// ─── Flow-graph kinds (criomed's first-milestone substrate —
-//     storing architectural specs as Mermaid-like records) ───
+// ─── Flow-graph kinds (criomed's first-milestone substrate) ──
 pub mod flow;
 
 // ─── Wire envelope re-exports ───────────────────────────────
@@ -65,37 +53,19 @@ pub use auth::AuthProof;
 pub use effect::{Effect, ExecutionPlan, ExecutionStep, OkReply, QueryHitReply, RejectedReply};
 pub use frame::{Body, Frame, FrameDecodeError};
 pub use handshake::{
-    HandshakeRejectionReason, HandshakeReply, HandshakeRequest, ProtocolVersion,
-    SIGNAL_PROTOCOL_VERSION,
+    HandshakeRejectionReason, HandshakeReply, HandshakeRequest, ProtocolVersion, SIGNAL_PROTOCOL_VERSION,
 };
 pub use reply::{Bindings, Reply, ValidateResult};
 pub use request::{Request, SubscribeOp, ValidateOp};
 
 // ─── Language IR re-exports ─────────────────────────────────
-pub use diagnostic::{
-    Applicability, Diagnostic, DiagnosticLevel, DiagnosticSite, DiagnosticSuggestion,
-};
+pub use diagnostic::{Applicability, Diagnostic, DiagnosticLevel, DiagnosticSite, DiagnosticSuggestion};
 pub use edit::{AssertOp, MutateOp, PatchOp, RetractOp, TxnBatch, TxnOp};
+pub use hash::Hash;
 pub use pattern::{FieldConstraint, RawListPattern, RawPattern};
-pub use query::{
-    Cursor, RawOp, RawProjField, RawProjection, RevisionRef, Selection, SortOrder,
-};
+pub use query::{Cursor, RawOp, RawProjField, RawProjection, RevisionRef, Selection, SortOrder};
 pub use slot::{Revision, Slot};
 pub use value::{FieldPath, RawLiteral, RawRecord, RawSegment, RawValue};
-
-// ─── Sema record kinds re-exports ───────────────────────────
-pub use domain::{Const, Enum, Field, Newtype, Struct, Variant};
-pub use module::{Import, Module, Visibility};
-pub use names::{
-    AssociatedName, BindingName, ConstId, ConstName, EnumId, EnumName, FieldName, GenericName,
-    GenericParamId, Hash, InstanceName, LiteralValue, MethodName, ModuleId, ModuleName, NewtypeId,
-    NewtypeName, OriginId, ParamName, PlaceName, ProgramId, RfiName, StructId, StructName,
-    TraitDeclId, TraitImplId, TraitName, TypeId, TypeName, VariantName,
-};
-pub use origin::Origin;
-pub use primitive::Primitive;
-pub use program::Program;
-pub use ty::{GenericParam, TraitBound, Type, TypeApplication};
 
 // ─── Flow-graph re-exports ──────────────────────────────────
 pub use flow::{Edge, Graph, Node, KNOWN_KINDS};

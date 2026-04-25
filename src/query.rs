@@ -11,14 +11,12 @@
 use rkyv::{Archive, Deserialize as RkyvDeserialize, Serialize as RkyvSerialize};
 use serde::{Deserialize, Serialize};
 
-use crate::names::Hash;
+use crate::hash::Hash;
 use crate::pattern::RawPattern;
 use crate::slot::Revision;
 
 /// Full query selection — pattern + ops + projection.
-#[derive(
-    Archive, RkyvSerialize, RkyvDeserialize, Serialize, Deserialize, Debug, Clone, PartialEq,
-)]
+#[derive(Archive, RkyvSerialize, RkyvDeserialize, Serialize, Deserialize, Debug, Clone, PartialEq)]
 pub struct Selection {
     pub pattern: RawPattern,
     pub operators: Vec<RawOp>,
@@ -26,9 +24,7 @@ pub struct Selection {
 }
 
 /// Query operator — applied left-to-right after the pattern.
-#[derive(
-    Archive, RkyvSerialize, RkyvDeserialize, Serialize, Deserialize, Debug, Clone, PartialEq,
-)]
+#[derive(Archive, RkyvSerialize, RkyvDeserialize, Serialize, Deserialize, Debug, Clone, PartialEq)]
 #[rkyv(serialize_bounds(
     __S: rkyv::ser::Writer + rkyv::ser::Allocator,
     __S::Error: rkyv::rancor::Source,
@@ -75,54 +71,19 @@ pub enum RawOp {
     RemoteInstance(String),
 }
 
-#[derive(
-    Archive,
-    RkyvSerialize,
-    RkyvDeserialize,
-    Serialize,
-    Deserialize,
-    Debug,
-    Clone,
-    Copy,
-    PartialEq,
-    Eq,
-    Hash,
-)]
+#[derive(Archive, RkyvSerialize, RkyvDeserialize, Serialize, Deserialize, Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum SortOrder {
     Asc,
     Desc,
 }
 
 /// Opaque cursor bytes for `Before`/`After` pagination.
-#[derive(
-    Archive,
-    RkyvSerialize,
-    RkyvDeserialize,
-    Serialize,
-    Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    Hash,
-)]
+#[derive(Archive, RkyvSerialize, RkyvDeserialize, Serialize, Deserialize, Debug, Clone, PartialEq, Eq, Hash)]
 pub struct Cursor(pub Vec<u8>);
 
 /// Refer to a database revision either by ordinal or by content
 /// hash of the resulting state.
-#[derive(
-    Archive,
-    RkyvSerialize,
-    RkyvDeserialize,
-    Serialize,
-    Deserialize,
-    Debug,
-    Clone,
-    Copy,
-    PartialEq,
-    Eq,
-    Hash,
-)]
+#[derive(Archive, RkyvSerialize, RkyvDeserialize, Serialize, Deserialize, Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum RevisionRef {
     Rev(Revision),
     Hash(Hash),
@@ -130,9 +91,7 @@ pub enum RevisionRef {
 
 /// Result-shape projection — a list of fields, binds, aggregations,
 /// or nested sub-projections.
-#[derive(
-    Archive, RkyvSerialize, RkyvDeserialize, Serialize, Deserialize, Debug, Clone, PartialEq,
-)]
+#[derive(Archive, RkyvSerialize, RkyvDeserialize, Serialize, Deserialize, Debug, Clone, PartialEq)]
 #[rkyv(serialize_bounds(
     __S: rkyv::ser::Writer + rkyv::ser::Allocator,
     __S::Error: rkyv::rancor::Source,
@@ -144,9 +103,7 @@ pub struct RawProjection {
     pub fields: Vec<RawProjField>,
 }
 
-#[derive(
-    Archive, RkyvSerialize, RkyvDeserialize, Serialize, Deserialize, Debug, Clone, PartialEq,
-)]
+#[derive(Archive, RkyvSerialize, RkyvDeserialize, Serialize, Deserialize, Debug, Clone, PartialEq)]
 #[rkyv(serialize_bounds(
     __S: rkyv::ser::Writer + rkyv::ser::Allocator,
     __S::Error: rkyv::rancor::Source,

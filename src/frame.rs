@@ -13,16 +13,13 @@
 
 use rkyv::{Archive, Deserialize as RkyvDeserialize, Serialize as RkyvSerialize};
 
-
 use crate::Slot;
 
 use crate::auth::AuthProof;
 use crate::reply::Reply;
 use crate::request::Request;
 
-#[derive(
-    Archive, RkyvSerialize, RkyvDeserialize, Debug, Clone, PartialEq,
-)]
+#[derive(Archive, RkyvSerialize, RkyvDeserialize, Debug, Clone, PartialEq)]
 pub struct Frame {
     /// Request/reply pairing. Server echoes the value from a
     /// request frame onto its reply frame; subscription replies
@@ -40,9 +37,7 @@ pub struct Frame {
     pub body: Body,
 }
 
-#[derive(
-    Archive, RkyvSerialize, RkyvDeserialize, Debug, Clone, PartialEq,
-)]
+#[derive(Archive, RkyvSerialize, RkyvDeserialize, Debug, Clone, PartialEq)]
 pub enum Body {
     Request(Request),
     Reply(Reply),
@@ -56,16 +51,13 @@ impl Frame {
     /// across machines (little_endian + pointer_width_32 +
     /// unaligned).
     pub fn encode(&self) -> Vec<u8> {
-        rkyv::to_bytes::<rkyv::rancor::Error>(self)
-            .expect("rkyv serialisation does not fail for owned values")
-            .to_vec()
+        rkyv::to_bytes::<rkyv::rancor::Error>(self).expect("rkyv serialisation does not fail for owned values").to_vec()
     }
 
     /// Decode from rkyv-archive bytes off the socket. Validates
     /// the archive via `bytecheck` before deserialising.
     pub fn decode(bytes: &[u8]) -> Result<Self, FrameDecodeError> {
-        rkyv::from_bytes::<Self, rkyv::rancor::Error>(bytes)
-            .map_err(|_| FrameDecodeError::BadArchive)
+        rkyv::from_bytes::<Self, rkyv::rancor::Error>(bytes).map_err(|_| FrameDecodeError::BadArchive)
     }
 }
 
@@ -113,21 +105,9 @@ mod tests {
 
     #[test]
     fn protocol_version_compatibility() {
-        let v0_1_0 = ProtocolVersion {
-            major: 0,
-            minor: 1,
-            patch: 0,
-        };
-        let v0_2_0 = ProtocolVersion {
-            major: 0,
-            minor: 2,
-            patch: 0,
-        };
-        let v1_0_0 = ProtocolVersion {
-            major: 1,
-            minor: 0,
-            patch: 0,
-        };
+        let v0_1_0 = ProtocolVersion { major: 0, minor: 1, patch: 0 };
+        let v0_2_0 = ProtocolVersion { major: 0, minor: 2, patch: 0 };
+        let v1_0_0 = ProtocolVersion { major: 1, minor: 0, patch: 0 };
 
         // Older client / newer server: compatible.
         assert!(v0_1_0.is_compatible_with(v0_2_0));
@@ -143,9 +123,6 @@ mod tests {
     #[test]
     fn decode_rejects_garbage() {
         let garbage = vec![0xff; 32];
-        assert!(matches!(
-            Frame::decode(&garbage),
-            Err(FrameDecodeError::BadArchive)
-        ));
+        assert!(matches!(Frame::decode(&garbage), Err(FrameDecodeError::BadArchive)));
     }
 }

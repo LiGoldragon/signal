@@ -17,9 +17,7 @@ use crate::value::{RawRecord, RawSegment, RawValue};
 
 /// Introduce a new record at a slot. `assigned_slot = Some(_)`
 /// during genesis; otherwise criome mints a slot.
-#[derive(
-    Archive, RkyvSerialize, RkyvDeserialize, Serialize, Deserialize, Debug, Clone, PartialEq,
-)]
+#[derive(Archive, RkyvSerialize, RkyvDeserialize, Serialize, Deserialize, Debug, Clone, PartialEq)]
 pub struct AssertOp {
     pub record: RawRecord,
     pub assigned_slot: Option<Slot>,
@@ -30,9 +28,7 @@ pub struct AssertOp {
 
 /// Whole-record replacement at an existing slot. Slot identity is
 /// preserved — subscriptions see a `SubMutate` event.
-#[derive(
-    Archive, RkyvSerialize, RkyvDeserialize, Serialize, Deserialize, Debug, Clone, PartialEq,
-)]
+#[derive(Archive, RkyvSerialize, RkyvDeserialize, Serialize, Deserialize, Debug, Clone, PartialEq)]
 pub struct MutateOp {
     pub slot: Slot,
     pub new_record: RawRecord,
@@ -42,19 +38,7 @@ pub struct MutateOp {
 /// Remove the record bound at a slot. Validator checks for
 /// outstanding slot-refs and rejects with a Diagnostic naming
 /// dependents if any.
-#[derive(
-    Archive,
-    RkyvSerialize,
-    RkyvDeserialize,
-    Serialize,
-    Deserialize,
-    Debug,
-    Clone,
-    Copy,
-    PartialEq,
-    Eq,
-    Hash,
-)]
+#[derive(Archive, RkyvSerialize, RkyvDeserialize, Serialize, Deserialize, Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub struct RetractOp {
     pub slot: Slot,
     pub expected_rev: Option<Revision>,
@@ -62,9 +46,7 @@ pub struct RetractOp {
 
 /// Surgical field-level edit at a path inside a record.
 /// Type-checked against the field's `TypeRef` at validation.
-#[derive(
-    Archive, RkyvSerialize, RkyvDeserialize, Serialize, Deserialize, Debug, Clone, PartialEq,
-)]
+#[derive(Archive, RkyvSerialize, RkyvDeserialize, Serialize, Deserialize, Debug, Clone, PartialEq)]
 pub struct PatchOp {
     pub slot: Slot,
     pub field_path: Vec<RawSegment>,
@@ -75,17 +57,13 @@ pub struct PatchOp {
 /// Atomic envelope wrapping a sequence of edit ops. All-or-nothing;
 /// one Revision; one redb transaction. The first error halts the
 /// batch; the reply names the failed op index.
-#[derive(
-    Archive, RkyvSerialize, RkyvDeserialize, Serialize, Deserialize, Debug, Clone, PartialEq,
-)]
+#[derive(Archive, RkyvSerialize, RkyvDeserialize, Serialize, Deserialize, Debug, Clone, PartialEq)]
 pub struct TxnBatch {
     pub ops: Vec<TxnOp>,
 }
 
 /// One op inside a `TxnBatch`.
-#[derive(
-    Archive, RkyvSerialize, RkyvDeserialize, Serialize, Deserialize, Debug, Clone, PartialEq,
-)]
+#[derive(Archive, RkyvSerialize, RkyvDeserialize, Serialize, Deserialize, Debug, Clone, PartialEq)]
 pub enum TxnOp {
     Assert(AssertOp),
     Mutate(MutateOp),

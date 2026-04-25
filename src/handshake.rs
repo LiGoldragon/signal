@@ -14,31 +14,14 @@
 
 use rkyv::{Archive, Deserialize as RkyvDeserialize, Serialize as RkyvSerialize};
 
-
 use crate::Slot;
 
 /// Current signal protocol version. Bump per semver: major for
 /// incompatible wire changes, minor for additive changes, patch
 /// for fixes that don't touch the wire.
-pub const SIGNAL_PROTOCOL_VERSION: ProtocolVersion = ProtocolVersion {
-    major: 0,
-    minor: 1,
-    patch: 0,
-};
+pub const SIGNAL_PROTOCOL_VERSION: ProtocolVersion = ProtocolVersion { major: 0, minor: 1, patch: 0 };
 
-#[derive(
-    Archive,
-    RkyvSerialize,
-    RkyvDeserialize,
-   
-   
-    Debug,
-    Clone,
-    Copy,
-    PartialEq,
-    Eq,
-    Hash,
-)]
+#[derive(Archive, RkyvSerialize, RkyvDeserialize, Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub struct ProtocolVersion {
     pub major: u16,
     pub minor: u16,
@@ -54,9 +37,7 @@ impl ProtocolVersion {
 }
 
 /// First request on a new connection.
-#[derive(
-    Archive, RkyvSerialize, RkyvDeserialize, Debug, Clone, PartialEq, Eq,
-)]
+#[derive(Archive, RkyvSerialize, RkyvDeserialize, Debug, Clone, PartialEq, Eq)]
 pub struct HandshakeRequest {
     pub client_version: ProtocolVersion,
     /// Free-form client name for logs and diagnostics. Not
@@ -65,9 +46,7 @@ pub struct HandshakeRequest {
 }
 
 /// Server's reply to a successful handshake.
-#[derive(
-    Archive, RkyvSerialize, RkyvDeserialize, Debug, Clone, PartialEq, Eq,
-)]
+#[derive(Archive, RkyvSerialize, RkyvDeserialize, Debug, Clone, PartialEq, Eq)]
 pub struct HandshakeReply {
     pub server_version: ProtocolVersion,
     /// criome instance identity. For multi-instance setups this
@@ -78,30 +57,13 @@ pub struct HandshakeReply {
 
 /// Reasons the server may reject a handshake. Returned inside a
 /// `Reply::HandshakeRejected`.
-#[derive(
-    Archive,
-    RkyvSerialize,
-    RkyvDeserialize,
-   
-   
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    Hash,
-)]
+#[derive(Archive, RkyvSerialize, RkyvDeserialize, Debug, Clone, PartialEq, Eq, Hash)]
 pub enum HandshakeRejectionReason {
     /// Client major version does not match server major version.
-    IncompatibleMajor {
-        client: ProtocolVersion,
-        server: ProtocolVersion,
-    },
+    IncompatibleMajor { client: ProtocolVersion, server: ProtocolVersion },
     /// Client minor version is ahead of server minor version.
     /// (Client must downgrade or server must upgrade.)
-    ClientMinorAhead {
-        client: ProtocolVersion,
-        server: ProtocolVersion,
-    },
+    ClientMinorAhead { client: ProtocolVersion, server: ProtocolVersion },
     /// Server is shutting down or otherwise refusing connections.
     ServerUnavailable { detail: String },
 }

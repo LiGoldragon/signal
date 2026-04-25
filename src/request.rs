@@ -10,15 +10,12 @@
 
 use rkyv::{Archive, Deserialize as RkyvDeserialize, Serialize as RkyvSerialize};
 
-
 use crate::edit::{AssertOp, MutateOp, PatchOp, RetractOp, TxnBatch, TxnOp};
 use crate::query::Selection;
 
 use crate::handshake::HandshakeRequest;
 
-#[derive(
-    Archive, RkyvSerialize, RkyvDeserialize, Debug, Clone, PartialEq,
-)]
+#[derive(Archive, RkyvSerialize, RkyvDeserialize, Debug, Clone, PartialEq)]
 pub enum Request {
     /// MUST be the first request on a new connection. See
     /// [`crate::handshake`].
@@ -34,7 +31,9 @@ pub enum Request {
     // ─── Query ───────────────────────────────────────────────
     Query(Selection),
     Subscribe(SubscribeOp),
-    Unsubscribe { subscription_id: u64 },
+    Unsubscribe {
+        subscription_id: u64,
+    },
 
     // ─── Read-only ───────────────────────────────────────────
     Validate(ValidateOp),
@@ -45,9 +44,7 @@ pub enum Request {
     Goodbye,
 }
 
-#[derive(
-    Archive, RkyvSerialize, RkyvDeserialize, Debug, Clone, PartialEq,
-)]
+#[derive(Archive, RkyvSerialize, RkyvDeserialize, Debug, Clone, PartialEq)]
 pub struct SubscribeOp {
     pub selection: Selection,
     /// Resume from this revision; `None` → start now.
@@ -59,9 +56,7 @@ pub struct SubscribeOp {
 
 /// Dry-run a single op through the validator pipeline. Returns
 /// diagnostics + an optional [`crate::ExecutionPlan`].
-#[derive(
-    Archive, RkyvSerialize, RkyvDeserialize, Debug, Clone, PartialEq,
-)]
+#[derive(Archive, RkyvSerialize, RkyvDeserialize, Debug, Clone, PartialEq)]
 pub struct ValidateOp {
     pub op: Box<TxnOp>,
     /// Include an `ExecutionPlan` in the reply.

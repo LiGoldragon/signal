@@ -26,9 +26,7 @@ use crate::slot::Slot;
 
 /// A node in a flow-graph. `id` is the human-readable identifier
 /// used in nexus text; `label` is the human-readable name.
-#[derive(
-    Archive, RkyvSerialize, RkyvDeserialize, Serialize, Deserialize, Debug, Clone, PartialEq, Eq, Hash,
-)]
+#[derive(Archive, RkyvSerialize, RkyvDeserialize, Serialize, Deserialize, Debug, Clone, PartialEq, Eq, Hash)]
 pub struct Node {
     pub id: String,
     pub label: String,
@@ -36,9 +34,7 @@ pub struct Node {
 
 /// A directed edge from one node to another. Optional `label`
 /// names the relationship.
-#[derive(
-    Archive, RkyvSerialize, RkyvDeserialize, Serialize, Deserialize, Debug, Clone, PartialEq, Eq, Hash,
-)]
+#[derive(Archive, RkyvSerialize, RkyvDeserialize, Serialize, Deserialize, Debug, Clone, PartialEq, Eq, Hash)]
 pub struct Edge {
     pub from: Slot,
     pub to: Slot,
@@ -47,9 +43,7 @@ pub struct Edge {
 
 /// A flow-graph: a titled collection of nodes and edges, with
 /// optional nested subgraphs.
-#[derive(
-    Archive, RkyvSerialize, RkyvDeserialize, Serialize, Deserialize, Debug, Clone, PartialEq, Eq, Hash,
-)]
+#[derive(Archive, RkyvSerialize, RkyvDeserialize, Serialize, Deserialize, Debug, Clone, PartialEq, Eq, Hash)]
 pub struct Graph {
     pub title: String,
     pub nodes: Vec<Slot>,

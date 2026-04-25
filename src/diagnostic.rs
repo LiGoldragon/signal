@@ -16,9 +16,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::slot::Slot;
 
-#[derive(
-    Archive, RkyvSerialize, RkyvDeserialize, Serialize, Deserialize, Debug, Clone, PartialEq,
-)]
+#[derive(Archive, RkyvSerialize, RkyvDeserialize, Serialize, Deserialize, Debug, Clone, PartialEq)]
 pub struct Diagnostic {
     pub level: DiagnosticLevel,
     /// `E0000` – `E9999` (string for forward-compat with
@@ -33,63 +31,31 @@ pub struct Diagnostic {
     pub durable_record: Option<Slot>,
 }
 
-#[derive(
-    Archive,
-    RkyvSerialize,
-    RkyvDeserialize,
-    Serialize,
-    Deserialize,
-    Debug,
-    Clone,
-    Copy,
-    PartialEq,
-    Eq,
-    Hash,
-)]
+#[derive(Archive, RkyvSerialize, RkyvDeserialize, Serialize, Deserialize, Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum DiagnosticLevel {
     Error,
     Warning,
     Info,
 }
 
-#[derive(
-    Archive, RkyvSerialize, RkyvDeserialize, Serialize, Deserialize, Debug, Clone, PartialEq,
-)]
+#[derive(Archive, RkyvSerialize, RkyvDeserialize, Serialize, Deserialize, Debug, Clone, PartialEq)]
 pub enum DiagnosticSite {
     /// A specific record location.
     Slot(Slot),
     /// A span in nexus source text.
-    SourceSpan {
-        offset: u32,
-        length: u32,
-        source: String,
-    },
+    SourceSpan { offset: u32, length: u32, source: String },
     /// An op within a `TxnBatch`.
     OpInBatch(u32),
 }
 
-#[derive(
-    Archive, RkyvSerialize, RkyvDeserialize, Serialize, Deserialize, Debug, Clone, PartialEq,
-)]
+#[derive(Archive, RkyvSerialize, RkyvDeserialize, Serialize, Deserialize, Debug, Clone, PartialEq)]
 pub struct DiagnosticSuggestion {
     pub applicability: Applicability,
     pub replacement_text: String,
     pub site: Option<DiagnosticSite>,
 }
 
-#[derive(
-    Archive,
-    RkyvSerialize,
-    RkyvDeserialize,
-    Serialize,
-    Deserialize,
-    Debug,
-    Clone,
-    Copy,
-    PartialEq,
-    Eq,
-    Hash,
-)]
+#[derive(Archive, RkyvSerialize, RkyvDeserialize, Serialize, Deserialize, Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum Applicability {
     MachineApplicable,
     MaybeIncorrect,

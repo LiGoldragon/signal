@@ -16,35 +16,11 @@ use serde::{Deserialize, Serialize};
 /// `Mutate` and `Patch` change the bound content-hash without
 /// changing the slot. Cross-record references travel as `Slot`,
 /// not as content-hash.
-#[derive(
-    Archive,
-    RkyvSerialize,
-    RkyvDeserialize,
-    Serialize,
-    Deserialize,
-    Debug,
-    Clone,
-    Copy,
-    PartialEq,
-    Eq,
-    Hash,
-)]
+#[derive(Archive, RkyvSerialize, RkyvDeserialize, Serialize, Deserialize, Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub struct Slot(pub u64);
 
 /// Revision — global monotone write-clock. Each successful
 /// transaction increments the revision; `expected_rev` carries
 /// CAS semantics for `Mutate`/`Retract`/`Patch`.
-#[derive(
-    Archive,
-    RkyvSerialize,
-    RkyvDeserialize,
-    Serialize,
-    Deserialize,
-    Debug,
-    Clone,
-    Copy,
-    PartialEq,
-    Eq,
-    Hash,
-)]
+#[derive(Archive, RkyvSerialize, RkyvDeserialize, Serialize, Deserialize, Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub struct Revision(pub u64);
