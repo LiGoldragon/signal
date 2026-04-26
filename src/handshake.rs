@@ -9,8 +9,6 @@
 //! versions are forward-compatible (a server with newer minor
 //! accepts a client with older minor); patch versions are
 //! ignored.
-//!
-//! Per `mentci/reports/077` §3 + §6 Q-S1.
 
 use rkyv::{Archive, Deserialize as RkyvDeserialize, Serialize as RkyvSerialize};
 
