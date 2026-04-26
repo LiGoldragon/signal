@@ -81,6 +81,30 @@ Contains, … }` or `OutcomeMessage { Ok, Diagnostic }`) are
 encouraged. Adding new strongly-typed kinds is the central activity
 of evolving signal.
 
+### Perfect specificity at the wire
+
+Signal carries the project's [perfect-specificity
+invariant](https://github.com/LiGoldragon/criome/blob/main/ARCHITECTURE.md#invariant-d)
+in its concrete shape. Every verb's payload is its own closed
+enum of typed kinds — `AssertOp { Node(Node) | Edge(Edge) | … }`,
+`MutateOp { Node { slot, new, expected_rev } | … }`,
+`QueryOp { Node(NodeQuery) | … }`, `Records { Node(Vec<Node>) |
+… }`. There is no shared `KnownRecord` wrapper, no generic
+record envelope, no string kind-name lookup at runtime. The wire
+knows what it carries by type; consumers `match` exhaustively.
+
+A pattern/query is itself a record kind: `NodeQuery` is paired
+with `Node`, generated from the same `KindDecl` by rsc. The
+grammar `(| ... |)` dispatches to the `*Query` variant of the
+named kind — no parallel "pattern" type-system layer exists.
+
+No `Unknown` escape variant. The closed enum is exhaustively
+closed; rebuilds bring the world forward together via the
+criome self-host loop. Schema-as-data lives in `KindDecl`
+records in sema; the typed Rust code in this crate is its
+projection (rsc closes the loop post-M0; M0 hand-edits the
+projection to match the bootstrap KindDecls in genesis.nexus).
+
 ## Wire format
 
 rkyv 0.8 with the canonical pinned feature set per
