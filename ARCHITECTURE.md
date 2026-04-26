@@ -35,11 +35,17 @@ Once a request crosses the daemon, it is signal end-to-end.
 
 Owns:
 
-- `Frame` envelope: `correlation_id`, `principal_hint`,
-  `auth_proof`, `body`.
+- `Frame` envelope: `principal_hint`, `auth_proof`, `body`. No
+  correlation id — replies pair to requests by **position** on
+  the connection (FIFO).
 - `Body { Request, Reply }`.
-- `Request` and `Reply` enums for every verb (assert, mutate,
-  retract, validate, query, subscribe, atomic-batch, handshake).
+- `Request` enum: `Handshake`, `Assert`, `Mutate`, `Retract`,
+  `AtomicBatch`, `Query`, `Subscribe`, `Validate`.
+- `Reply` enum: `HandshakeAccepted` / `HandshakeRejected`,
+  `Outcome` (single-element edit reply), `Outcomes` (multi-element
+  edit reply), `Records` (query result).
+- `OutcomeMessage`: `Ok` (success record kind) or `Diagnostic`
+  (failure record kind).
 - `HandshakeRequest` / `HandshakeReply` /
   `HandshakeRejectionReason` — the protocol-version exchange
   that opens a connection.
@@ -47,19 +53,33 @@ Owns:
   major-exact / minor-forward compatibility rule.
 - `AuthProof` (`SingleOperator` MVP, `BlsSig` and `QuorumProof`
   post-MVP skeletons).
-- The full **language IR** absorbed from the former nexus-schema
+- The **language IR** absorbed from the former nexus-schema
   crate: `RawRecord`, `RawValue`, `RawLiteral`, `RawPattern`,
-  `Selection`, `RawOp`, `AssertOp` / `MutateOp` / `RetractOp`
-  / `PatchOp` / `TxnBatch`, `Diagnostic`, `Slot`, `Revision`,
-  `Hash`, etc.
-- The **flow-graph kinds** (`Node`, `Edge`, `Graph`,
-  `KNOWN_KINDS`) — criome's first-milestone substrate.
+  `Selection`, `RawOp`, `AssertOp` / `MutateOp` / `RetractOp` /
+  `AtomicBatch` / `BatchOp`, `Diagnostic`, `Slot`, `Revision`,
+  `Hash`.
+- The **flow-graph kinds** (`Node`, `Edge`, `Graph`, `Ok`,
+  `RelationKind`, `KNOWN_KINDS`) — criome's first-milestone
+  substrate. `RelationKind` is a closed enum of relation
+  variants (Flow, DependsOn, Contains, References, Produces,
+  Consumes, Calls, Implements, IsA).
 
 Does not own:
 
 - Nexus text grammar or parser — see [github.com/LiGoldragon/nexus](https://github.com/LiGoldragon/nexus).
 - Sema state — owned by criome.
 - Validator pipeline — owned by criome.
+
+## Schema discipline
+
+Signal is the place where new typed kinds and enum variants land
+as the system grows. The "no keywords" rule from the nexus
+grammar applies to the **parser** only — there are no reserved
+words like `SELECT` or `IF` that the parser dispatches on.
+**Schema-level typed enums** (like `RelationKind { DependsOn,
+Contains, … }` or `OutcomeMessage { Ok, Diagnostic }`) are
+encouraged. Adding new strongly-typed kinds is the central activity
+of evolving signal.
 
 ## Wire format
 
@@ -126,17 +146,16 @@ src/
 ├── handshake.rs  — ProtocolVersion, HandshakeRequest/Reply
 ├── auth.rs       — AuthProof variants
 ├── request.rs    — Request enum
-├── reply.rs      — Reply enum
-├── effect.rs     — Effect, OkReply, RejectedReply, QueryHitReply
+├── reply.rs      — Reply enum, OutcomeMessage
 ├── value.rs      — RawRecord, RawValue, RawLiteral, FieldPath
 ├── pattern.rs    — RawPattern, FieldConstraint
 ├── query.rs      — Selection, RawOp, RawProjection
-├── edit.rs       — AssertOp, MutateOp, RetractOp, PatchOp,
-│                    TxnBatch, TxnOp
+├── edit.rs       — AssertOp, MutateOp, RetractOp,
+│                    AtomicBatch, BatchOp
 ├── diagnostic.rs — Diagnostic, DiagnosticLevel, DiagnosticSite
 ├── slot.rs       — Slot, Revision
 ├── hash.rs       — Hash (Blake3 32-byte content hash)
-└── flow.rs       — Node, Edge, Graph, KNOWN_KINDS
+└── flow.rs       — Node, Edge, Graph, Ok, RelationKind, KNOWN_KINDS
 ```
 
 ## Status

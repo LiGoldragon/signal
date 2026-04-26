@@ -1,14 +1,17 @@
 //! [`Frame`] — the wire envelope for every signal message.
 //!
-//! Each Frame carries a correlation id (request/reply pairing),
-//! an optional principal hint (which Slot-bound principal is
-//! making the request), an optional auth proof, and a body
-//! (Request or Reply).
+//! Each Frame carries an optional principal hint (which Slot-bound
+//! principal is making the request), an optional auth proof, and
+//! a body (Request or Reply).
+//!
+//! Replies pair to requests by **position on the connection (FIFO)**;
+//! there is no correlation id. The first reply on a connection
+//! corresponds to the first request, the second reply to the second
+//! request, and so on.
 //!
 //! The frame schema *is* the framing — both nexus and criome
 //! know the rkyv schema, so a single `rkyv::to_bytes` /
 //! `rkyv::from_bytes` per Frame covers transport.
-//!
 
 use rkyv::{Archive, Deserialize as RkyvDeserialize, Serialize as RkyvSerialize};
 
@@ -20,10 +23,6 @@ use crate::request::Request;
 
 #[derive(Archive, RkyvSerialize, RkyvDeserialize, Debug, Clone, PartialEq)]
 pub struct Frame {
-    /// Request/reply pairing. Server echoes the value from a
-    /// request frame onto its reply frame.
-    pub correlation_id: u64,
-
     /// Slot-bound principal making this request. `None` is
     /// allowed during handshake and for unauthenticated probes.
     pub principal_hint: Option<Slot>,
@@ -74,7 +73,6 @@ mod tests {
     #[test]
     fn handshake_request_round_trip() {
         let original = Frame {
-            correlation_id: 1,
             principal_hint: None,
             auth_proof: None,
             body: Body::Request(Request::Handshake(HandshakeRequest {

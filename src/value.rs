@@ -1,4 +1,4 @@
-//! Wire-record values — what travels inside Assert/Mutate/Patch
+//! Wire-record values — what travels inside Assert/Mutate
 //! ops and Query replies before kind-resolution at criome.
 //!
 //! `RawRecord` is the signal-side form: a kind name plus field
