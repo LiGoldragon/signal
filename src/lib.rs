@@ -30,7 +30,6 @@
 
 // ─── Wire envelope ──────────────────────────────────────────
 pub mod auth;
-pub mod effect;
 pub mod frame;
 pub mod handshake;
 pub mod reply;
@@ -50,17 +49,16 @@ pub mod flow;
 
 // ─── Wire envelope re-exports ───────────────────────────────
 pub use auth::AuthProof;
-pub use effect::{Effect, ExecutionPlan, ExecutionStep, OkReply, QueryHitReply, RejectedReply};
 pub use frame::{Body, Frame, FrameDecodeError};
 pub use handshake::{
     HandshakeRejectionReason, HandshakeReply, HandshakeRequest, ProtocolVersion, SIGNAL_PROTOCOL_VERSION,
 };
-pub use reply::{Bindings, Reply, ValidateResult};
-pub use request::{Request, SubscribeOp, ValidateOp};
+pub use reply::{Bindings, OutcomeMessage, Reply};
+pub use request::{Request, ValidateOp};
 
 // ─── Language IR re-exports ─────────────────────────────────
 pub use diagnostic::{Applicability, Diagnostic, DiagnosticLevel, DiagnosticSite, DiagnosticSuggestion};
-pub use edit::{AssertOp, MutateOp, PatchOp, RetractOp, TxnBatch, TxnOp};
+pub use edit::{AssertOp, AtomicBatch, BatchOp, MutateOp, RetractOp};
 pub use hash::Hash;
 pub use pattern::{FieldConstraint, RawListPattern, RawPattern};
 pub use query::{Cursor, RawOp, RawProjField, RawProjection, RevisionRef, Selection, SortOrder};
@@ -68,4 +66,4 @@ pub use slot::{Revision, Slot};
 pub use value::{FieldPath, RawLiteral, RawRecord, RawSegment, RawValue};
 
 // ─── Flow-graph re-exports ──────────────────────────────────
-pub use flow::{Edge, Graph, Node, KNOWN_KINDS};
+pub use flow::{Edge, Graph, Node, Ok, KNOWN_KINDS};

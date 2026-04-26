@@ -21,8 +21,7 @@ use crate::request::Request;
 #[derive(Archive, RkyvSerialize, RkyvDeserialize, Debug, Clone, PartialEq)]
 pub struct Frame {
     /// Request/reply pairing. Server echoes the value from a
-    /// request frame onto its reply frame; subscription replies
-    /// after `SubReady` use the subscription_id inside the body.
+    /// request frame onto its reply frame.
     pub correlation_id: u64,
 
     /// Slot-bound principal making this request. `None` is
@@ -85,19 +84,6 @@ mod tests {
         };
         let bytes = original.encode();
         assert!(!bytes.is_empty());
-        let decoded = Frame::decode(&bytes).expect("decode");
-        assert_eq!(decoded, original);
-    }
-
-    #[test]
-    fn goodbye_round_trip() {
-        let original = Frame {
-            correlation_id: 99,
-            principal_hint: Some(Slot(100)),
-            auth_proof: Some(AuthProof::SingleOperator),
-            body: Body::Request(Request::Goodbye),
-        };
-        let bytes = original.encode();
         let decoded = Frame::decode(&bytes).expect("decode");
         assert_eq!(decoded, original);
     }

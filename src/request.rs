@@ -1,18 +1,19 @@
 //! `Request` — what nexus (or any signal-speaking client) sends
 //! to criome.
 //!
-//! After the handshake, every Frame body is `Body::Request(...)`
-//! or `Body::Reply(...)`. Edit verbs and query verbs use payload
-//! types from `nexus-schema` (the language IR is shared between
-//! signal-on-wire and sema-stored shapes).
+//! After the handshake, every Frame body is `Body::Request(...)` or
+//! `Body::Reply(...)`.
 //!
+//! Connection lifecycle is socket-level, not Request-level: there
+//! is no Goodbye, Cancel, Resume, Heartbeat, or Unsubscribe verb.
+//! Closing the socket ends the connection; subscriptions die with
+//! their connection.
 
 use rkyv::{Archive, Deserialize as RkyvDeserialize, Serialize as RkyvSerialize};
 
-use crate::edit::{AssertOp, MutateOp, PatchOp, RetractOp, TxnBatch, TxnOp};
-use crate::query::Selection;
-
+use crate::edit::{AssertOp, AtomicBatch, BatchOp, MutateOp, RetractOp};
 use crate::handshake::HandshakeRequest;
+use crate::query::Selection;
 
 #[derive(Archive, RkyvSerialize, RkyvDeserialize, Debug, Clone, PartialEq)]
 pub enum Request {
@@ -24,40 +25,23 @@ pub enum Request {
     Assert(AssertOp),
     Mutate(MutateOp),
     Retract(RetractOp),
-    Patch(PatchOp),
-    TxnBatch(TxnBatch),
+    AtomicBatch(AtomicBatch),
 
     // ─── Query ───────────────────────────────────────────────
     Query(Selection),
-    Subscribe(SubscribeOp),
-    Unsubscribe {
-        subscription_id: u64,
-    },
+    /// Open a subscription on this connection. The subscription
+    /// streams matching events going forward (no initial snapshot
+    /// — issue a Query first if you want current state). One
+    /// subscription per connection.
+    Subscribe(Selection),
 
     // ─── Read-only ───────────────────────────────────────────
     Validate(ValidateOp),
-
-    // ─── Connection management ───────────────────────────────
-    /// Close the connection cleanly. Server replies with
-    /// [`crate::Reply::Goodbye`] then both sides drop the socket.
-    Goodbye,
 }
 
-#[derive(Archive, RkyvSerialize, RkyvDeserialize, Debug, Clone, PartialEq)]
-pub struct SubscribeOp {
-    pub selection: Selection,
-    /// Resume from this revision; `None` → start now.
-    pub from_revision: Option<crate::Revision>,
-    /// If true, the server emits the current matches as a
-    /// `Reply::SubSnapshot` before live diffs begin.
-    pub initial_snapshot: bool,
-}
-
-/// Dry-run a single op through the validator pipeline. Returns
-/// diagnostics + an optional [`crate::ExecutionPlan`].
+/// Dry-run a single op or batch through the validator pipeline.
+/// Returns the would-be `OutcomeMessage` (or sequence of them).
 #[derive(Archive, RkyvSerialize, RkyvDeserialize, Debug, Clone, PartialEq)]
 pub struct ValidateOp {
-    pub op: Box<TxnOp>,
-    /// Include an `ExecutionPlan` in the reply.
-    pub explain: bool,
+    pub op: Box<BatchOp>,
 }

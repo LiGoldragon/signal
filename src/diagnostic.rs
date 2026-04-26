@@ -43,7 +43,7 @@ pub enum DiagnosticSite {
     Slot(Slot),
     /// A span in nexus source text.
     SourceSpan { offset: u32, length: u32, source: String },
-    /// An op within a `TxnBatch`.
+    /// An op within an `AtomicBatch`.
     OpInBatch(u32),
 }
 

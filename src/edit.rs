@@ -1,31 +1,34 @@
-//! Edit IR — Assert/Mutate/Retract/Patch + atomic batches.
+//! Edit IR — Assert / Mutate / Retract + atomic batches.
 //!
-//! Five edit verbs: `Assert` introduces a record at a slot,
-//! `Mutate` replaces a record whole, `Retract` removes a record,
-//! `Patch` does field-level edits, `TxnBatch` wraps a sequence
-//! atomically. CAS via `expected_rev`. Forward-refs inside a
-//! transaction are not resolved (split into two transactions —
-//!//!
+//! Three edit verbs:
+//! - `Assert` introduces a new record.
+//! - `Mutate` replaces an existing record (including the pattern-
+//!   based form that subsumes per-field Patch).
+//! - `Retract` removes a record.
+//!
+//! Atomic batches wrap a sequence of edit ops as all-or-nothing.
 
 use rkyv::{Archive, Deserialize as RkyvDeserialize, Serialize as RkyvSerialize};
 use serde::{Deserialize, Serialize};
 
 use crate::slot::{Revision, Slot};
-use crate::value::{RawRecord, RawSegment, RawValue};
+use crate::value::RawRecord;
 
-/// Introduce a new record at a slot. `assigned_slot = Some(_)`
-/// during genesis; otherwise criome mints a slot.
+/// Introduce a new record. `assigned_slot = Some(_)` during
+/// genesis seeding; otherwise criome assigns the slot internally.
+/// CAS via `expected_rev` (`Some(0)` = "fail if any record currently
+/// bound at this slot").
 #[derive(Archive, RkyvSerialize, RkyvDeserialize, Serialize, Deserialize, Debug, Clone, PartialEq)]
 pub struct AssertOp {
     pub record: RawRecord,
     pub assigned_slot: Option<Slot>,
-    /// CAS for slot non-existence: `Some(0)` means "fail if any
-    /// record currently bound at this slot".
     pub expected_rev: Option<Revision>,
 }
 
-/// Whole-record replacement at an existing slot. Slot identity is
-/// preserved — subscriptions see a `SubMutate` event.
+/// Whole-record replacement. Identity (slot) is preserved.
+/// Pattern-driven mutation (replace every match of a pattern with
+/// a new record) is the same shape — the daemon translates
+/// `~(\| pat \|) (NewRecord …)` text into one MutateOp per match.
 #[derive(Archive, RkyvSerialize, RkyvDeserialize, Serialize, Deserialize, Debug, Clone, PartialEq)]
 pub struct MutateOp {
     pub slot: Slot,
@@ -33,38 +36,26 @@ pub struct MutateOp {
     pub expected_rev: Option<Revision>,
 }
 
-/// Remove the record bound at a slot. Validator checks for
-/// outstanding slot-refs and rejects with a Diagnostic naming
-/// dependents if any.
+/// Remove the record bound at a slot. Validator rejects if any
+/// outstanding references would dangle.
 #[derive(Archive, RkyvSerialize, RkyvDeserialize, Serialize, Deserialize, Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub struct RetractOp {
     pub slot: Slot,
     pub expected_rev: Option<Revision>,
 }
 
-/// Surgical field-level edit at a path inside a record.
-/// Type-checked against the field's `TypeRef` at validation.
+/// Atomic envelope wrapping a sequence of edit ops. All-or-nothing
+/// commit at one Revision in one transaction. The reply is a
+/// `Vec<OutcomeMessage>` paired by index to the input ops.
 #[derive(Archive, RkyvSerialize, RkyvDeserialize, Serialize, Deserialize, Debug, Clone, PartialEq)]
-pub struct PatchOp {
-    pub slot: Slot,
-    pub field_path: Vec<RawSegment>,
-    pub new_value: RawValue,
-    pub expected_rev: Option<Revision>,
+pub struct AtomicBatch {
+    pub ops: Vec<BatchOp>,
 }
 
-/// Atomic envelope wrapping a sequence of edit ops. All-or-nothing;
-/// one Revision; one redb transaction. The first error halts the
-/// batch; the reply names the failed op index.
+/// One op inside an `AtomicBatch`.
 #[derive(Archive, RkyvSerialize, RkyvDeserialize, Serialize, Deserialize, Debug, Clone, PartialEq)]
-pub struct TxnBatch {
-    pub ops: Vec<TxnOp>,
-}
-
-/// One op inside a `TxnBatch`.
-#[derive(Archive, RkyvSerialize, RkyvDeserialize, Serialize, Deserialize, Debug, Clone, PartialEq)]
-pub enum TxnOp {
+pub enum BatchOp {
     Assert(AssertOp),
     Mutate(MutateOp),
     Retract(RetractOp),
-    Patch(PatchOp),
 }

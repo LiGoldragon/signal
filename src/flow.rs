@@ -51,7 +51,18 @@ pub struct Graph {
     pub subgraphs: Vec<Slot>,
 }
 
-/// The kind names criomed accepts at v0.0.1. The validator's
-/// schema-check uses this list directly — no in-sema `KindDecl`
-/// records needed for the first milestone.
+/// Success acknowledgement message. Empty record kind — the
+/// presence of `(Ok)` at a reply position means the request
+/// succeeded with no further information. Failure replies use
+/// the existing `Diagnostic` kind.
+///
+/// Per Li 2026-04-26 ((messages are records, records are delimited,
+/// so (Ok) — a unit-struct record kind, not a unit variant)).
+#[derive(Archive, RkyvSerialize, RkyvDeserialize, Serialize, Deserialize, Debug, Clone, Copy, PartialEq, Eq, Hash, Default)]
+pub struct Ok {}
+
+/// The kind names criomed accepts at v0.0.1 as **sema-storable
+/// records** (incoming Asserts/Mutates/Retracts target one of
+/// these). `Ok` and `Diagnostic` are message kinds (reply-only)
+/// and do not appear here.
 pub const KNOWN_KINDS: &[&str] = &["Node", "Edge", "Graph"];
