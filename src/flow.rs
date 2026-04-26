@@ -45,10 +45,9 @@ pub struct Edge {
     pub kind: RelationKind,
 }
 
-/// Closed vocabulary of relation kinds an Edge can carry. From
-/// the prior-art survey in [reports/079] — covers PROV-O / UML /
-/// Mermaid-class precedent. Extend as new relation semantics are
-/// needed; deletions are breaking changes.
+/// Closed vocabulary of relation kinds an Edge can carry.
+/// Covers PROV-O / UML / Mermaid-class precedent. Extend as new
+/// relation semantics are needed; deletions are breaking changes.
 #[derive(Archive, RkyvSerialize, RkyvDeserialize, Serialize, Deserialize, Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum RelationKind {
     /// Generic forward flow — data, control, anything moving from

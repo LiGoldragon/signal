@@ -118,10 +118,13 @@ discipline carries through (`(R)` ↔ `(R)`, `~(R)` ↔ `~(R)`,
 are atomic at the position — never half-emitted; partial failure
 becomes a `Diagnostic` *instead of* the sequence at that position.
 
-See [reports/083](https://github.com/LiGoldragon/mentci/blob/main/reports/083-the-return-protocol.md)
-for the full reply-protocol design (slot dependencies via tempid
-binds, multi-connection parallelism, cancellation by socket
-close, subscription event semantics).
+For dependent edits where a later request needs the slot
+assigned by an earlier one, the **client orchestrates** —
+captures the assigned slot from the earlier reply (in its host
+language) and substitutes it into the later request. Nexus has
+no variables, no scoping, no cross-request state. For
+parallelism, open multiple connections — each is its own serial
+lane.
 
 ## Direct authoring — peer to nexus
 
@@ -165,7 +168,7 @@ kinds defined; round-trip tests cover the envelope.
 
 ## Cross-cutting context
 
-- Three-layer messaging story:
-  [mentci/reports/077](https://github.com/LiGoldragon/mentci/blob/main/reports/077-nexus-and-signal.md)
 - Project-wide architecture:
   [criome/ARCHITECTURE.md](https://github.com/LiGoldragon/criome/blob/main/ARCHITECTURE.md)
+- The text-translator daemon at the boundary:
+  [nexus/ARCHITECTURE.md](https://github.com/LiGoldragon/nexus/blob/main/ARCHITECTURE.md)
