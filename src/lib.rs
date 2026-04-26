@@ -66,4 +66,4 @@ pub use slot::{Revision, Slot};
 pub use value::{FieldPath, RawLiteral, RawRecord, RawSegment, RawValue};
 
 // ─── Flow-graph re-exports ──────────────────────────────────
-pub use flow::{Edge, Graph, Node, Ok, KNOWN_KINDS};
+pub use flow::{Edge, Graph, Node, Ok, RelationKind, KNOWN_KINDS};

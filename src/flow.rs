@@ -32,13 +32,42 @@ pub struct Node {
     pub label: String,
 }
 
-/// A directed edge from one node to another. Optional `label`
-/// names the relationship.
-#[derive(Archive, RkyvSerialize, RkyvDeserialize, Serialize, Deserialize, Debug, Clone, PartialEq, Eq, Hash)]
+/// A directed edge from one node to another, typed by its
+/// relation kind. Per Li 2026-04-26: every edge declares what
+/// relation it carries — strongly-typed, closed vocabulary.
+/// Adding new relation kinds is what the schema is for.
+#[derive(Archive, RkyvSerialize, RkyvDeserialize, Serialize, Deserialize, Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub struct Edge {
     pub from: Slot,
     pub to: Slot,
-    pub label: Option<String>,
+    pub kind: RelationKind,
+}
+
+/// Closed vocabulary of relation kinds an Edge can carry. From
+/// the prior-art survey in [reports/079] — covers PROV-O / UML /
+/// Mermaid-class precedent. Extend as new relation semantics are
+/// needed; deletions are breaking changes.
+#[derive(Archive, RkyvSerialize, RkyvDeserialize, Serialize, Deserialize, Debug, Clone, Copy, PartialEq, Eq, Hash)]
+pub enum RelationKind {
+    /// Generic forward flow — data, control, anything moving from
+    /// `from` to `to`.
+    Flow,
+    /// `from` depends on `to` (compile, runtime, semantic).
+    DependsOn,
+    /// `from` contains `to` (composition).
+    Contains,
+    /// `from` references `to` (weak, non-owning).
+    References,
+    /// `from` produces `to` as output.
+    Produces,
+    /// `from` consumes `to` as input.
+    Consumes,
+    /// `from` invokes `to` (function/method call).
+    Calls,
+    /// `from` implements interface/trait `to`.
+    Implements,
+    /// `from` is-a `to` (subtype, kind-of).
+    IsA,
 }
 
 /// A flow-graph: a titled collection of nodes and edges, with
