@@ -1,20 +1,35 @@
 # ARCHITECTURE — signal
 
-The rkyv messaging schema between **nexus** and **criome**.
-Signal is the *rkyv form of nexus*: nexus parses nexus text
-into signal frames; criome processes signal frames and replies.
+Signal is the **native binary form** of the records criome holds.
+Sema — the records — is by definition directly computer-cognizable:
+the bytes a record occupies at rest *are* its meaning, no parsing,
+no interpretation. Criome IS sema's engine, so criome receives and
+serves sema in its native form. Signal is that form on the wire.
+
+Nexus text exists as the human-facing translation. The mechanical-
+translation rule (every nexus text construct has exactly one signal
+form, and vice versa) keeps the two surfaces in lockstep. Inside
+the nexus daemon, text-in becomes signal-out; signal-replies become
+text-out.
 
 ```
-nexus text ─┐                        ┌─ signal rkyv ─┐
-            │                        │               │
-   client ──┴── client-msg ──> nexus ──> signal ──> criome
-                                        <── reply ──
+text-speaking peers                  signal-speaking peers
+(humans, LLM agents,                  (the nexus daemon talking
+ nexus-cli, editor LSPs)              to criome — and any peer
+                                       holding typed records)
+        │                                       │
+        │ pure nexus text                       │ length-prefixed
+        │ in / out                              │ rkyv frames
+        ▼                                       ▼
+┌──────────────────┐                    ┌─────────────────┐
+│ /tmp/nexus.sock  │                    │ /tmp/criome.sock│
+│  nexus daemon    │  ──── signal ────► │     criome      │
+│ (text translator)│  ◄─── signal ───── │ (validator+sema)│
+└──────────────────┘                    └─────────────────┘
 ```
 
-This crate is rkyv-only — no serde — per Li's decision: signal
-is non-text-form, direct rust rkyv. nexus-schema (a dependency)
-provides the language IR payload types; signal owns only the
-envelope and protocol.
+Nexus text is the only non-signal surface in the sema-ecosystem.
+Once a request crosses the daemon, it is signal end-to-end.
 
 ## Boundaries
 
@@ -23,10 +38,8 @@ Owns:
 - `Frame` envelope: `correlation_id`, `principal_hint`,
   `auth_proof`, `body`.
 - `Body { Request, Reply }`.
-- `Request` enum: `Handshake` + edit / query / validate verbs +
-  `Goodbye`.
-- `Reply` enum: handshake outcomes + unary outcomes +
-  subscription stream events + `Goodbye`.
+- `Request` and `Reply` enums for every verb (assert, mutate,
+  retract, validate, query, subscribe, atomic-batch, handshake).
 - `HandshakeRequest` / `HandshakeReply` /
   `HandshakeRejectionReason` — the protocol-version exchange
   that opens a connection.
@@ -34,17 +47,19 @@ Owns:
   major-exact / minor-forward compatibility rule.
 - `AuthProof` (`SingleOperator` MVP, `BlsSig` and `QuorumProof`
   post-MVP skeletons).
-- `Effect`, `OkReply`, `RejectedReply`, `QueryHitReply`,
-  `ExecutionPlan`, `ExecutionStep` — outcome shapes.
+- The full **language IR** absorbed from the former nexus-schema
+  crate: `RawRecord`, `RawValue`, `RawLiteral`, `RawPattern`,
+  `Selection`, `RawOp`, `AssertOp` / `MutateOp` / `RetractOp`
+  / `PatchOp` / `TxnBatch`, `Diagnostic`, `Slot`, `Revision`,
+  `Hash`, etc.
+- The **flow-graph kinds** (`Node`, `Edge`, `Graph`,
+  `KNOWN_KINDS`) — criome's first-milestone substrate.
 
 Does not own:
 
-- Language IR (`RawPattern`, `RawOp`, `AssertOp`, `RawRecord`,
-  `Diagnostic`, `Slot`, `Revision`, …) — lives in
-  [nexus-schema](https://github.com/LiGoldragon/nexus-schema).
-  Signal imports payload types from there.
-- The nexus text language — [github.com/LiGoldragon/nexus](https://github.com/LiGoldragon/nexus).
+- Nexus text grammar or parser — see [github.com/LiGoldragon/nexus](https://github.com/LiGoldragon/nexus).
 - Sema state — owned by criome.
+- Validator pipeline — owned by criome.
 
 ## Wire format
 
@@ -53,37 +68,52 @@ rkyv 0.8 with the canonical pinned feature set per
 `default-features = false, features = ["std", "bytecheck",
 "little_endian", "pointer_width_32", "unaligned"]`.
 
-The frame schema **is** the framing — both parties know the
-schema, no length-prefix layer outside rkyv. `Frame::encode` /
-`Frame::decode` are `rkyv::to_bytes` / `rkyv::from_bytes` with
-`bytecheck` validation on read.
+Schema-as-framing: reader and writer both know the record kinds.
+Frames are length-prefixed (4-byte big-endian) so a stream socket
+can find frame boundaries; everything after the prefix is a rkyv
+archive of `Frame`. Nothing in the bytes describes itself.
+
+`Frame::encode` / `Frame::decode` use `rkyv::to_bytes` /
+`rkyv::from_bytes` with `bytecheck` validation on read.
 
 ## Handshake
 
-Every connection MUST open with `Request::Handshake`:
+Every connection opens with `Request::Handshake`:
 
-1. Client sends `Frame { auth_proof: None, body:
-   Request::Handshake(HandshakeRequest{client_version, ...}) }`.
+1. Initiator sends `Frame { body: Request::Handshake(...) }`.
 2. Server validates compatibility (major-exact, minor-forward).
-3. Server replies `Reply::HandshakeAccepted` or
-   `Reply::HandshakeRejected(reason)`.
-4. On accepted: subsequent frames carry `auth_proof: Some(...)`
-   and normal request/reply traffic.
+3. Server replies `HandshakeAccepted` or `HandshakeRejected`.
+4. On accepted: subsequent frames carry the agreed protocol
+   version implicitly.
 
 `SIGNAL_PROTOCOL_VERSION = 0.1.0`. Bump per semver.
 
+## Reply protocol
+
+Replies are paired to requests by **position** on the connection:
+the N-th reply is for the N-th request. No correlation IDs.
+Replies use the same record kinds as requests; the verb sigil
+discipline carries through (`(R)` ↔ `(R)`, `~(R)` ↔ `~(R)`,
+`!(R)` ↔ `!(R)`, etc.). Sequence-shaped replies (Query results)
+are atomic at the position — never half-emitted; partial failure
+becomes a `Diagnostic` *instead of* the sequence at that position.
+
+See [reports/083](https://github.com/LiGoldragon/mentci/blob/main/reports/083-the-return-protocol.md)
+for the full reply-protocol design (slot dependencies via tempid
+binds, multi-connection parallelism, cancellation by socket
+close, subscription event semantics).
+
 ## Direct authoring — peer to nexus
 
-Architecturally, signal is a peer-shaped interface to nexus
-text. Practically:
+Architecturally, signal is peer-shaped to nexus text:
 
-- ✓ **Deterministic programmatic clients** (Rust, scripts, CI)
-  may compose `AssertOp` / `MutateOp` / `TxnBatch` in rkyv
-  directly and send.
-- ✗ **LLM agents** speak nexus text today; they cannot author
-  rkyv binary until trained on it. Per Li 2026-04-25: *"not
-  yet, not until llm models are trained using binary signal
-  data."*
+- ✓ **Programmatic Rust clients** (services, CI, the daemon itself)
+  may compose typed records directly and send them as signal
+  frames — no text round-trip.
+- ✗ **LLM agents** author nexus text and let the daemon translate.
+  The text is the form they're trained on. Per Li 2026-04-25:
+  *"not yet, not until llm models are trained using binary
+  signal data."*
 
 Both paths arrive at criome as signal frames.
 
@@ -95,15 +125,24 @@ src/
 ├── frame.rs      — Frame envelope, encode/decode, tests
 ├── handshake.rs  — ProtocolVersion, HandshakeRequest/Reply
 ├── auth.rs       — AuthProof variants
-├── request.rs    — Request enum + SubscribeOp + ValidateOp
-├── reply.rs      — Reply enum + ValidateResult + Bindings
-└── effect.rs     — Effect, OkReply, RejectedReply,
-                    QueryHitReply, ExecutionPlan, ExecutionStep
+├── request.rs    — Request enum
+├── reply.rs      — Reply enum
+├── effect.rs     — Effect, OkReply, RejectedReply, QueryHitReply
+├── value.rs      — RawRecord, RawValue, RawLiteral, FieldPath
+├── pattern.rs    — RawPattern, FieldConstraint
+├── query.rs      — Selection, RawOp, RawProjection
+├── edit.rs       — AssertOp, MutateOp, RetractOp, PatchOp,
+│                    TxnBatch, TxnOp
+├── diagnostic.rs — Diagnostic, DiagnosticLevel, DiagnosticSite
+├── slot.rs       — Slot, Revision
+├── hash.rs       — Hash (Blake3 32-byte content hash)
+└── flow.rs       — Node, Edge, Graph, KNOWN_KINDS
 ```
 
 ## Status
 
-**Skeleton-as-design**, 4 round-trip tests pass.
+**Skeleton-as-design.** Wire envelope + IR types + flow-graph
+kinds defined; round-trip tests cover the envelope.
 
 ## Cross-cutting context
 
