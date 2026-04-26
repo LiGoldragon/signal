@@ -24,12 +24,14 @@ use serde::{Deserialize, Serialize};
 
 use crate::slot::Slot;
 
-/// A node in a flow-graph. `id` is the human-readable identifier
-/// used in nexus text; `label` is the human-readable name.
+/// A node in a flow-graph. `name` is the display handle —
+/// human-readable text for the node. **Identity is the node's
+/// slot**, not its name; two nodes with the same name are two
+/// different nodes (different slots). Names exist for display,
+/// never for reference.
 #[derive(Archive, RkyvSerialize, RkyvDeserialize, Serialize, Deserialize, Debug, Clone, PartialEq, Eq, Hash)]
 pub struct Node {
-    pub id: String,
-    pub label: String,
+    pub name: String,
 }
 
 /// A directed edge from one node to another, typed by its
