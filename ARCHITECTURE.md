@@ -53,10 +53,11 @@ Owns:
   major-exact / minor-forward compatibility rule.
 - `AuthProof` (`SingleOperator` MVP, `BlsSig` and `QuorumProof`
   post-MVP skeletons).
-- The **per-verb typed payloads**: `AssertOp` / `MutateOp` /
-  `RetractOp` / `AtomicBatch` / `BatchOp` for edits;
-  `QueryOp` for queries; `Records` for typed query results.
-  Each is a closed enum of typed kinds (no generic wrapper).
+- The **per-verb typed payloads**: `AssertOperation` /
+  `MutateOperation` / `RetractOperation` / `AtomicBatch` /
+  `BatchOperation` for edits; `QueryOperation` for queries;
+  `Records` for typed query results. Each is a closed enum
+  of typed kinds (no generic wrapper).
 - The **pattern field** type: `PatternField<T>` with
   `Wildcard | Bind | Match(T)` variants, used per-field in
   `*Query` types.
@@ -67,12 +68,16 @@ Owns:
   paired `NodeQuery` / `EdgeQuery` / `GraphQuery`), `Ok`,
   `RelationKind` (closed enum of 9 relation variants — Flow,
   DependsOn, Contains, References, Produces, Consumes, Calls,
-  Implements, IsA — exposing `::ALL`, `::from_variant_name`,
-  and `::variant_name` methods for parser / renderer use).
+  Implements, IsA). Encoding/decoding handled by the
+  [nota-derive](https://github.com/LiGoldragon/nota-derive)
+  derives — no hand-written `from_variant_name` /
+  `variant_name` helpers needed.
 - Auxiliary types: `Diagnostic` + `DiagnosticLevel` +
   `DiagnosticSite` + `DiagnosticSuggestion`; `Slot` and
-  `Revision` (`#[serde(transparent)]` u64 newtypes); `Hash`
-  (32-byte BLAKE3 alias).
+  `Revision` (private-field `u64` newtypes deriving
+  `NotaTransparent` so the wire form is the bare integer
+  + `From<u64>` and `From<Slot> for u64` conversions for
+  ergonomic construction); `Hash` (32-byte BLAKE3 alias).
 
 Does not own:
 
@@ -96,12 +101,13 @@ of evolving signal.
 Signal carries the project's [perfect-specificity
 invariant](https://github.com/LiGoldragon/criome/blob/main/ARCHITECTURE.md#invariant-d)
 in its concrete shape. Every verb's payload is its own closed
-enum of typed kinds — `AssertOp { Node(Node) | Edge(Edge) | … }`,
-`MutateOp { Node { slot, new, expected_rev } | … }`,
-`QueryOp { Node(NodeQuery) | … }`, `Records { Node(Vec<Node>) |
-… }`. There is no shared `KnownRecord` wrapper, no generic
-record envelope, no string kind-name lookup at runtime. The wire
-knows what it carries by type; consumers `match` exhaustively.
+enum of typed kinds — `AssertOperation { Node(Node) | Edge(Edge) | … }`,
+`MutateOperation { Node { slot, new, expected_rev } | … }`,
+`QueryOperation { Node(NodeQuery) | … }`,
+`Records { Node(Vec<Node>) | … }`. There is no shared
+`KnownRecord` wrapper, no generic record envelope, no string
+kind-name lookup at runtime. The wire knows what it carries by
+type; consumers `match` exhaustively.
 
 A pattern/query is itself a record kind: `NodeQuery` is paired
 with `Node`, generated from the same `KindDecl` by rsc. The
