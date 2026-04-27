@@ -150,7 +150,7 @@ fn retract_operation_with_optional_revision_present_round_trips() {
 fn retract_operation_with_optional_revision_absent_round_trips() {
     round_trip(
         RetractOperation { slot: Slot::from(50u64), expected_rev: None },
-        "(RetractOperation 50)",
+        "(RetractOperation 50 None)",
     );
 }
 
@@ -201,7 +201,7 @@ fn mutate_operation_struct_variant_with_absent_optional_round_trips() {
             new: Node { name: "Alice".into() },
             expected_rev: None,
         },
-        "(Node 100 (Node \"Alice\"))",
+        "(Node 100 (Node \"Alice\") None)",
     );
 }
 
