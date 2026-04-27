@@ -1,11 +1,9 @@
-//! Flow-graph kinds — the first sema record category criomed
-//! handles end-to-end.
+//! Flow-graph kinds — Node, Edge, Graph + paired Query kinds.
 //!
-//! Per Li 2026-04-25: *"first milestone is not machina ... I'm
-//! leaning towards making the first criomed usage to be for
-//! storing specification as flow-graphs (think mermaid language
-//! for representing flow charts, but in fully typed binary) —
-//! that way we can start designing architecture in sema."*
+//! Per Li 2026-04-25: *"first criomed usage to be for storing
+//! specification as flow-graphs (think mermaid for representing
+//! flow charts, but in fully typed binary) — that way we can start
+//! designing architecture in sema."*
 //!
 //! **Logic only, no styling.** Per Li 2026-04-25: *"the flow
 //! subset is only about representing logic, not concerning itself
@@ -13,31 +11,34 @@
 //! fields — those belong to a separate rendering layer if/when we
 //! ever need one.
 //!
-//! These types are baked into criomed's binary. The validator's
-//! schema-check matches incoming `RawRecord.kind_name` against
-//! `"Node" | "Edge" | "Graph"`; everything else returns `E0001`.
-//! No `KindDecl`/`FieldSpec` indirection — the Rust types ARE
-//! the schema for v0.0.1.
+//! Each data kind has a paired `*Query` kind — `Node` ↔ `NodeQuery`,
+//! `Edge` ↔ `EdgeQuery`, `Graph` ↔ `GraphQuery` — per the perfect-
+//! specificity invariant ([criome/ARCHITECTURE.md §2 Invariant D
+//! ](https://github.com/LiGoldragon/criome/blob/main/ARCHITECTURE.md#invariant-d)).
+//! A query is itself a record kind, generated from the same
+//! `KindDecl` by rsc; M0 hand-writes the projection.
 
 use rkyv::{Archive, Deserialize as RkyvDeserialize, Serialize as RkyvSerialize};
 use serde::{Deserialize, Serialize};
 
+use crate::pattern::PatternField;
 use crate::slot::Slot;
 
+// ─── Data kinds ──────────────────────────────────────────────
+
 /// A node in a flow-graph. `name` is the display handle —
-/// human-readable text for the node. **Identity is the node's
-/// slot**, not its name; two nodes with the same name are two
-/// different nodes (different slots). Names exist for display,
-/// never for reference.
+/// human-readable text. **Identity is the node's slot**, not its
+/// name; two nodes with the same name are two different nodes
+/// (different slots). Names exist for display, never for
+/// reference.
 #[derive(Archive, RkyvSerialize, RkyvDeserialize, Serialize, Deserialize, Debug, Clone, PartialEq, Eq, Hash)]
 pub struct Node {
     pub name: String,
 }
 
-/// A directed edge from one node to another, typed by its
-/// relation kind. Per Li 2026-04-26: every edge declares what
-/// relation it carries — strongly-typed, closed vocabulary.
-/// Adding new relation kinds is what the schema is for.
+/// A directed edge from one node to another, typed by its relation
+/// kind. Per Li 2026-04-26: every edge declares what relation it
+/// carries — strongly-typed, closed vocabulary.
 #[derive(Archive, RkyvSerialize, RkyvDeserialize, Serialize, Deserialize, Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub struct Edge {
     pub from: Slot,
@@ -45,9 +46,9 @@ pub struct Edge {
     pub kind: RelationKind,
 }
 
-/// Closed vocabulary of relation kinds an Edge can carry.
-/// Covers PROV-O / UML / Mermaid-class precedent. Extend as new
-/// relation semantics are needed; deletions are breaking changes.
+/// Closed vocabulary of relation kinds an Edge can carry. Covers
+/// PROV-O / UML / Mermaid-class precedent. Extend as new relation
+/// semantics are needed; deletions are breaking changes.
 #[derive(Archive, RkyvSerialize, RkyvDeserialize, Serialize, Deserialize, Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum RelationKind {
     /// Generic forward flow — data, control, anything moving from
@@ -81,18 +82,40 @@ pub struct Graph {
     pub subgraphs: Vec<Slot>,
 }
 
+// ─── Query kinds ─────────────────────────────────────────────
+
+/// Query for `Node` records. Match by `name` field.
+#[derive(Archive, RkyvSerialize, RkyvDeserialize, Serialize, Deserialize, Debug, Clone, PartialEq)]
+pub struct NodeQuery {
+    pub name: PatternField<String>,
+}
+
+/// Query for `Edge` records. Match by any combination of `from`,
+/// `to`, `kind`.
+#[derive(Archive, RkyvSerialize, RkyvDeserialize, Serialize, Deserialize, Debug, Clone, PartialEq)]
+pub struct EdgeQuery {
+    pub from: PatternField<Slot>,
+    pub to: PatternField<Slot>,
+    pub kind: PatternField<RelationKind>,
+}
+
+/// Query for `Graph` records. Match by `title`. List-shaped fields
+/// (`nodes`, `edges`, `subgraphs`) are not patternable in M0 —
+/// list patterns are M1+.
+#[derive(Archive, RkyvSerialize, RkyvDeserialize, Serialize, Deserialize, Debug, Clone, PartialEq)]
+pub struct GraphQuery {
+    pub title: PatternField<String>,
+}
+
+// ─── Outcome message kind ────────────────────────────────────
+
 /// Success acknowledgement message. Empty record kind — the
 /// presence of `(Ok)` at a reply position means the request
-/// succeeded with no further information. Failure replies use
-/// the existing `Diagnostic` kind.
+/// succeeded with no further information. Failure replies use the
+/// existing `Diagnostic` kind.
 ///
-/// Per Li 2026-04-26 ((messages are records, records are delimited,
-/// so (Ok) — a unit-struct record kind, not a unit variant)).
+/// Per Li 2026-04-26 ((messages are records, records are
+/// delimited, so (Ok) — a unit-struct record kind, not a unit
+/// variant)).
 #[derive(Archive, RkyvSerialize, RkyvDeserialize, Serialize, Deserialize, Debug, Clone, Copy, PartialEq, Eq, Hash, Default)]
 pub struct Ok {}
-
-/// The kind names criomed accepts at v0.0.1 as **sema-storable
-/// records** (incoming Asserts/Mutates/Retracts target one of
-/// these). `Ok` and `Diagnostic` are message kinds (reply-only)
-/// and do not appear here.
-pub const KNOWN_KINDS: &[&str] = &["Node", "Edge", "Graph"];

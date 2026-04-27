@@ -1,8 +1,8 @@
-//! `Request` — what nexus (or any signal-speaking client) sends
-//! to criome.
+//! `Request` — what a signal-speaking client (the nexus daemon, a
+//! programmatic Rust client, future criome peers) sends to criome.
 //!
-//! After the handshake, every Frame body is `Body::Request(...)` or
-//! `Body::Reply(...)`.
+//! After the handshake, every Frame body is `Body::Request(...)`
+//! or `Body::Reply(...)`.
 //!
 //! Connection lifecycle is socket-level, not Request-level: there
 //! is no Goodbye, Cancel, Resume, Heartbeat, or Unsubscribe verb.
@@ -13,7 +13,7 @@ use rkyv::{Archive, Deserialize as RkyvDeserialize, Serialize as RkyvSerialize};
 
 use crate::edit::{AssertOp, AtomicBatch, BatchOp, MutateOp, RetractOp};
 use crate::handshake::HandshakeRequest;
-use crate::query::Selection;
+use crate::query::QueryOp;
 
 #[derive(Archive, RkyvSerialize, RkyvDeserialize, Debug, Clone, PartialEq)]
 pub enum Request {
@@ -28,12 +28,12 @@ pub enum Request {
     AtomicBatch(AtomicBatch),
 
     // ─── Query ───────────────────────────────────────────────
-    Query(Selection),
-    /// Open a subscription on this connection. The subscription
-    /// streams matching events going forward (no initial snapshot
-    /// — issue a Query first if you want current state). One
-    /// subscription per connection.
-    Subscribe(Selection),
+    Query(QueryOp),
+    /// Open a subscription on this connection. Streams matching
+    /// events going forward (no initial snapshot — issue a Query
+    /// first if you want current state). One subscription per
+    /// connection.
+    Subscribe(QueryOp),
 
     // ─── Read-only ───────────────────────────────────────────
     Validate(ValidateOp),

@@ -68,7 +68,6 @@ pub enum FrameDecodeError {
 mod tests {
     use super::*;
     use crate::handshake::{HandshakeRequest, ProtocolVersion, SIGNAL_PROTOCOL_VERSION};
-    use crate::reply::Reply;
 
     #[test]
     fn handshake_request_round_trip() {
@@ -107,5 +106,226 @@ mod tests {
     fn decode_rejects_garbage() {
         let garbage = vec![0xff; 32];
         assert!(matches!(Frame::decode(&garbage), Err(FrameDecodeError::BadArchive)));
+    }
+
+    // Per-verb round-trip tests — each verb's typed payload survives
+    // encode/decode, exercising the perfect-specificity shape end-to-
+    // end via Frame.
+
+    use crate::edit::{AssertOp, AtomicBatch, BatchOp, MutateOp, RetractOp};
+    use crate::flow::{Edge, EdgeQuery, Graph, GraphQuery, Node, NodeQuery, Ok, RelationKind};
+    use crate::pattern::PatternField;
+    use crate::query::QueryOp;
+    use crate::reply::{OutcomeMessage, Records, Reply};
+    use crate::schema::{Cardinality, FieldDecl, KindDecl, KindDeclQuery};
+    use crate::slot::{Revision, Slot};
+
+    fn round_trip(original: Frame) {
+        let bytes = original.encode();
+        let decoded = Frame::decode(&bytes).expect("decode");
+        assert_eq!(decoded, original);
+    }
+
+    #[test]
+    fn assert_node_round_trip() {
+        round_trip(Frame {
+            principal_hint: None,
+            auth_proof: None,
+            body: Body::Request(Request::Assert(AssertOp::Node(Node {
+                name: "User".into(),
+            }))),
+        });
+    }
+
+    #[test]
+    fn assert_edge_round_trip() {
+        round_trip(Frame {
+            principal_hint: None,
+            auth_proof: None,
+            body: Body::Request(Request::Assert(AssertOp::Edge(Edge {
+                from: Slot(100),
+                to: Slot(101),
+                kind: RelationKind::DependsOn,
+            }))),
+        });
+    }
+
+    #[test]
+    fn assert_graph_round_trip() {
+        round_trip(Frame {
+            principal_hint: Some(Slot(7)),
+            auth_proof: None,
+            body: Body::Request(Request::Assert(AssertOp::Graph(Graph {
+                title: "criome request flow".into(),
+                nodes: vec![Slot(100), Slot(101), Slot(102)],
+                edges: vec![Slot(200), Slot(201)],
+                subgraphs: vec![],
+            }))),
+        });
+    }
+
+    #[test]
+    fn assert_kind_decl_round_trip() {
+        round_trip(Frame {
+            principal_hint: None,
+            auth_proof: None,
+            body: Body::Request(Request::Assert(AssertOp::KindDecl(KindDecl {
+                name: "Hyperedge".into(),
+                fields: vec![
+                    FieldDecl {
+                        name: "members".into(),
+                        type_name: "Slot".into(),
+                        cardinality: Cardinality::Many,
+                    },
+                    FieldDecl {
+                        name: "weight".into(),
+                        type_name: "f64".into(),
+                        cardinality: Cardinality::One,
+                    },
+                ],
+            }))),
+        });
+    }
+
+    #[test]
+    fn mutate_node_round_trip() {
+        round_trip(Frame {
+            principal_hint: None,
+            auth_proof: None,
+            body: Body::Request(Request::Mutate(MutateOp::Node {
+                slot: Slot(100),
+                new: Node { name: "User updated".into() },
+                expected_rev: Some(Revision(42)),
+            })),
+        });
+    }
+
+    #[test]
+    fn retract_round_trip() {
+        round_trip(Frame {
+            principal_hint: None,
+            auth_proof: None,
+            body: Body::Request(Request::Retract(RetractOp {
+                slot: Slot(100),
+                expected_rev: None,
+            })),
+        });
+    }
+
+    #[test]
+    fn atomic_batch_round_trip() {
+        round_trip(Frame {
+            principal_hint: None,
+            auth_proof: None,
+            body: Body::Request(Request::AtomicBatch(AtomicBatch {
+                ops: vec![
+                    BatchOp::Assert(AssertOp::Node(Node { name: "A".into() })),
+                    BatchOp::Mutate(MutateOp::Node {
+                        slot: Slot(50),
+                        new: Node { name: "B".into() },
+                        expected_rev: None,
+                    }),
+                    BatchOp::Retract(RetractOp { slot: Slot(60), expected_rev: None }),
+                ],
+            })),
+        });
+    }
+
+    #[test]
+    fn query_node_with_bind_round_trip() {
+        round_trip(Frame {
+            principal_hint: None,
+            auth_proof: None,
+            body: Body::Request(Request::Query(QueryOp::Node(NodeQuery {
+                name: PatternField::Bind("name".into()),
+            }))),
+        });
+    }
+
+    #[test]
+    fn query_edge_mixed_pattern_round_trip() {
+        round_trip(Frame {
+            principal_hint: None,
+            auth_proof: None,
+            body: Body::Request(Request::Query(QueryOp::Edge(EdgeQuery {
+                from: PatternField::Match(Slot(102)),
+                to: PatternField::Bind("to".into()),
+                kind: PatternField::Wildcard,
+            }))),
+        });
+    }
+
+    #[test]
+    fn query_graph_round_trip() {
+        round_trip(Frame {
+            principal_hint: None,
+            auth_proof: None,
+            body: Body::Request(Request::Query(QueryOp::Graph(GraphQuery {
+                title: PatternField::Match("criome request flow".into()),
+            }))),
+        });
+    }
+
+    #[test]
+    fn query_kind_decl_round_trip() {
+        round_trip(Frame {
+            principal_hint: None,
+            auth_proof: None,
+            body: Body::Request(Request::Query(QueryOp::KindDecl(KindDeclQuery {
+                name: PatternField::Wildcard,
+            }))),
+        });
+    }
+
+    #[test]
+    fn reply_outcome_ok_round_trip() {
+        round_trip(Frame {
+            principal_hint: None,
+            auth_proof: None,
+            body: Body::Reply(Reply::Outcome(OutcomeMessage::Ok(Ok {}))),
+        });
+    }
+
+    #[test]
+    fn reply_records_node_round_trip() {
+        round_trip(Frame {
+            principal_hint: None,
+            auth_proof: None,
+            body: Body::Reply(Reply::Records(Records::Node(vec![
+                Node { name: "Alice".into() },
+                Node { name: "Bob".into() },
+            ]))),
+        });
+    }
+
+    #[test]
+    fn reply_records_edge_empty_round_trip() {
+        round_trip(Frame {
+            principal_hint: None,
+            auth_proof: None,
+            body: Body::Reply(Reply::Records(Records::Edge(vec![]))),
+        });
+    }
+
+    #[test]
+    fn reply_outcomes_mixed_round_trip() {
+        use crate::diagnostic::{Diagnostic, DiagnosticLevel};
+        round_trip(Frame {
+            principal_hint: None,
+            auth_proof: None,
+            body: Body::Reply(Reply::Outcomes(vec![
+                OutcomeMessage::Ok(Ok {}),
+                OutcomeMessage::Diagnostic(Diagnostic {
+                    level: DiagnosticLevel::Error,
+                    code: "E1001".into(),
+                    message: "unknown kind".into(),
+                    primary_site: None,
+                    context: vec![],
+                    suggestions: vec![],
+                    durable_record: None,
+                }),
+                OutcomeMessage::Ok(Ok {}),
+            ])),
+        });
     }
 }

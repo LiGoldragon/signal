@@ -1,26 +1,28 @@
-//! `Reply` — what criome sends back.
+//! `Reply` — what criome sends back. Per-position pairing (FIFO,
+//! no correlation IDs).
 //!
-//! Replies are paired to requests by **position** on the connection
-//! (FIFO; no correlation IDs). Reply *form* mirrors request form
-//! and reuses the request-side sigil discipline at the wire level.
+//! Per the perfect-specificity invariant, query results are typed
+//! per kind via [`Records`] — a Node-targeted query returns
+//! `Records::Node(Vec<Node>)`, never a heterogeneous list.
+//! Consumers `match` on the `Records` variant and know the element
+//! shape without further dispatch.
 //!
 //! Per-position reply shapes:
-//! - Single edit (Assert/Mutate/Retract): a single `OutcomeMessage`.
-//! - Multi-element edit (Mutate-with-pattern, AtomicBatch): a
-//!   `Vec<OutcomeMessage>`, paired by index to the affected items.
-//! - Query: a `Vec<RawRecord>` of matching records.
+//! - Single edit (Assert/Mutate/Retract): one `OutcomeMessage`.
+//! - Multi-element edit (AtomicBatch, mutate-with-pattern at the
+//!   daemon): `Vec<OutcomeMessage>` paired by index.
+//! - Query: `Records` carrying the typed result sequence.
 //! - Subscribe: connection enters streaming mode; each event is a
-//!   record arriving on the connection (not a Reply variant — see
-//!   `Event` below for the M2+ shape).
+//!   typed record arriving on the connection.
 //!
 //! Failure at any reply position is a `Diagnostic` record.
 
 use rkyv::{Archive, Deserialize as RkyvDeserialize, Serialize as RkyvSerialize};
 
 use crate::diagnostic::Diagnostic;
-use crate::flow::Ok;
+use crate::flow::{Edge, Graph, Node, Ok};
 use crate::handshake::{HandshakeRejectionReason, HandshakeReply};
-use crate::value::{RawRecord, RawValue};
+use crate::schema::KindDecl;
 
 #[derive(Archive, RkyvSerialize, RkyvDeserialize, Debug, Clone, PartialEq)]
 pub enum Reply {
@@ -37,8 +39,9 @@ pub enum Reply {
     Outcomes(Vec<OutcomeMessage>),
 
     // ─── Query reply ─────────────────────────────────────────
-    /// The matching records (empty `Vec` for zero matches).
-    Records(Vec<RawRecord>),
+    /// Typed per-kind result sequence (empty `Vec` for zero
+    /// matches).
+    Records(Records),
 }
 
 /// Per-position outcome — either success acknowledgement or a
@@ -50,7 +53,13 @@ pub enum OutcomeMessage {
     Diagnostic(Diagnostic),
 }
 
-/// Bindings — for query results that carry pattern binds, one per
-/// match.
+/// Typed per-kind query result. Each variant matches the kind the
+/// query targeted; the consumer `match`es and gets a typed
+/// `Vec<Kind>` directly.
 #[derive(Archive, RkyvSerialize, RkyvDeserialize, Debug, Clone, PartialEq)]
-pub struct Bindings(pub Vec<(String, RawValue)>);
+pub enum Records {
+    Node(Vec<Node>),
+    Edge(Vec<Edge>),
+    Graph(Vec<Graph>),
+    KindDecl(Vec<KindDecl>),
+}

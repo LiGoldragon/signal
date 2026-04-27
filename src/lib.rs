@@ -6,27 +6,27 @@
 //!
 //! Two layers, all rkyv:
 //!
-//! 1. **Wire envelope** — `Frame`, `Body`, `Request`, `Reply`,
-//!    handshake, auth-proof, outcomes.
-//! 2. **Language IR** — `RawPattern`, `RawOp`, `AssertOp`,
-//!    `RawRecord`, `RawValue`, `Diagnostic`, `Slot`, `Revision`,
-//!    `Hash`. The shapes nexus text translates *into* and that
-//!    programmatic clients author directly.
+//! 1. **Wire envelope** — [`Frame`], [`Body`], [`Request`],
+//!    [`Reply`], handshake, auth.
+//! 2. **Typed records** — [`Node`], [`Edge`], [`Graph`],
+//!    [`KindDecl`] and their paired `*Query` kinds.
 //!
-//! Plus the **flow-graph kinds** (`Node`, `Edge`, `Graph`) — the
-//! v0.0.1 sema record category criomed handles end-to-end. Per
-//! Li 2026-04-25: *"first criomed usage to be for storing
-//! specification as flow-graphs ... so we can start designing
-//! architecture in sema."*
+//! Per the perfect-specificity invariant
+//! ([criome/ARCHITECTURE.md §2 Invariant D
+//! ](https://github.com/LiGoldragon/criome/blob/main/ARCHITECTURE.md#invariant-d)):
+//! every verb's payload is its own closed enum of typed kinds —
+//! [`AssertOp`], [`MutateOp`], [`QueryOp`], [`Records`] each name
+//! exactly the kinds they operate on. No generic record wrapper;
+//! no string kind-name dispatch.
 //!
 //! ```text
 //! nexus (text) → nexus daemon (translates) → signal (rkyv) → criome
 //! criome (response) → signal → nexus daemon (translates) → nexus (text)
 //! ```
 //!
-//! Wire format: rkyv 0.8 portable feature set; the frame schema
-//! is the framing (both parties know it). Per
-//! `mentci/reports/074`.
+//! Wire format: rkyv 0.8 portable feature set; the frame schema is
+//! the framing (both parties know it). Per
+//! [mentci/reports/074](https://github.com/LiGoldragon/mentci/blob/main/reports/074-portable-rkyv-discipline.md).
 
 // ─── Wire envelope ──────────────────────────────────────────
 pub mod auth;
@@ -35,35 +35,38 @@ pub mod handshake;
 pub mod reply;
 pub mod request;
 
-// ─── Language IR ────────────────────────────────────────────
+// ─── Typed records & supporting types ───────────────────────
 pub mod diagnostic;
 pub mod edit;
 pub mod hash;
 pub mod pattern;
 pub mod query;
+pub mod schema;
 pub mod slot;
-pub mod value;
 
-// ─── Flow-graph kinds (criomed's first-milestone substrate) ──
+// ─── Flow-graph kinds (criome's first-milestone substrate) ──
 pub mod flow;
 
 // ─── Wire envelope re-exports ───────────────────────────────
 pub use auth::AuthProof;
 pub use frame::{Body, Frame, FrameDecodeError};
 pub use handshake::{
-    HandshakeRejectionReason, HandshakeReply, HandshakeRequest, ProtocolVersion, SIGNAL_PROTOCOL_VERSION,
+    HandshakeRejectionReason, HandshakeReply, HandshakeRequest, ProtocolVersion,
+    SIGNAL_PROTOCOL_VERSION,
 };
-pub use reply::{Bindings, OutcomeMessage, Reply};
+pub use reply::{OutcomeMessage, Records, Reply};
 pub use request::{Request, ValidateOp};
 
-// ─── Language IR re-exports ─────────────────────────────────
-pub use diagnostic::{Applicability, Diagnostic, DiagnosticLevel, DiagnosticSite, DiagnosticSuggestion};
+// ─── Typed records re-exports ───────────────────────────────
+pub use diagnostic::{
+    Applicability, Diagnostic, DiagnosticLevel, DiagnosticSite, DiagnosticSuggestion,
+};
 pub use edit::{AssertOp, AtomicBatch, BatchOp, MutateOp, RetractOp};
 pub use hash::Hash;
-pub use pattern::{FieldConstraint, RawListPattern, RawPattern};
-pub use query::{Cursor, RawOp, RawProjField, RawProjection, RevisionRef, Selection, SortOrder};
+pub use pattern::PatternField;
+pub use query::QueryOp;
+pub use schema::{Cardinality, FieldDecl, KindDecl, KindDeclQuery};
 pub use slot::{Revision, Slot};
-pub use value::{FieldPath, RawLiteral, RawRecord, RawSegment, RawValue};
 
 // ─── Flow-graph re-exports ──────────────────────────────────
-pub use flow::{Edge, Graph, Node, Ok, RelationKind, KNOWN_KINDS};
+pub use flow::{Edge, EdgeQuery, Graph, GraphQuery, Node, NodeQuery, Ok, RelationKind};
