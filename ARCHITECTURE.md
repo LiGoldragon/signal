@@ -185,23 +185,22 @@ Both paths arrive at criome as signal frames.
 ```
 src/
 ├── lib.rs        — module entry + re-exports
-├── frame.rs      — Frame envelope, encode/decode, round-trip tests
-├── handshake.rs  — ProtocolVersion, HandshakeRequest/Reply
-├── auth.rs       — AuthProof variants
-├── request.rs    — Request enum (per-verb dispatch)
+├── frame.rs      — Frame envelope, encode/decode, FrameDecodeError
+├── handshake.rs  — ProtocolVersion, HandshakeRequest/Reply, HandshakeRejectionReason
+├── auth.rs       — AuthProof variants (BlsSignature, ...), BlsG1
+├── request.rs    — Request enum (per-verb dispatch) + ValidateOperation
 ├── reply.rs      — Reply enum, OutcomeMessage, Records (typed per kind)
-├── edit.rs       — AssertOp / MutateOp / RetractOp / AtomicBatch / BatchOp
-│                    (per-verb closed enums of typed kinds)
-├── query.rs      — QueryOp closed enum of typed *Query payloads
-├── pattern.rs    — PatternField<T> { Wildcard | Bind | Match(T) }
+├── edit.rs       — AssertOperation / MutateOperation / RetractOperation
+│                    + AtomicBatch / BatchOperation (rkyv-only for M0)
+├── query.rs      — QueryOperation closed enum of typed *Query payloads
+├── pattern.rs    — re-exports nota_codec::PatternField
 ├── schema.rs     — KindDecl, FieldDecl, Cardinality, KindDeclQuery
-├── diagnostic.rs — Diagnostic, DiagnosticLevel, DiagnosticSite,
-│                    DiagnosticSuggestion
-├── slot.rs       — Slot, Revision (transparent u64 newtypes)
+├── diagnostic.rs — Diagnostic, DiagnosticLevel, DiagnosticSite (incl. OperationInBatch),
+│                    DiagnosticSuggestion, Applicability
+├── slot.rs       — Slot, Revision (NotaTransparent u64 newtypes)
 ├── hash.rs       — Hash (BLAKE3 32-byte alias)
-└── flow.rs       — Node, Edge, Graph (with paired *Query types),
-                    Ok, RelationKind (with ::ALL, ::from_variant_name,
-                    ::variant_name methods)
+└── flow.rs       — Node, Edge, Graph (with paired *Query types via NexusPattern),
+                    Ok, RelationKind (NotaEnum)
 ```
 
 ## Status
