@@ -1,9 +1,11 @@
 //! Flow-graph kinds — Node, Edge, Graph + paired Query kinds.
 //!
-//! Per Li 2026-04-25: *"first criomed usage to be for storing
+//! Per Li 2026-04-25: *"first criome usage to be for storing
 //! specification as flow-graphs (think mermaid for representing
 //! flow charts, but in fully typed binary) — that way we can start
-//! designing architecture in sema."*
+//! designing architecture in sema."* (Quoted with the daemon name
+//! normalised from the original "criomed" — same daemon, current
+//! spelling.)
 //!
 //! **Logic only, no styling.** Per Li 2026-04-25: *"the flow
 //! subset is only about representing logic, not concerning itself

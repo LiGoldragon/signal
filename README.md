@@ -26,14 +26,26 @@ criome (response) → signal → nexus daemon (translates) → nexus (text)
 - **`HandshakeRequest`** / **`HandshakeReply`** — the protocol
   version exchange that opens a connection.
 - **`AuthProof`** — single-operator MVP, BLS / quorum post-MVP.
-- **Language IR** — `RawRecord`, `RawValue`, `Diagnostic`,
-  `Slot`, `Revision`, `Hash`, `RawPattern`, `Selection`,
-  `RawOp`, `AssertOp`, `MutateOp`, `RetractOp`, `AtomicBatch`,
-  `BatchOp`. Absorbed from the former nexus-schema crate
-  (shelved 2026-04-25).
-- **Flow-graph kinds** — `Node`, `Edge`, `Graph`, `Ok`,
-  `RelationKind`, `KNOWN_KINDS`. The first sema record category
-  criomed handles end-to-end.
+- **Per-verb typed payloads** — `AssertOp` / `MutateOp` /
+  `RetractOp` / `AtomicBatch` / `BatchOp` for edits;
+  `QueryOp` for queries; `Records` for typed query results.
+  Each is a closed enum of typed kinds — no generic record
+  wrapper, no string kind-name lookup.
+- **`PatternField<T>`** — `Wildcard | Bind | Match(T)`,
+  used per-field in the `*Query` types.
+- **Schema-as-data** — `KindDecl`, `FieldDecl`,
+  `Cardinality`, `KindDeclQuery`.
+- **Flow-graph kinds** — `Node`, `Edge`, `Graph` (with
+  paired `NodeQuery` / `EdgeQuery` / `GraphQuery`), `Ok`,
+  `RelationKind` (closed 9-variant enum exposing `::ALL`,
+  `::from_variant_name`, `::variant_name`). The first sema
+  record category criome handles end-to-end.
+
+
+- **Auxiliary** — `Diagnostic` / `DiagnosticLevel` /
+  `DiagnosticSite` / `DiagnosticSuggestion`; `Slot` /
+  `Revision` (transparent u64 newtypes); `Hash` (BLAKE3
+  32-byte alias).
 
 ## What this crate does *not* define
 

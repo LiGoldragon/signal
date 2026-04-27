@@ -53,16 +53,26 @@ Owns:
   major-exact / minor-forward compatibility rule.
 - `AuthProof` (`SingleOperator` MVP, `BlsSig` and `QuorumProof`
   post-MVP skeletons).
-- The **language IR** absorbed from the former nexus-schema
-  crate: `RawRecord`, `RawValue`, `RawLiteral`, `RawPattern`,
-  `Selection`, `RawOp`, `AssertOp` / `MutateOp` / `RetractOp` /
-  `AtomicBatch` / `BatchOp`, `Diagnostic`, `Slot`, `Revision`,
-  `Hash`.
-- The **flow-graph kinds** (`Node`, `Edge`, `Graph`, `Ok`,
-  `RelationKind`, `KNOWN_KINDS`) — criome's first-milestone
-  substrate. `RelationKind` is a closed enum of relation
-  variants (Flow, DependsOn, Contains, References, Produces,
-  Consumes, Calls, Implements, IsA).
+- The **per-verb typed payloads**: `AssertOp` / `MutateOp` /
+  `RetractOp` / `AtomicBatch` / `BatchOp` for edits;
+  `QueryOp` for queries; `Records` for typed query results.
+  Each is a closed enum of typed kinds (no generic wrapper).
+- The **pattern field** type: `PatternField<T>` with
+  `Wildcard | Bind | Match(T)` variants, used per-field in
+  `*Query` types.
+- The **schema-as-data type**: `KindDecl` (with `FieldDecl`,
+  `Cardinality`, and the paired `KindDeclQuery`) — see
+  [`src/schema.rs`](src/schema.rs).
+- The **flow-graph kinds**: `Node`, `Edge`, `Graph` (with
+  paired `NodeQuery` / `EdgeQuery` / `GraphQuery`), `Ok`,
+  `RelationKind` (closed enum of 9 relation variants — Flow,
+  DependsOn, Contains, References, Produces, Consumes, Calls,
+  Implements, IsA — exposing `::ALL`, `::from_variant_name`,
+  and `::variant_name` methods for parser / renderer use).
+- Auxiliary types: `Diagnostic` + `DiagnosticLevel` +
+  `DiagnosticSite` + `DiagnosticSuggestion`; `Slot` and
+  `Revision` (`#[serde(transparent)]` u64 newtypes); `Hash`
+  (32-byte BLAKE3 alias).
 
 Does not own:
 
@@ -169,26 +179,31 @@ Both paths arrive at criome as signal frames.
 ```
 src/
 ├── lib.rs        — module entry + re-exports
-├── frame.rs      — Frame envelope, encode/decode, tests
+├── frame.rs      — Frame envelope, encode/decode, round-trip tests
 ├── handshake.rs  — ProtocolVersion, HandshakeRequest/Reply
 ├── auth.rs       — AuthProof variants
-├── request.rs    — Request enum
-├── reply.rs      — Reply enum, OutcomeMessage
-├── value.rs      — RawRecord, RawValue, RawLiteral, FieldPath
-├── pattern.rs    — RawPattern, FieldConstraint
-├── query.rs      — Selection, RawOp, RawProjection
-├── edit.rs       — AssertOp, MutateOp, RetractOp,
-│                    AtomicBatch, BatchOp
-├── diagnostic.rs — Diagnostic, DiagnosticLevel, DiagnosticSite
-├── slot.rs       — Slot, Revision
-├── hash.rs       — Hash (Blake3 32-byte content hash)
-└── flow.rs       — Node, Edge, Graph, Ok, RelationKind, KNOWN_KINDS
+├── request.rs    — Request enum (per-verb dispatch)
+├── reply.rs      — Reply enum, OutcomeMessage, Records (typed per kind)
+├── edit.rs       — AssertOp / MutateOp / RetractOp / AtomicBatch / BatchOp
+│                    (per-verb closed enums of typed kinds)
+├── query.rs      — QueryOp closed enum of typed *Query payloads
+├── pattern.rs    — PatternField<T> { Wildcard | Bind | Match(T) }
+├── schema.rs     — KindDecl, FieldDecl, Cardinality, KindDeclQuery
+├── diagnostic.rs — Diagnostic, DiagnosticLevel, DiagnosticSite,
+│                    DiagnosticSuggestion
+├── slot.rs       — Slot, Revision (transparent u64 newtypes)
+├── hash.rs       — Hash (BLAKE3 32-byte alias)
+└── flow.rs       — Node, Edge, Graph (with paired *Query types),
+                    Ok, RelationKind (with ::ALL, ::from_variant_name,
+                    ::variant_name methods)
 ```
 
 ## Status
 
-**Skeleton-as-design.** Wire envelope + IR types + flow-graph
-kinds defined; round-trip tests cover the envelope.
+**Working core.** Wire envelope + per-verb typed payloads +
+flow-graph kinds + KindDecl all defined and exercised. Round-
+trip tests (18) cover Frame end-to-end across every verb shape
+including patterns and typed Records replies.
 
 ## Cross-cutting context
 
