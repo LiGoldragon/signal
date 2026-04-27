@@ -237,7 +237,7 @@ mod tests {
             principal_hint: None,
             auth_proof: None,
             body: Body::Request(Request::Query(QueryOp::Node(NodeQuery {
-                name: PatternField::Bind("name".into()),
+                name: PatternField::Bind,
             }))),
         });
     }
@@ -249,7 +249,7 @@ mod tests {
             auth_proof: None,
             body: Body::Request(Request::Query(QueryOp::Edge(EdgeQuery {
                 from: PatternField::Match(Slot(102)),
-                to: PatternField::Bind("to".into()),
+                to: PatternField::Bind,
                 kind: PatternField::Wildcard,
             }))),
         });
