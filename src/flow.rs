@@ -3,9 +3,7 @@
 //! Per Li 2026-04-25: *"first criome usage to be for storing
 //! specification as flow-graphs (think mermaid for representing
 //! flow charts, but in fully typed binary) — that way we can start
-//! designing architecture in sema."* (Quoted with the daemon name
-//! normalised from the original "criomed" — same daemon, current
-//! spelling.)
+//! designing architecture in sema."*
 //!
 //! **Logic only, no styling.** Per Li 2026-04-25: *"the flow
 //! subset is only about representing logic, not concerning itself
@@ -20,10 +18,9 @@
 //! A query is itself a record kind, generated from the same
 //! `KindDecl` by rsc; M0 hand-writes the projection.
 
+use nota_codec::{NexusPattern, NotaEnum, NotaRecord, PatternField};
 use rkyv::{Archive, Deserialize as RkyvDeserialize, Serialize as RkyvSerialize};
-use serde::{Deserialize, Serialize};
 
-use crate::pattern::PatternField;
 use crate::slot::Slot;
 
 // ─── Data kinds ──────────────────────────────────────────────
@@ -33,7 +30,7 @@ use crate::slot::Slot;
 /// name; two nodes with the same name are two different nodes
 /// (different slots). Names exist for display, never for
 /// reference.
-#[derive(Archive, RkyvSerialize, RkyvDeserialize, Serialize, Deserialize, Debug, Clone, PartialEq, Eq, Hash)]
+#[derive(Archive, RkyvSerialize, RkyvDeserialize, NotaRecord, Debug, Clone, PartialEq, Eq, Hash)]
 pub struct Node {
     pub name: String,
 }
@@ -41,7 +38,7 @@ pub struct Node {
 /// A directed edge from one node to another, typed by its relation
 /// kind. Per Li 2026-04-26: every edge declares what relation it
 /// carries — strongly-typed, closed vocabulary.
-#[derive(Archive, RkyvSerialize, RkyvDeserialize, Serialize, Deserialize, Debug, Clone, Copy, PartialEq, Eq, Hash)]
+#[derive(Archive, RkyvSerialize, RkyvDeserialize, NotaRecord, Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub struct Edge {
     pub from: Slot,
     pub to: Slot,
@@ -51,7 +48,7 @@ pub struct Edge {
 /// Closed vocabulary of relation kinds an Edge can carry. Covers
 /// PROV-O / UML / Mermaid-class precedent. Extend as new relation
 /// semantics are needed; deletions are breaking changes.
-#[derive(Archive, RkyvSerialize, RkyvDeserialize, Serialize, Deserialize, Debug, Clone, Copy, PartialEq, Eq, Hash)]
+#[derive(Archive, RkyvSerialize, RkyvDeserialize, NotaEnum, Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum RelationKind {
     /// Generic forward flow — data, control, anything moving from
     /// `from` to `to`.
@@ -74,61 +71,9 @@ pub enum RelationKind {
     IsA,
 }
 
-impl RelationKind {
-    /// All variants in declaration order. Useful for round-trip
-    /// tests, error messages, and parser dispatch.
-    pub const ALL: &'static [Self] = &[
-        Self::Flow,
-        Self::DependsOn,
-        Self::Contains,
-        Self::References,
-        Self::Produces,
-        Self::Consumes,
-        Self::Calls,
-        Self::Implements,
-        Self::IsA,
-    ];
-
-    /// Match a PascalCase variant name (`"DependsOn"`) to its
-    /// `RelationKind` value. Returns `None` if the name is not a
-    /// known variant. Callers (typically a parser) wrap the `None`
-    /// in their own error type.
-    pub fn from_variant_name(variant_name: &str) -> Option<Self> {
-        match variant_name {
-            "Flow" => Some(Self::Flow),
-            "DependsOn" => Some(Self::DependsOn),
-            "Contains" => Some(Self::Contains),
-            "References" => Some(Self::References),
-            "Produces" => Some(Self::Produces),
-            "Consumes" => Some(Self::Consumes),
-            "Calls" => Some(Self::Calls),
-            "Implements" => Some(Self::Implements),
-            "IsA" => Some(Self::IsA),
-            _ => None,
-        }
-    }
-
-    /// Inverse of [`from_variant_name`] — the canonical PascalCase
-    /// spelling of this variant, suitable for rendering back to
-    /// nexus text.
-    pub fn variant_name(self) -> &'static str {
-        match self {
-            Self::Flow => "Flow",
-            Self::DependsOn => "DependsOn",
-            Self::Contains => "Contains",
-            Self::References => "References",
-            Self::Produces => "Produces",
-            Self::Consumes => "Consumes",
-            Self::Calls => "Calls",
-            Self::Implements => "Implements",
-            Self::IsA => "IsA",
-        }
-    }
-}
-
 /// A flow-graph: a titled collection of nodes and edges, with
 /// optional nested subgraphs.
-#[derive(Archive, RkyvSerialize, RkyvDeserialize, Serialize, Deserialize, Debug, Clone, PartialEq, Eq, Hash)]
+#[derive(Archive, RkyvSerialize, RkyvDeserialize, NotaRecord, Debug, Clone, PartialEq, Eq, Hash)]
 pub struct Graph {
     pub title: String,
     pub nodes: Vec<Slot>,
@@ -139,14 +84,16 @@ pub struct Graph {
 // ─── Query kinds ─────────────────────────────────────────────
 
 /// Query for `Node` records. Match by `name` field.
-#[derive(Archive, RkyvSerialize, RkyvDeserialize, Serialize, Deserialize, Debug, Clone, PartialEq)]
+#[derive(Archive, RkyvSerialize, RkyvDeserialize, NexusPattern, Debug, Clone, PartialEq)]
+#[nota(queries = "Node")]
 pub struct NodeQuery {
     pub name: PatternField<String>,
 }
 
 /// Query for `Edge` records. Match by any combination of `from`,
 /// `to`, `kind`.
-#[derive(Archive, RkyvSerialize, RkyvDeserialize, Serialize, Deserialize, Debug, Clone, PartialEq)]
+#[derive(Archive, RkyvSerialize, RkyvDeserialize, NexusPattern, Debug, Clone, PartialEq)]
+#[nota(queries = "Edge")]
 pub struct EdgeQuery {
     pub from: PatternField<Slot>,
     pub to: PatternField<Slot>,
@@ -156,7 +103,8 @@ pub struct EdgeQuery {
 /// Query for `Graph` records. Match by `title`. List-shaped fields
 /// (`nodes`, `edges`, `subgraphs`) are not patternable in M0 —
 /// list patterns are M1+.
-#[derive(Archive, RkyvSerialize, RkyvDeserialize, Serialize, Deserialize, Debug, Clone, PartialEq)]
+#[derive(Archive, RkyvSerialize, RkyvDeserialize, NexusPattern, Debug, Clone, PartialEq)]
+#[nota(queries = "Graph")]
 pub struct GraphQuery {
     pub title: PatternField<String>,
 }
@@ -165,11 +113,7 @@ pub struct GraphQuery {
 
 /// Success acknowledgement message. Empty record kind — the
 /// presence of `(Ok)` at a reply position means the request
-/// succeeded with no further information. Failure replies use the
-/// existing `Diagnostic` kind.
-///
-/// Per Li 2026-04-26 ((messages are records, records are
-/// delimited, so (Ok) — a unit-struct record kind, not a unit
-/// variant)).
-#[derive(Archive, RkyvSerialize, RkyvDeserialize, Serialize, Deserialize, Debug, Clone, Copy, PartialEq, Eq, Hash, Default)]
+/// succeeded with no further information. Failure replies use
+/// the existing `Diagnostic` kind.
+#[derive(Archive, RkyvSerialize, RkyvDeserialize, NotaRecord, Debug, Clone, Copy, PartialEq, Eq, Hash, Default)]
 pub struct Ok {}

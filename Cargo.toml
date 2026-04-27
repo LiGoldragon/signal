@@ -5,13 +5,13 @@ edition      = "2024"
 rust-version = "1.85"
 license      = "MIT OR Apache-2.0"
 repository   = "https://github.com/LiGoldragon/signal"
-description  = "signal — the criome binary language. Wire envelope (Frame, handshake) + language IR (RawPattern, RawOp, AssertOp, …) + sema record kinds (KindDecl, Struct, Enum, …). Anything criome is signal."
+description  = "signal — the criome binary language. Wire envelope (Frame, handshake) + per-verb typed payloads + sema record kinds. Anything criome is signal."
 
 [dependencies]
-rkyv = { version = "0.8", default-features = false, features = ["std", "bytecheck", "little_endian", "pointer_width_32", "unaligned"] }
-serde = { version = "1", features = ["derive"] }
-blake3 = "1.5"
-thiserror = "2"
+rkyv       = { version = "0.8", default-features = false, features = ["std", "bytecheck", "little_endian", "pointer_width_32", "unaligned"] }
+nota-codec = { git = "https://github.com/LiGoldragon/nota-codec.git", rev = "90bb518fb6fc5447dc34db53c432a461ff6c960a" }
+blake3     = "1.5"
+thiserror  = "2"
 
 [lints.rust]
 unused = "allow"

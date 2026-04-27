@@ -1,29 +1,13 @@
-//! `PatternField<T>` — a slot in a `*Query` record kind.
+//! `PatternField<T>` — re-exported from `nota-codec`.
 //!
-//! Each field of a `*Query` type is a `PatternField<T>` where `T`
-//! is the corresponding field type on the data kind. A pattern
-//! field is one of:
+//! The shape lives in nota-codec because the codec needs to
+//! pattern-match it during pattern-record encoding/decoding;
+//! see [reports/099 §4.4](https://github.com/LiGoldragon/mentci/blob/main/reports/099-custom-derive-design-2026-04-27.md)
+//! for the layering rationale.
 //!
-//! - `Wildcard` — match any value (`_` in nexus text)
-//! - `Bind` — match any value and capture under the schema field's
-//!   name. The bind name is *implicit from the field's position*
-//!   in the `*Query` record; the IR carries no string. See
-//!   [grammar.md §Binds][grammar] for the auto-name rule.
-//! - `Match(value)` — match the literal value of type `T`
-//!
-//! The `*Query` record kinds are paired with their data kinds —
-//! `NodeQuery` with `Node`, `EdgeQuery` with `Edge`, etc — and
-//! generated alongside them by rsc from the same `KindDecl`. M0
-//! hand-writes the projection.
-//!
-//! [grammar]: https://github.com/LiGoldragon/nexus/blob/main/spec/grammar.md
+//! Variants: `Wildcard` (`_` in nexus text), `Bind` (`@<schema-
+//! field-name>`), `Match(value)`. The bind name is implicit from
+//! the field's position in the surrounding `*Query` record — the
+//! IR carries no string.
 
-use rkyv::{Archive, Deserialize as RkyvDeserialize, Serialize as RkyvSerialize};
-use serde::{Deserialize, Serialize};
-
-#[derive(Archive, RkyvSerialize, RkyvDeserialize, Serialize, Deserialize, Debug, Clone, PartialEq)]
-pub enum PatternField<T> {
-    Wildcard,
-    Bind,
-    Match(T),
-}
+pub use nota_codec::PatternField;

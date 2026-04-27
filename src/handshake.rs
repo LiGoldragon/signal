@@ -9,6 +9,9 @@
 //! versions are forward-compatible (a server with newer minor
 //! accepts a client with older minor); patch versions are
 //! ignored.
+//!
+//! Wire-only: handshake messages travel as rkyv frames and never
+//! cross the nexus text boundary.
 
 use rkyv::{Archive, Deserialize as RkyvDeserialize, Serialize as RkyvSerialize};
 
@@ -49,7 +52,7 @@ pub struct HandshakeReply {
     pub server_version: ProtocolVersion,
     /// criome instance identity. For multi-instance setups this
     /// is the slot of a `CriomedInstance` record in sema; for
-    /// single-instance MVP it is `Slot(0)`.
+    /// single-instance MVP it is `Slot::from(0u64)`.
     pub server_id: Slot,
 }
 

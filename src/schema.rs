@@ -11,18 +11,16 @@
 //! recompile-the-engine cycle (the criome self-host loop). M0
 //! hand-edits the projection because rsc isn't ready yet.
 
+use nota_codec::{NexusPattern, NotaEnum, NotaRecord, PatternField};
 use rkyv::{Archive, Deserialize as RkyvDeserialize, Serialize as RkyvSerialize};
-use serde::{Deserialize, Serialize};
 
-use crate::pattern::PatternField;
-
-#[derive(Archive, RkyvSerialize, RkyvDeserialize, Serialize, Deserialize, Debug, Clone, PartialEq, Eq, Hash)]
+#[derive(Archive, RkyvSerialize, RkyvDeserialize, NotaRecord, Debug, Clone, PartialEq, Eq, Hash)]
 pub struct KindDecl {
     pub name: String,
     pub fields: Vec<FieldDecl>,
 }
 
-#[derive(Archive, RkyvSerialize, RkyvDeserialize, Serialize, Deserialize, Debug, Clone, PartialEq, Eq, Hash)]
+#[derive(Archive, RkyvSerialize, RkyvDeserialize, NotaRecord, Debug, Clone, PartialEq, Eq, Hash)]
 pub struct FieldDecl {
     pub name: String,
     /// The Rust type name of the field as it appears in the
@@ -32,7 +30,7 @@ pub struct FieldDecl {
     pub cardinality: Cardinality,
 }
 
-#[derive(Archive, RkyvSerialize, RkyvDeserialize, Serialize, Deserialize, Debug, Clone, Copy, PartialEq, Eq, Hash)]
+#[derive(Archive, RkyvSerialize, RkyvDeserialize, NotaEnum, Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum Cardinality {
     One,
     Many,
@@ -40,9 +38,10 @@ pub enum Cardinality {
 }
 
 /// Query for `KindDecl` records. Field-level pattern only on
-/// `name`; querying inside the `Vec<FieldDecl>` would require list
-/// patterns and is M1+.
-#[derive(Archive, RkyvSerialize, RkyvDeserialize, Serialize, Deserialize, Debug, Clone, PartialEq)]
+/// `name`; querying inside the `Vec<FieldDecl>` would require
+/// list patterns and is M1+.
+#[derive(Archive, RkyvSerialize, RkyvDeserialize, NexusPattern, Debug, Clone, PartialEq)]
+#[nota(queries = "KindDecl")]
 pub struct KindDeclQuery {
     pub name: PatternField<String>,
 }

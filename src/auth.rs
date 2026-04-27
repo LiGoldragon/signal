@@ -4,10 +4,9 @@
 //!   connects via a Unix-socket peer-cred check that already
 //!   established trust at the OS layer. No cryptographic proof
 //!   on the wire.
-//! - **Post-MVP**: `BlsSig` (single-principal cryptographic
+//! - **Post-MVP**: `BlsSignature` (single-principal cryptographic
 //!   signature) and `QuorumProof` (federated quorum proof
 //!   referring to a `CommittedMutation` record). Skeletons here.
-//!
 
 use rkyv::{Archive, Deserialize as RkyvDeserialize, Serialize as RkyvSerialize};
 
@@ -21,7 +20,7 @@ pub enum AuthProof {
 
     /// Single-principal BLS signature. `signer` slot points at
     /// a `Principal` record in sema.
-    BlsSig { sig: BlsG1, signer: Slot },
+    BlsSignature { signature: BlsG1, signer: Slot },
 
     /// Federated quorum proof. `committed` slot points at a
     /// `CommittedMutation` record that carries the aggregated
@@ -29,5 +28,17 @@ pub enum AuthProof {
     QuorumProof { committed: Slot },
 }
 
+/// 48-byte BLS signature in G1. Wire/auth-only — never crosses
+/// the nexus text boundary, so no `NotaTransparent` derive.
 #[derive(Archive, RkyvSerialize, RkyvDeserialize, Debug, Clone, Copy, PartialEq, Eq, Hash)]
-pub struct BlsG1(pub [u8; 48]);
+pub struct BlsG1([u8; 48]);
+
+impl BlsG1 {
+    pub fn new(bytes: [u8; 48]) -> Self {
+        Self(bytes)
+    }
+
+    pub fn as_bytes(&self) -> &[u8; 48] {
+        &self.0
+    }
+}

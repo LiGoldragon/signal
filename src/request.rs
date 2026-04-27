@@ -11,10 +11,15 @@
 
 use rkyv::{Archive, Deserialize as RkyvDeserialize, Serialize as RkyvSerialize};
 
-use crate::edit::{AssertOp, AtomicBatch, BatchOp, MutateOp, RetractOp};
+use crate::edit::{AssertOperation, AtomicBatch, BatchOperation, MutateOperation, RetractOperation};
 use crate::handshake::HandshakeRequest;
-use crate::query::QueryOp;
+use crate::query::QueryOperation;
 
+/// Wire-only envelope. Text-bound dispatch happens at the codec
+/// layer's `Decoder::next_request` (sigil + delimiter routing);
+/// `Request` itself is not a `NexusVerb` because its variants
+/// dispatch on different surface forms (sigils, delimiters, the
+/// Handshake special-case) rather than on a uniform record-head.
 #[derive(Archive, RkyvSerialize, RkyvDeserialize, Debug, Clone, PartialEq)]
 pub enum Request {
     /// MUST be the first request on a new connection. See
@@ -22,26 +27,27 @@ pub enum Request {
     Handshake(HandshakeRequest),
 
     // ─── Edit ────────────────────────────────────────────────
-    Assert(AssertOp),
-    Mutate(MutateOp),
-    Retract(RetractOp),
+    Assert(AssertOperation),
+    Mutate(MutateOperation),
+    Retract(RetractOperation),
     AtomicBatch(AtomicBatch),
 
     // ─── Query ───────────────────────────────────────────────
-    Query(QueryOp),
+    Query(QueryOperation),
     /// Open a subscription on this connection. Streams matching
     /// events going forward (no initial snapshot — issue a Query
     /// first if you want current state). One subscription per
     /// connection.
-    Subscribe(QueryOp),
+    Subscribe(QueryOperation),
 
     // ─── Read-only ───────────────────────────────────────────
-    Validate(ValidateOp),
+    Validate(ValidateOperation),
 }
 
-/// Dry-run a single op or batch through the validator pipeline.
-/// Returns the would-be `OutcomeMessage` (or sequence of them).
+/// Dry-run a single operation or batch through the validator
+/// pipeline. Returns the would-be `OutcomeMessage` (or sequence
+/// of them).
 #[derive(Archive, RkyvSerialize, RkyvDeserialize, Debug, Clone, PartialEq)]
-pub struct ValidateOp {
-    pub op: Box<BatchOp>,
+pub struct ValidateOperation {
+    pub operation: Box<BatchOperation>,
 }
