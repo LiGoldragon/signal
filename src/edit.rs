@@ -18,6 +18,10 @@
 //! all-or-nothing.
 
 use nota_codec::{NexusVerb, NotaRecord};
+
+// `AtomicBatch` and `BatchOperation` derive only rkyv (no
+// `NotaRecord` / `NexusVerb`) for M0 — see their per-type docs
+// for the M1+ hand-impl plan.
 use rkyv::{Archive, Deserialize as RkyvDeserialize, Serialize as RkyvSerialize};
 
 use crate::flow::{Edge, Graph, Node};
@@ -72,15 +76,25 @@ pub struct RetractOperation {
 }
 
 /// Atomic envelope wrapping a sequence of edit operations.
-/// All-or-nothing commit at one Revision in one transaction. The
-/// reply is per-element `OutcomeMessage` paired by index.
-#[derive(Archive, RkyvSerialize, RkyvDeserialize, NotaRecord, Debug, Clone, PartialEq)]
+/// All-or-nothing commit at one Revision in one transaction.
+/// The reply is per-element `OutcomeMessage` paired by index.
+///
+/// **Wire form (rkyv only for M0).** The canonical nexus text
+/// form is `[| op1 op2 op3 |]` with sigil-dispatched inner
+/// operations (`(Node …)` for assert, `~(Node …)` for mutate,
+/// `!slot` for retract). That dispatch can't be derived
+/// uniformly because the inner shape switches by sigil; the
+/// hand-written `NotaEncode`/`NotaDecode` impls land in M1+
+/// alongside the hand-written `Decoder::next_request` extension
+/// for `[|` openers.
+#[derive(Archive, RkyvSerialize, RkyvDeserialize, Debug, Clone, PartialEq)]
 pub struct AtomicBatch {
     pub operations: Vec<BatchOperation>,
 }
 
-/// One operation inside an `AtomicBatch`.
-#[derive(Archive, RkyvSerialize, RkyvDeserialize, NexusVerb, Debug, Clone, PartialEq)]
+/// One operation inside an `AtomicBatch`. Wire-only for M0;
+/// see [`AtomicBatch`] for the M1+ text-form plan.
+#[derive(Archive, RkyvSerialize, RkyvDeserialize, Debug, Clone, PartialEq)]
 pub enum BatchOperation {
     Assert(AssertOperation),
     Mutate(MutateOperation),

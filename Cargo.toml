@@ -9,7 +9,7 @@ description  = "signal — the criome binary language. Wire envelope (Frame, han
 
 [dependencies]
 rkyv       = { version = "0.8", default-features = false, features = ["std", "bytecheck", "little_endian", "pointer_width_32", "unaligned"] }
-nota-codec = { git = "https://github.com/LiGoldragon/nota-codec.git", rev = "90bb518fb6fc5447dc34db53c432a461ff6c960a" }
+nota-codec = { git = "https://github.com/LiGoldragon/nota-codec.git", rev = "ab1ea3be6fff06f68b86be66cb064d46d53d1022" }
 blake3     = "1.5"
 thiserror  = "2"
 
