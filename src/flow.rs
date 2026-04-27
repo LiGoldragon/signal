@@ -72,6 +72,58 @@ pub enum RelationKind {
     IsA,
 }
 
+impl RelationKind {
+    /// All variants in declaration order. Useful for round-trip
+    /// tests, error messages, and parser dispatch.
+    pub const ALL: &'static [Self] = &[
+        Self::Flow,
+        Self::DependsOn,
+        Self::Contains,
+        Self::References,
+        Self::Produces,
+        Self::Consumes,
+        Self::Calls,
+        Self::Implements,
+        Self::IsA,
+    ];
+
+    /// Match a PascalCase variant name (`"DependsOn"`) to its
+    /// `RelationKind` value. Returns `None` if the name is not a
+    /// known variant. Callers (typically a parser) wrap the `None`
+    /// in their own error type.
+    pub fn from_variant_name(variant_name: &str) -> Option<Self> {
+        match variant_name {
+            "Flow" => Some(Self::Flow),
+            "DependsOn" => Some(Self::DependsOn),
+            "Contains" => Some(Self::Contains),
+            "References" => Some(Self::References),
+            "Produces" => Some(Self::Produces),
+            "Consumes" => Some(Self::Consumes),
+            "Calls" => Some(Self::Calls),
+            "Implements" => Some(Self::Implements),
+            "IsA" => Some(Self::IsA),
+            _ => None,
+        }
+    }
+
+    /// Inverse of [`from_variant_name`] — the canonical PascalCase
+    /// spelling of this variant, suitable for rendering back to
+    /// nexus text.
+    pub fn variant_name(self) -> &'static str {
+        match self {
+            Self::Flow => "Flow",
+            Self::DependsOn => "DependsOn",
+            Self::Contains => "Contains",
+            Self::References => "References",
+            Self::Produces => "Produces",
+            Self::Consumes => "Consumes",
+            Self::Calls => "Calls",
+            Self::Implements => "Implements",
+            Self::IsA => "IsA",
+        }
+    }
+}
+
 /// A flow-graph: a titled collection of nodes and edges, with
 /// optional nested subgraphs.
 #[derive(Archive, RkyvSerialize, RkyvDeserialize, Serialize, Deserialize, Debug, Clone, PartialEq, Eq, Hash)]
