@@ -47,10 +47,9 @@ pub enum Body {
 impl Frame {
     /// Encode to rkyv-archive bytes for socket write.
     ///
-    /// rkyv 0.8 portable feature set per
-    /// `mentci/reports/074` guarantees deterministic bytes
-    /// across machines (little_endian + pointer_width_32 +
-    /// unaligned).
+    /// rkyv 0.8 portable feature set guarantees deterministic
+    /// bytes across machines (little_endian + pointer_width_32
+    /// + unaligned).
     pub fn encode(&self) -> Vec<u8> {
         rkyv::to_bytes::<rkyv::rancor::Error>(self)
             .expect("rkyv serialisation does not fail for owned values")

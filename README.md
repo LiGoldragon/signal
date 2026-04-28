@@ -80,7 +80,7 @@ Both paths arrive at criome as signal frames.
 ## Wire format
 
 rkyv 0.8 with the canonical pinned feature set per
-[mentci/reports/074](https://github.com/LiGoldragon/mentci/blob/main/reports/074-portable-rkyv-discipline.md):
+[tools-documentation/rust/rkyv.md](https://github.com/LiGoldragon/tools-documentation/blob/main/rust/rkyv.md):
 `default-features = false, features = ["std", "bytecheck",
 "little_endian", "pointer_width_32", "unaligned"]`.
 

@@ -30,8 +30,8 @@
 //! ```
 //!
 //! Wire format: rkyv 0.8 portable feature set; the frame schema is
-//! the framing (both parties know it). Per
-//! [mentci/reports/074](https://github.com/LiGoldragon/mentci/blob/main/reports/074-portable-rkyv-discipline.md).
+//! the framing (both parties know it). Discipline:
+//! [tools-documentation/rust/rkyv.md](https://github.com/LiGoldragon/tools-documentation/blob/main/rust/rkyv.md).
 //! Text format: nota-codec + nota-derive at the nexus dialect.
 
 // ─── Wire envelope ──────────────────────────────────────────
