@@ -53,7 +53,7 @@ criome (response) → signal → nexus daemon (translates) → nexus (text)
   defined by the
   [nexus](https://github.com/LiGoldragon/nexus) grammar and
   parsed by
-  [nota-serde-core](https://github.com/LiGoldragon/nota-serde-core).
+  [nota-codec](https://github.com/LiGoldragon/nota-codec).
 - **Sema state** — owned by criome.
 - **The validator pipeline** — owned by criome.
 
