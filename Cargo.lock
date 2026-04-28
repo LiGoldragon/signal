@@ -98,7 +98,7 @@ dependencies = [
 [[package]]
 name = "nota-codec"
 version = "0.1.0"
-source = "git+https://github.com/LiGoldragon/nota-codec.git?rev=103b3de6ff177ef20c9c00cabda4a9342bc7edb9#103b3de6ff177ef20c9c00cabda4a9342bc7edb9"
+source = "git+https://github.com/LiGoldragon/nota-codec.git?branch=main#125d34732c2de00abcb1d43d9f43b7a6a6f5e5a8"
 dependencies = [
  "nota-derive",
  "rkyv",
