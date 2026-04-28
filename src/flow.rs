@@ -16,7 +16,7 @@
 //! specificity invariant ([criome/ARCHITECTURE.md §2 Invariant D
 //! ](https://github.com/LiGoldragon/criome/blob/main/ARCHITECTURE.md#invariant-d)).
 //! A query is itself a record kind, hand-written today; once
-//! `rsc` lands, the data and query kinds will be projected from
+//! `prism` lands, the data and query kinds will be projected from
 //! the same source records.
 
 use nota_codec::{NexusPattern, NotaEnum, NotaRecord, PatternField};

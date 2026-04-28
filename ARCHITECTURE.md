@@ -107,7 +107,7 @@ kind-name lookup at runtime. The wire knows what it carries by
 type; consumers `match` exhaustively.
 
 A pattern/query is itself a record kind: `NodeQuery` is paired
-with `Node`, hand-written today; once `rsc` lands, data and
+with `Node`, hand-written today; once `prism` lands, data and
 query kinds will be projected from the same source records. The
 grammar `(| ... |)` dispatches to the `*Query` variant of the
 named kind — no parallel "pattern" type-system layer exists.
@@ -117,7 +117,7 @@ closed; rebuilds bring the world forward together via the
 criome self-host loop. New kinds land by adding the typed
 struct + the closed-enum variant in this crate, propagating
 through criome's hand-coded dispatch — schema-as-data records
-are not authoritative until `rsc` and a real reader exist.
+are not authoritative until `prism` and a real reader exist.
 
 ## Wire format
 
