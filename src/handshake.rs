@@ -51,7 +51,7 @@ pub struct HandshakeRequest {
 pub struct HandshakeReply {
     pub server_version: ProtocolVersion,
     /// criome instance identity. For multi-instance setups this
-    /// is the slot of a `CriomedInstance` record in sema; for
+    /// is the slot of a `CriomeDaemonInstance` record in sema; for
     /// single-instance MVP it is `Slot::from(0u64)`.
     pub server_id: Slot,
 }

@@ -34,6 +34,25 @@ pub struct Diagnostic {
     pub durable_record: Option<Slot>,
 }
 
+impl Diagnostic {
+    /// Build an `Error`-level diagnostic with the given code and
+    /// message; primary_site / context / suggestions /
+    /// durable_record default to empty/None. The canonical
+    /// constructor for daemon-emitted diagnostics that carry no
+    /// source-span and aren't asserted into sema.
+    pub fn error(code: &str, message: String) -> Self {
+        Self {
+            level: DiagnosticLevel::Error,
+            code: code.to_string(),
+            message,
+            primary_site: None,
+            context: vec![],
+            suggestions: vec![],
+            durable_record: None,
+        }
+    }
+}
+
 #[derive(Archive, RkyvSerialize, RkyvDeserialize, NotaEnum, Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum DiagnosticLevel {
     Error,
