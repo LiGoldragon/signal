@@ -206,9 +206,9 @@ src/
 ## Status
 
 **Working core.** Wire envelope + per-verb typed payloads +
-flow-graph kinds + KindDecl all defined and exercised. Round-
-trip tests (18) cover Frame end-to-end across every verb shape
-including patterns and typed Records replies.
+flow-graph kinds + KindDecl all defined and exercised. 42 tests
+total — 19 wire-envelope round-trip + 23 text-format round-trip
+across every verb shape, pattern, and typed `Records` reply.
 
 ## Cross-cutting context
 
