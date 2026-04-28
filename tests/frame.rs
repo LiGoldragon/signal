@@ -5,11 +5,11 @@
 //! file `src/frame.rs` no longer carries them inline.
 
 use signal::{
-    AssertOperation, AtomicBatch, AuthProof, BatchOperation, Body, Cardinality, Diagnostic,
-    DiagnosticLevel, Edge, EdgeQuery, FieldDecl, Frame, FrameDecodeError, Graph, GraphQuery,
-    HandshakeRequest, KindDecl, KindDeclQuery, MutateOperation, Node, NodeQuery, Ok,
-    OutcomeMessage, PatternField, ProtocolVersion, QueryOperation, Records, RelationKind, Reply,
-    Request, RetractOperation, Revision, SIGNAL_PROTOCOL_VERSION, Slot,
+    AssertOperation, AtomicBatch, AuthProof, BatchOperation, Body, Diagnostic, DiagnosticLevel,
+    Edge, EdgeQuery, Frame, FrameDecodeError, Graph, GraphQuery, HandshakeRequest,
+    MutateOperation, Node, NodeQuery, Ok, OutcomeMessage, PatternField, ProtocolVersion,
+    QueryOperation, Records, RelationKind, Reply, Request, RetractOperation, Revision,
+    SIGNAL_PROTOCOL_VERSION, Slot,
 };
 
 fn round_trip(original: Frame) {
@@ -92,29 +92,6 @@ fn assert_graph_round_trip() {
 }
 
 #[test]
-fn assert_kind_decl_round_trip() {
-    round_trip(Frame {
-        principal_hint: None,
-        auth_proof: None,
-        body: Body::Request(Request::Assert(AssertOperation::KindDecl(KindDecl {
-            name: "Hyperedge".into(),
-            fields: vec![
-                FieldDecl {
-                    name: "members".into(),
-                    type_name: "Slot".into(),
-                    cardinality: Cardinality::Many,
-                },
-                FieldDecl {
-                    name: "weight".into(),
-                    type_name: "f64".into(),
-                    cardinality: Cardinality::One,
-                },
-            ],
-        }))),
-    });
-}
-
-#[test]
 fn mutate_node_round_trip() {
     round_trip(Frame {
         principal_hint: None,
@@ -192,17 +169,6 @@ fn query_graph_round_trip() {
         auth_proof: None,
         body: Body::Request(Request::Query(QueryOperation::Graph(GraphQuery {
             title: PatternField::Match("criome request flow".into()),
-        }))),
-    });
-}
-
-#[test]
-fn query_kind_decl_round_trip() {
-    round_trip(Frame {
-        principal_hint: None,
-        auth_proof: None,
-        body: Body::Request(Request::Query(QueryOperation::KindDecl(KindDeclQuery {
-            name: PatternField::Wildcard,
         }))),
     });
 }

@@ -10,8 +10,8 @@
 //!    [`Reply`], handshake, auth. rkyv-only — never crosses the
 //!    nexus text boundary in raw form.
 //! 2. **Typed records and per-verb payloads** — [`Node`], [`Edge`],
-//!    [`Graph`], [`KindDecl`], the data kinds and their paired
-//!    `*Query` kinds, plus `AssertOperation` / `MutateOperation` /
+//!    [`Graph`], the data kinds and their paired `*Query` kinds,
+//!    plus `AssertOperation` / `MutateOperation` /
 //!    `RetractOperation` / `QueryOperation` / `BatchOperation`
 //!    closed enums. All derive both rkyv (for the wire) and the
 //!    appropriate `nota-codec` derive (for nexus text).
@@ -47,7 +47,6 @@ pub mod edit;
 pub mod hash;
 pub mod pattern;
 pub mod query;
-pub mod schema;
 pub mod slot;
 
 // ─── Flow-graph kinds (criome's first-milestone substrate) ──
@@ -73,7 +72,6 @@ pub use edit::{
 pub use hash::Hash;
 pub use pattern::PatternField;
 pub use query::QueryOperation;
-pub use schema::{Cardinality, FieldDecl, KindDecl, KindDeclQuery};
 pub use slot::{Revision, Slot};
 
 // ─── Flow-graph re-exports ──────────────────────────────────

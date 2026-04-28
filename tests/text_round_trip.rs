@@ -3,15 +3,14 @@
 //!
 //! Closes the loop end-to-end: nota-codec's own tests use toy
 //! types defined inside the codec crate; this file exercises
-//! the *real* signal types (Node, Edge, Graph, KindDecl,
-//! AssertOperation, MutateOperation, the four Query types, …)
-//! through the Decoder/Encoder protocol.
+//! the *real* signal types (Node, Edge, Graph, AssertOperation,
+//! MutateOperation, the three Query types, …) through the
+//! Decoder/Encoder protocol.
 
 use nota_codec::{Decoder, Encoder, NotaDecode, NotaEncode};
 use signal::{
-    AssertOperation, Cardinality, Edge, EdgeQuery, FieldDecl, Graph, GraphQuery, KindDecl,
-    KindDeclQuery, MutateOperation, Node, NodeQuery, Ok, PatternField, QueryOperation,
-    RelationKind, RetractOperation, Revision, Slot,
+    AssertOperation, Edge, EdgeQuery, Graph, GraphQuery, MutateOperation, Node, NodeQuery, Ok,
+    PatternField, QueryOperation, RelationKind, RetractOperation, Revision, Slot,
 };
 
 fn round_trip<T>(value: T, expected_text: &str)
@@ -40,7 +39,7 @@ fn revision_round_trips_as_bare_integer() {
     round_trip(Revision::from(7u64), "7");
 }
 
-// ─── NotaEnum — RelationKind / Cardinality ─────────────────
+// ─── NotaEnum — RelationKind ───────────────────────────────
 
 #[test]
 fn every_relation_kind_round_trips() {
@@ -61,13 +60,6 @@ fn every_relation_kind_round_trips() {
         let mut decoder = Decoder::nexus(&text);
         assert_eq!(RelationKind::decode(&mut decoder).unwrap(), kind);
     }
-}
-
-#[test]
-fn cardinality_one_emits_its_identifier() {
-    round_trip(Cardinality::One, "One");
-    round_trip(Cardinality::Many, "Many");
-    round_trip(Cardinality::Optional, "Optional");
 }
 
 // ─── NotaRecord — flow data kinds ──────────────────────────
@@ -104,35 +96,6 @@ fn graph_with_populated_collections_round_trips() {
             subgraphs: vec![],
         },
         "(Graph \"criome request flow\" [1 2 3] [10 11] [])",
-    );
-}
-
-// ─── NotaRecord — schema kinds ─────────────────────────────
-
-#[test]
-fn field_decl_round_trips() {
-    round_trip(
-        FieldDecl {
-            name: "from".into(),
-            type_name: "Slot".into(),
-            cardinality: Cardinality::One,
-        },
-        "(FieldDecl \"from\" \"Slot\" One)",
-    );
-}
-
-#[test]
-fn kind_decl_with_nested_field_decls_round_trips() {
-    round_trip(
-        KindDecl {
-            name: "Edge".into(),
-            fields: vec![
-                FieldDecl { name: "from".into(), type_name: "Slot".into(), cardinality: Cardinality::One },
-                FieldDecl { name: "to".into(), type_name: "Slot".into(), cardinality: Cardinality::One },
-                FieldDecl { name: "kind".into(), type_name: "RelationKind".into(), cardinality: Cardinality::One },
-            ],
-        },
-        "(KindDecl \"Edge\" [(FieldDecl \"from\" \"Slot\" One) (FieldDecl \"to\" \"Slot\" One) (FieldDecl \"kind\" \"RelationKind\" One)])",
     );
 }
 
@@ -251,26 +214,3 @@ fn graph_query_round_trips() {
     );
 }
 
-#[test]
-fn kind_decl_query_with_bind_round_trips() {
-    round_trip(
-        KindDeclQuery { name: PatternField::Bind },
-        "(| KindDecl @name |)",
-    );
-}
-
-// ─── Cross-cutting: a complex value round-trips ─────────────
-
-#[test]
-fn nested_assert_of_kind_decl_with_field_decls_round_trips() {
-    round_trip(
-        AssertOperation::KindDecl(KindDecl {
-            name: "Hyperedge".into(),
-            fields: vec![
-                FieldDecl { name: "members".into(), type_name: "Slot".into(), cardinality: Cardinality::Many },
-                FieldDecl { name: "weight".into(), type_name: "f64".into(), cardinality: Cardinality::One },
-            ],
-        }),
-        "(KindDecl \"Hyperedge\" [(FieldDecl \"members\" \"Slot\" Many) (FieldDecl \"weight\" \"f64\" One)])",
-    );
-}

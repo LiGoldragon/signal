@@ -61,9 +61,6 @@ Owns:
 - The **pattern field** type: `PatternField<T>` with
   `Wildcard | Bind | Match(T)` variants, used per-field in
   `*Query` types.
-- The **schema-as-data type**: `KindDecl` (with `FieldDecl`,
-  `Cardinality`, and the paired `KindDeclQuery`) — see
-  [`src/schema.rs`](src/schema.rs).
 - The **flow-graph kinds**: `Node`, `Edge`, `Graph` (with
   paired `NodeQuery` / `EdgeQuery` / `GraphQuery`), `Ok`,
   `RelationKind` (closed enum of 9 relation variants — Flow,
@@ -110,16 +107,17 @@ kind-name lookup at runtime. The wire knows what it carries by
 type; consumers `match` exhaustively.
 
 A pattern/query is itself a record kind: `NodeQuery` is paired
-with `Node`, generated from the same `KindDecl` by rsc. The
+with `Node`, hand-written today; once `rsc` lands, data and
+query kinds will be projected from the same source records. The
 grammar `(| ... |)` dispatches to the `*Query` variant of the
 named kind — no parallel "pattern" type-system layer exists.
 
 No `Unknown` escape variant. The closed enum is exhaustively
 closed; rebuilds bring the world forward together via the
-criome self-host loop. Schema-as-data lives in `KindDecl`
-records in sema; the typed Rust code in this crate is its
-projection (rsc closes the loop post-M0; M0 hand-edits the
-projection to match the bootstrap KindDecls in genesis.nexus).
+criome self-host loop. New kinds land by adding the typed
+struct + the closed-enum variant in this crate, propagating
+through criome's hand-coded dispatch — schema-as-data records
+are not authoritative until `rsc` and a real reader exist.
 
 ## Wire format
 
@@ -194,7 +192,6 @@ src/
 │                    + AtomicBatch / BatchOperation (rkyv-only for M0)
 ├── query.rs      — QueryOperation closed enum of typed *Query payloads
 ├── pattern.rs    — re-exports nota_codec::PatternField
-├── schema.rs     — KindDecl, FieldDecl, Cardinality, KindDeclQuery
 ├── diagnostic.rs — Diagnostic, DiagnosticLevel, DiagnosticSite (incl. OperationInBatch),
 │                    DiagnosticSuggestion, Applicability
 ├── slot.rs       — Slot, Revision (NotaTransparent u64 newtypes)
@@ -206,8 +203,8 @@ src/
 ## Status
 
 **Working core.** Wire envelope + per-verb typed payloads +
-flow-graph kinds + KindDecl all defined and exercised. 42 tests
-total — 19 wire-envelope round-trip + 23 text-format round-trip
+flow-graph kinds all defined and exercised. 35 tests
+total — 17 wire-envelope round-trip + 18 text-format round-trip
 across every verb shape, pattern, and typed `Records` reply.
 
 ## Cross-cutting context

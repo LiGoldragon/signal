@@ -27,7 +27,6 @@ use rkyv::{Archive, Deserialize as RkyvDeserialize, Serialize as RkyvSerialize};
 use crate::diagnostic::Diagnostic;
 use crate::flow::{Edge, Graph, Node, Ok};
 use crate::handshake::{HandshakeRejectionReason, HandshakeReply};
-use crate::schema::KindDecl;
 
 #[derive(Archive, RkyvSerialize, RkyvDeserialize, Debug, Clone, PartialEq)]
 pub enum Reply {
@@ -66,5 +65,4 @@ pub enum Records {
     Node(Vec<Node>),
     Edge(Vec<Edge>),
     Graph(Vec<Graph>),
-    KindDecl(Vec<KindDecl>),
 }

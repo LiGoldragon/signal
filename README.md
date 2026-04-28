@@ -33,8 +33,6 @@ criome (response) → signal → nexus daemon (translates) → nexus (text)
   wrapper, no string kind-name lookup.
 - **`PatternField<T>`** — `Wildcard | Bind | Match(T)`,
   used per-field in the `*Query` types.
-- **Schema-as-data** — `KindDecl`, `FieldDecl`,
-  `Cardinality`, `KindDeclQuery`.
 - **Flow-graph kinds** — `Node`, `Edge`, `Graph` (with
   paired `NodeQuery` / `EdgeQuery` / `GraphQuery`), `Ok`,
   `RelationKind` (closed 9-variant enum exposing `::ALL`,

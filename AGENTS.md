@@ -1,6 +1,6 @@
 # Agent instructions
 
-Repo role: the **wire format** — `Frame` envelope + per-verb typed payloads (rkyv) + protocol-level types (`HandshakeRequest`, `Diagnostic`, `Slot`, etc.) + the schema-as-data types (`KindDecl`, `FieldDecl`).
+Repo role: the **wire format** — `Frame` envelope + per-verb typed payloads (rkyv) + protocol-level types (`HandshakeRequest`, `Diagnostic`, `Slot`, etc.) + the flow-graph data kinds (`Node`, `Edge`, `Graph` plus paired `*Query` types).
 
 Read [ARCHITECTURE.md](ARCHITECTURE.md) for the boundaries and shape.
 

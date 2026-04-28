@@ -25,7 +25,6 @@ use nota_codec::{NexusVerb, NotaRecord};
 use rkyv::{Archive, Deserialize as RkyvDeserialize, Serialize as RkyvSerialize};
 
 use crate::flow::{Edge, Graph, Node};
-use crate::schema::KindDecl;
 use crate::slot::{Revision, Slot};
 
 /// Introduce a new record. Criome assigns the slot internally on
@@ -36,7 +35,6 @@ pub enum AssertOperation {
     Node(Node),
     Edge(Edge),
     Graph(Graph),
-    KindDecl(KindDecl),
 }
 
 /// Whole-record replacement at a slot. Each variant carries the
@@ -57,11 +55,6 @@ pub enum MutateOperation {
     Graph {
         slot: Slot,
         new: Graph,
-        expected_rev: Option<Revision>,
-    },
-    KindDecl {
-        slot: Slot,
-        new: KindDecl,
         expected_rev: Option<Revision>,
     },
 }

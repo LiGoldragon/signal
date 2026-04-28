@@ -15,8 +15,9 @@
 //! `Edge` ↔ `EdgeQuery`, `Graph` ↔ `GraphQuery` — per the perfect-
 //! specificity invariant ([criome/ARCHITECTURE.md §2 Invariant D
 //! ](https://github.com/LiGoldragon/criome/blob/main/ARCHITECTURE.md#invariant-d)).
-//! A query is itself a record kind, generated from the same
-//! `KindDecl` by rsc; M0 hand-writes the projection.
+//! A query is itself a record kind, hand-written today; once
+//! `rsc` lands, the data and query kinds will be projected from
+//! the same source records.
 
 use nota_codec::{NexusPattern, NotaEnum, NotaRecord, PatternField};
 use rkyv::{Archive, Deserialize as RkyvDeserialize, Serialize as RkyvSerialize};
