@@ -59,10 +59,17 @@ pub enum OutcomeMessage {
 
 /// Typed per-kind query result. Each variant matches the kind
 /// the query targeted; the consumer `match`es and gets a typed
-/// `Vec<Kind>` directly.
+/// sequence directly.
+///
+/// Each element pairs the record's **slot** with the record
+/// content. Slot is identity (cross-record references travel
+/// as Slot, not as content-hash); pairing it with the record
+/// in query replies is what lets consumers (mentci-lib's
+/// canvas, the nexus renderer) resolve references — `Edge.from`
+/// and `Edge.to` against the Node sequence's slot column.
 #[derive(Archive, RkyvSerialize, RkyvDeserialize, Debug, Clone, PartialEq)]
 pub enum Records {
-    Node(Vec<Node>),
-    Edge(Vec<Edge>),
-    Graph(Vec<Graph>),
+    Node(Vec<(crate::Slot, Node)>),
+    Edge(Vec<(crate::Slot, Edge)>),
+    Graph(Vec<(crate::Slot, Graph)>),
 }
