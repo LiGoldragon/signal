@@ -188,8 +188,8 @@ fn reply_records_node_round_trip() {
         principal_hint: None,
         auth_proof: None,
         body: Body::Reply(Reply::Records(Records::Node(vec![
-            Node { name: "Alice".into() },
-            Node { name: "Bob".into() },
+            (Slot::from(1024u64), Node { name: "Alice".into() }),
+            (Slot::from(1025u64), Node { name: "Bob".into() }),
         ]))),
     });
 }
