@@ -1,10 +1,25 @@
 # ARCHITECTURE — signal
 
-Signal is the **native binary form** of the records criome holds.
-Sema — the records — is by definition directly computer-cognizable:
-the bytes a record occupies at rest *are* its meaning, no parsing,
-no interpretation. Criome IS sema's engine, so criome receives and
-serves sema in its native form. Signal is that form on the wire.
+Signal is the **base wire-protocol crate of the sema-ecosystem**.
+It carries the native binary form of the records criome holds:
+sema — the records — is by definition directly computer-
+cognizable; the bytes a record occupies at rest *are* its meaning,
+no parsing, no interpretation. Criome IS sema's engine, so criome
+receives and serves sema in its native form. Signal is that form
+on the wire.
+
+Signal owns the universal primitives — the `Frame` envelope,
+handshake, auth, sema record kinds, and the front-end verbs every
+client speaks (`Assert`, `Mutate`, `Retract`, `AtomicBatch`,
+`Query`, `Subscribe`, `Validate`). Effect-bearing wires layered
+atop signal — currently
+[signal-forge](https://github.com/LiGoldragon/signal-forge) for
+the criome ↔ forge leg and
+[signal-arca](https://github.com/LiGoldragon/signal-arca) for the
+writers ↔ arca-daemon leg — re-use signal's `Frame`, handshake,
+and auth, and add their own per-verb payloads. Builder-internal
+churn in those layered crates does not recompile front-end
+clients that depend only on signal.
 
 Nexus text exists as the human-facing translation. The mechanical-
 translation rule (every nexus text construct has exactly one signal
@@ -40,7 +55,11 @@ Owns:
   the connection (FIFO).
 - `Body { Request, Reply }`.
 - `Request` enum: `Handshake`, `Assert`, `Mutate`, `Retract`,
-  `AtomicBatch`, `Query`, `Subscribe`, `Validate`.
+  `AtomicBatch`, `Query`, `Subscribe`, `Validate`. `BuildRequest`
+  is the next expected verb — a front-end-visible verb that
+  asks criome to forward a build to forge; criome validates the
+  target and forwards over signal-forge. Lands alongside
+  forge-daemon.
 - `Reply` enum: `HandshakeAccepted` / `HandshakeRejected`,
   `Outcome` (single-element edit reply), `Outcomes` (multi-element
   edit reply), `Records` (query result).
@@ -68,7 +87,12 @@ Owns:
   Implements, IsA). Encoding/decoding handled by the
   [nota-derive](https://github.com/LiGoldragon/nota-derive)
   derives — no hand-written `from_variant_name` /
-  `variant_name` helpers needed.
+  `variant_name` helpers needed. The node-kind taxonomy
+  (Source / Transformer / Sink / Junction / Supervisor) is the
+  next expected addition here — it lets a flow-graph express
+  what each node *does* in the dataflow rather than only how
+  nodes connect; lands when prism's first emission template
+  needs it.
 - Auxiliary types: `Diagnostic` + `DiagnosticLevel` +
   `DiagnosticSite` + `DiagnosticSuggestion`; `Slot` and
   `Revision` (private-field `u64` newtypes deriving

@@ -1,15 +1,30 @@
 # signal
 
-The rkyv messaging schema between **nexus** and **criome**.
+The base rkyv wire-protocol crate of the sema-ecosystem.
 Signal is the **native binary form** of the records criome holds:
 sema is by definition computer-cognizable, so its native form is
 binary. Nexus text is the human-facing translation; signal is what
-criome receives and emits on the wire.
+criome receives and emits on the wire — and what every front-end
+client (nexus, the GUI editor, mentci-lib, agents speaking signal
+directly) sends in.
 
 ```
 nexus (text) → nexus daemon (translates) → signal (rkyv) → criome
 criome (response) → signal → nexus daemon (translates) → nexus (text)
 ```
+
+Effect-bearing wires layer atop signal — re-using its `Frame`,
+handshake, and auth — and add their own per-verb payloads:
+
+- [signal-forge](https://github.com/LiGoldragon/signal-forge)
+  carries the criome ↔ forge leg (effect-bearing build / deploy
+  / store-entry verbs).
+- [signal-arca](https://github.com/LiGoldragon/signal-arca)
+  carries the writers ↔ arca-daemon leg (`Deposit`-class verbs
+  authorised by criome-signed capability tokens).
+
+This crate owns the universal envelope and the front-end verb
+surface; the layered crates own only the leg-specific verbs.
 
 ## What this crate defines
 

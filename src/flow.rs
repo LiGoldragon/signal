@@ -18,6 +18,14 @@
 //! A query is itself a record kind, hand-written today; once
 //! `prism` lands, the data and query kinds will be projected from
 //! the same source records.
+//!
+//! **Next expected addition: node-kind taxonomy.** Today a `Node`
+//! is just a name — slot identity carries the rest. The taxonomy
+//! (Source / Transformer / Sink / Junction / Supervisor) lets a
+//! flow-graph say what each node *does* in the dataflow, which
+//! prism's first emission template needs to project a graph into
+//! Rust. Lands alongside the prism skeleton; until then nodes are
+//! relation-only.
 
 use nota_codec::{NexusPattern, NotaEnum, NotaRecord, PatternField};
 use rkyv::{Archive, Deserialize as RkyvDeserialize, Serialize as RkyvSerialize};
