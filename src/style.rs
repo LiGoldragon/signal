@@ -116,17 +116,20 @@ pub enum StrokeToken {
 }
 
 /// Paired query kinds — first cut.
-#[derive(Archive, RkyvSerialize, RkyvDeserialize, NotaRecord, NexusPattern, Debug, Clone)]
+#[derive(Archive, RkyvSerialize, RkyvDeserialize, NexusPattern, Debug, Clone)]
+#[nota(queries = "Theme")]
 pub struct ThemeQuery {
     pub display_name: PatternField<String>,
 }
 
-#[derive(Archive, RkyvSerialize, RkyvDeserialize, NotaRecord, NexusPattern, Debug, Clone)]
+#[derive(Archive, RkyvSerialize, RkyvDeserialize, NexusPattern, Debug, Clone)]
+#[nota(queries = "KindStyle")]
 pub struct KindStyleQuery {
     pub kind_name: PatternField<String>,
 }
 
-#[derive(Archive, RkyvSerialize, RkyvDeserialize, NotaRecord, NexusPattern, Debug, Clone, Copy)]
+#[derive(Archive, RkyvSerialize, RkyvDeserialize, NexusPattern, Debug, Clone)]
+#[nota(queries = "RelationKindStyle")]
 pub struct RelationKindStyleQuery {
     pub relation: PatternField<RelationKind>,
 }

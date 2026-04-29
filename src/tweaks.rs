@@ -30,7 +30,8 @@ pub struct Tweaks {
 }
 
 /// Paired query kind for Tweaks.
-#[derive(Archive, RkyvSerialize, RkyvDeserialize, NotaRecord, NexusPattern, Debug, Clone, Copy)]
+#[derive(Archive, RkyvSerialize, RkyvDeserialize, NexusPattern, Debug, Clone)]
+#[nota(queries = "Tweaks")]
 pub struct TweaksQuery {
     pub principal: PatternField<Slot>,
     pub theme: PatternField<Slot>,

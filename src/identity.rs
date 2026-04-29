@@ -28,7 +28,8 @@ pub struct Principal {
 }
 
 /// Paired query kind for Principal.
-#[derive(Archive, RkyvSerialize, RkyvDeserialize, NotaRecord, NexusPattern, Debug, Clone)]
+#[derive(Archive, RkyvSerialize, RkyvDeserialize, NexusPattern, Debug, Clone)]
+#[nota(queries = "Principal")]
 pub struct PrincipalQuery {
     pub display_name: PatternField<String>,
     pub note: PatternField<String>,

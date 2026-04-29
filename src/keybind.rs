@@ -55,7 +55,8 @@ pub enum ActionToken {
 }
 
 /// Paired query.
-#[derive(Archive, RkyvSerialize, RkyvDeserialize, NotaRecord, NexusPattern, Debug, Clone)]
+#[derive(Archive, RkyvSerialize, RkyvDeserialize, NexusPattern, Debug, Clone)]
+#[nota(queries = "KeybindMap")]
 pub struct KeybindMapQuery {
     pub display_name: PatternField<String>,
 }

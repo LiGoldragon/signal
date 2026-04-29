@@ -39,6 +39,14 @@ pub struct NodePlacement {
 }
 
 /// Semantic size hint. Shells map to native pixel/em systems.
+///
+/// Intent-only — variants are unit. NotaEnum requires every
+/// variant to be a unit variant (the wire form is the variant
+/// name; data-carrying variants would break the closed-enum
+/// text-roundtrip guarantee). Pixel-precision overrides, if
+/// ever needed, will land as a separate `pixel_override:
+/// Option<u32>` field on Layout — keeping the semantic-intent
+/// names clean.
 #[derive(Archive, RkyvSerialize, RkyvDeserialize, NotaEnum, Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum SizeIntent {
     /// Compact.
@@ -47,18 +55,17 @@ pub enum SizeIntent {
     Medium,
     /// Spacious.
     Wide,
-    /// Concrete pixel value when the user has dragged a
-    /// splitter to a specific size.
-    Pixels(u32),
 }
 
 /// Paired queries.
-#[derive(Archive, RkyvSerialize, RkyvDeserialize, NotaRecord, NexusPattern, Debug, Clone)]
+#[derive(Archive, RkyvSerialize, RkyvDeserialize, NexusPattern, Debug, Clone)]
+#[nota(queries = "Layout")]
 pub struct LayoutQuery {
     pub display_name: PatternField<String>,
 }
 
-#[derive(Archive, RkyvSerialize, RkyvDeserialize, NotaRecord, NexusPattern, Debug, Clone, Copy)]
+#[derive(Archive, RkyvSerialize, RkyvDeserialize, NexusPattern, Debug, Clone)]
+#[nota(queries = "NodePlacement")]
 pub struct NodePlacementQuery {
     pub graph: PatternField<Slot>,
     pub node: PatternField<Slot>,
