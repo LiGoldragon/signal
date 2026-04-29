@@ -52,6 +52,13 @@ pub mod slot;
 // ─── Flow-graph kinds (criome's first-milestone substrate) ──
 pub mod flow;
 
+// ─── Identity + per-Principal config ────────────────────────
+pub mod identity;
+pub mod keybind;
+pub mod layout;
+pub mod style;
+pub mod tweaks;
+
 // ─── Wire envelope re-exports ───────────────────────────────
 pub use auth::{AuthProof, BlsG1};
 pub use frame::{Body, Frame, FrameDecodeError};
@@ -76,3 +83,13 @@ pub use slot::{Revision, Slot};
 
 // ─── Flow-graph re-exports ──────────────────────────────────
 pub use flow::{Edge, EdgeQuery, Graph, GraphQuery, Node, NodeQuery, Ok, RelationKind};
+
+// ─── Identity + per-Principal config re-exports ─────────────
+pub use identity::{Principal, PrincipalQuery};
+pub use keybind::{ActionToken, KeybindEntry, KeybindMap, KeybindMapQuery};
+pub use layout::{Layout, LayoutQuery, NodePlacement, NodePlacementQuery, SizeIntent};
+pub use style::{
+    GlyphToken, IntentToken, KindStyle, KindStyleQuery, RelationKindStyle,
+    RelationKindStyleQuery, StrokeToken, Theme, ThemeQuery,
+};
+pub use tweaks::{Tweaks, TweaksQuery};
