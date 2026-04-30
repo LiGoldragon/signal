@@ -1,18 +1,30 @@
-//! Schema-introspection types — the descriptor every signal record
-//! kind exposes via `#[derive(signal_derive::Schema)]`, plus the
-//! `Kind` trait it implements and the `ALL_KINDS` catalogue
-//! consumers walk.
+//! Schema-introspection types — `KindDescriptor`, `FieldDescriptor`,
+//! `FieldType`, the `Kind` trait, and the `ALL_KINDS` catalogue.
 //!
-//! Designed in [mentci/reports/115](https://github.com/LiGoldragon/mentci/blob/main/reports/115-schema-derive-design-2026-04-30.md).
-//! The macro lives in `signal-derive`; the types and the catalogue
-//! live here.
+//! **Role: bootstrap source, NOT runtime catalogue.**
 //!
-//! Consumers — mentci-lib's `CompiledSchema`, nexus-daemon's
-//! renderer when wired — call `T::DESCRIPTOR` for any signal kind
-//! to learn its shape, or walk `ALL_KINDS` to enumerate every
-//! kind in the vocabulary. Resolution of cross-references inside
-//! `FieldType::Record { kind_name }` is the consumer's job: look
-//! up the named kind in `ALL_KINDS` to learn its shape.
+//! Per [mentci/reports/119](https://github.com/LiGoldragon/mentci/blob/main/reports/119-schema-in-sema-corrected-direction-2026-04-30.md):
+//! the runtime authority for "what kinds exist" is **sema-resident
+//! `KindDecl` records**, not these compile-time consts. These types
+//! exist as the input to a build-time projection: the seed step
+//! reads `ALL_KINDS` once at engine boot and asserts equivalent
+//! `KindDecl` / `FieldDecl` / `VariantDecl` records into sema.
+//! From then on, every consumer (mentci-lib's constructor flow,
+//! the nexus renderer, agents) queries sema, never reads
+//! `ALL_KINDS` directly.
+//!
+//! Why both: nota-codec needs the type knowledge at compile time
+//! for wire encoding/decoding (it's baked into `NotaEnum` /
+//! `NotaRecord` derives). Sema needs the same knowledge as data
+//! for runtime introspection. Both come from the same source —
+//! the Rust type definitions in this crate. Neither is the other's
+//! authority. See [reports/119 §2.1](https://github.com/LiGoldragon/mentci/blob/main/reports/119-schema-in-sema-corrected-direction-2026-04-30.md#21--are-we-re-implementing-parts-of-nexus)
+//! for the full reasoning.
+//!
+//! Tracked-as-known-wrong: the consumer-side reading `ALL_KINDS`
+//! directly (instead of sema) — see beads `mentci-next-lvg`. The
+//! `Kind` trait + `ALL_KINDS` const stay; only the consumer path
+//! changes.
 
 /// Describe a record kind's shape — name + structural shape.
 #[derive(Debug, Clone, Copy)]
