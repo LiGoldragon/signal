@@ -17,7 +17,7 @@
 use nota_codec::NotaEnum;
 use rkyv::{Archive, Deserialize as RkyvDeserialize, Serialize as RkyvSerialize};
 
-use crate::slot::Slot;
+use crate::slot::{AnyKind, Slot};
 
 #[derive(Archive, RkyvSerialize, RkyvDeserialize, Debug, Clone, PartialEq)]
 pub struct Diagnostic {
@@ -31,7 +31,7 @@ pub struct Diagnostic {
     pub suggestions: Vec<DiagnosticSuggestion>,
     /// If asserted as a durable `Diagnostic` record in sema, the
     /// slot it lives at; `None` for transient-only diagnostics.
-    pub durable_record: Option<Slot>,
+    pub durable_record: Option<Slot<Diagnostic>>,
 }
 
 impl Diagnostic {
@@ -67,8 +67,11 @@ pub enum DiagnosticLevel {
 /// `Diagnostic` record above which carries it as `Option<DiagnosticSite>`.
 #[derive(Archive, RkyvSerialize, RkyvDeserialize, Debug, Clone, PartialEq)]
 pub enum DiagnosticSite {
-    /// A specific record location.
-    Slot(Slot),
+    /// A specific record location. The slot may point at a record
+    /// of any kind (parse failures across diverse records all
+    /// route through this site shape), so the kind is type-erased
+    /// via `AnyKind`.
+    Slot(Slot<AnyKind>),
     /// A span in nexus source text.
     SourceSpan { offset: u32, length: u32, source: String },
     /// An operation within an `AtomicBatch`, by position.

@@ -109,7 +109,7 @@ fn retract_round_trip() {
     round_trip(Frame {
         principal_hint: None,
         auth_proof: None,
-        body: Body::Request(Request::Retract(RetractOperation {
+        body: Body::Request(Request::Retract(RetractOperation::Node {
             slot: Slot::from(100u64),
             expected_rev: None,
         })),
@@ -129,7 +129,7 @@ fn atomic_batch_round_trip() {
                     new: Node { name: "B".into() },
                     expected_rev: None,
                 }),
-                BatchOperation::Retract(RetractOperation {
+                BatchOperation::Retract(RetractOperation::Node {
                     slot: Slot::from(60u64),
                     expected_rev: None,
                 }),

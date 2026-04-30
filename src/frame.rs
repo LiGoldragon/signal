@@ -20,6 +20,7 @@
 use rkyv::{Archive, Deserialize as RkyvDeserialize, Serialize as RkyvSerialize};
 
 use crate::Slot;
+use crate::identity::Principal;
 
 use crate::auth::AuthProof;
 use crate::reply::Reply;
@@ -29,7 +30,7 @@ use crate::request::Request;
 pub struct Frame {
     /// Slot-bound principal making this request. `None` is
     /// allowed during handshake and for unauthenticated probes.
-    pub principal_hint: Option<Slot>,
+    pub principal_hint: Option<Slot<Principal>>,
 
     /// Authentication proof. `None` only during handshake; every
     /// post-handshake frame carries one (SingleOperator MVP).

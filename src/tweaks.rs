@@ -14,27 +14,31 @@
 use nota_codec::{NexusPattern, NotaRecord, PatternField};
 use rkyv::{Archive, Deserialize as RkyvDeserialize, Serialize as RkyvSerialize};
 
+use crate::identity::Principal;
+use crate::keybind::KeybindMap;
+use crate::layout::Layout;
 use crate::slot::Slot;
+use crate::style::Theme;
 
 /// Per-Principal index of style/configuration records.
 #[derive(Archive, RkyvSerialize, RkyvDeserialize, NotaRecord, Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub struct Tweaks {
     /// Whose Tweaks these are.
-    pub principal: Slot,
+    pub principal: Slot<Principal>,
     /// Active Theme record.
-    pub theme: Slot,
+    pub theme: Slot<Theme>,
     /// Active Layout record.
-    pub layout: Slot,
+    pub layout: Slot<Layout>,
     /// Active KeybindMap record.
-    pub keybinds: Slot,
+    pub keybinds: Slot<KeybindMap>,
 }
 
 /// Paired query kind for Tweaks.
 #[derive(Archive, RkyvSerialize, RkyvDeserialize, NexusPattern, Debug, Clone)]
 #[nota(queries = "Tweaks")]
 pub struct TweaksQuery {
-    pub principal: PatternField<Slot>,
-    pub theme: PatternField<Slot>,
-    pub layout: PatternField<Slot>,
-    pub keybinds: PatternField<Slot>,
+    pub principal: PatternField<Slot<Principal>>,
+    pub theme: PatternField<Slot<Theme>>,
+    pub layout: PatternField<Slot<Layout>>,
+    pub keybinds: PatternField<Slot<KeybindMap>>,
 }

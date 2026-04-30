@@ -31,7 +31,7 @@ where
 
 #[test]
 fn slot_round_trips_as_bare_integer() {
-    round_trip(Slot::from(42u64), "42");
+    round_trip(Slot::<signal::Node>::from(42u64), "42");
 }
 
 #[test]
@@ -99,21 +99,27 @@ fn graph_with_populated_collections_round_trips() {
     );
 }
 
-// ─── NotaRecord — edit operations ──────────────────────────
+// ─── NexusVerb — RetractOperation per-kind variants ────────
 
 #[test]
-fn retract_operation_with_optional_revision_present_round_trips() {
+fn retract_node_with_optional_revision_present_round_trips() {
     round_trip(
-        RetractOperation { slot: Slot::from(50u64), expected_rev: Some(Revision::from(7u64)) },
-        "(RetractOperation 50 7)",
+        RetractOperation::Node {
+            slot: Slot::from(50u64),
+            expected_rev: Some(Revision::from(7u64)),
+        },
+        "(Node 50 7)",
     );
 }
 
 #[test]
-fn retract_operation_with_optional_revision_absent_round_trips() {
+fn retract_node_with_optional_revision_absent_round_trips() {
     round_trip(
-        RetractOperation { slot: Slot::from(50u64), expected_rev: None },
-        "(RetractOperation 50 None)",
+        RetractOperation::Node {
+            slot: Slot::from(50u64),
+            expected_rev: None,
+        },
+        "(Node 50 None)",
     );
 }
 

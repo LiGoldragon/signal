@@ -17,6 +17,13 @@ use rkyv::{Archive, Deserialize as RkyvDeserialize, Serialize as RkyvSerialize};
 
 use crate::Slot;
 
+/// Marker for the `CriomeDaemonInstance` record kind. The full
+/// record shape lands when multi-instance criome is implemented;
+/// until then, this marker carries the kind in
+/// `Slot<CriomeDaemonInstance>` so the server-id slot in
+/// `HandshakeReply` is typed.
+pub struct CriomeDaemonInstance;
+
 /// Current signal protocol version. Bump per semver: major for
 /// incompatible wire changes, minor for additive changes, patch
 /// for fixes that don't touch the wire.
@@ -53,7 +60,7 @@ pub struct HandshakeReply {
     /// criome instance identity. For multi-instance setups this
     /// is the slot of a `CriomeDaemonInstance` record in sema; for
     /// single-instance MVP it is `Slot::from(0u64)`.
-    pub server_id: Slot,
+    pub server_id: Slot<CriomeDaemonInstance>,
 }
 
 /// Reasons the server may reject a handshake. Returned inside a

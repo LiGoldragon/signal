@@ -49,8 +49,8 @@ pub struct Node {
 /// carries — strongly-typed, closed vocabulary.
 #[derive(Archive, RkyvSerialize, RkyvDeserialize, NotaRecord, Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub struct Edge {
-    pub from: Slot,
-    pub to: Slot,
+    pub from: Slot<Node>,
+    pub to: Slot<Node>,
     pub kind: RelationKind,
 }
 
@@ -85,9 +85,9 @@ pub enum RelationKind {
 #[derive(Archive, RkyvSerialize, RkyvDeserialize, NotaRecord, Debug, Clone, PartialEq, Eq, Hash)]
 pub struct Graph {
     pub title: String,
-    pub nodes: Vec<Slot>,
-    pub edges: Vec<Slot>,
-    pub subgraphs: Vec<Slot>,
+    pub nodes: Vec<Slot<Node>>,
+    pub edges: Vec<Slot<Edge>>,
+    pub subgraphs: Vec<Slot<Graph>>,
 }
 
 // ─── Query kinds ─────────────────────────────────────────────
@@ -104,8 +104,8 @@ pub struct NodeQuery {
 #[derive(Archive, RkyvSerialize, RkyvDeserialize, NexusPattern, Debug, Clone, PartialEq)]
 #[nota(queries = "Edge")]
 pub struct EdgeQuery {
-    pub from: PatternField<Slot>,
-    pub to: PatternField<Slot>,
+    pub from: PatternField<Slot<Node>>,
+    pub to: PatternField<Slot<Node>>,
     pub kind: PatternField<RelationKind>,
 }
 

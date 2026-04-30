@@ -60,11 +60,11 @@ pub mod style;
 pub mod tweaks;
 
 // ─── Wire envelope re-exports ───────────────────────────────
-pub use auth::{AuthProof, BlsG1};
+pub use auth::{AuthProof, BlsG1, CommittedMutation};
 pub use frame::{Body, Frame, FrameDecodeError};
 pub use handshake::{
-    HandshakeRejectionReason, HandshakeReply, HandshakeRequest, ProtocolVersion,
-    SIGNAL_PROTOCOL_VERSION,
+    CriomeDaemonInstance, HandshakeRejectionReason, HandshakeReply, HandshakeRequest,
+    ProtocolVersion, SIGNAL_PROTOCOL_VERSION,
 };
 pub use reply::{OutcomeMessage, Records, Reply};
 pub use request::{Request, ValidateOperation};
@@ -79,7 +79,7 @@ pub use edit::{
 pub use hash::Hash;
 pub use pattern::PatternField;
 pub use query::QueryOperation;
-pub use slot::{Revision, Slot};
+pub use slot::{AnyKind, Revision, Slot};
 
 // ─── Flow-graph re-exports ──────────────────────────────────
 pub use flow::{Edge, EdgeQuery, Graph, GraphQuery, Node, NodeQuery, Ok, RelationKind};

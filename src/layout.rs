@@ -11,6 +11,7 @@
 use nota_codec::{NexusPattern, NotaEnum, NotaRecord, PatternField};
 use rkyv::{Archive, Deserialize as RkyvDeserialize, Serialize as RkyvSerialize};
 
+use crate::flow::{Graph, Node};
 use crate::slot::Slot;
 
 /// Workbench pane layout intent.
@@ -29,8 +30,8 @@ pub struct Layout {
 /// per (graph, node) pair; identity is the slot.
 #[derive(Archive, RkyvSerialize, RkyvDeserialize, NotaRecord, Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub struct NodePlacement {
-    pub graph: Slot,
-    pub node: Slot,
+    pub graph: Slot<Graph>,
+    pub node: Slot<Node>,
     /// Position is integer hundredths-of-grid-units (1/100 of
     /// a logical canvas grid square). Concrete grid resolution
     /// finalises as the canvas wires up.
@@ -67,6 +68,6 @@ pub struct LayoutQuery {
 #[derive(Archive, RkyvSerialize, RkyvDeserialize, NexusPattern, Debug, Clone)]
 #[nota(queries = "NodePlacement")]
 pub struct NodePlacementQuery {
-    pub graph: PatternField<Slot>,
-    pub node: PatternField<Slot>,
+    pub graph: PatternField<Slot<Graph>>,
+    pub node: PatternField<Slot<Node>>,
 }

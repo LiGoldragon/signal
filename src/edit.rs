@@ -17,7 +17,7 @@
 //! Atomic batches wrap a sequence of edit operations as
 //! all-or-nothing.
 
-use nota_codec::{NexusVerb, NotaRecord};
+use nota_codec::NexusVerb;
 
 // `AtomicBatch` and `BatchOperation` derive only rkyv (no
 // `NotaRecord` / `NexusVerb`) for M0 — see their per-type docs
@@ -43,29 +43,41 @@ pub enum AssertOperation {
 #[derive(Archive, RkyvSerialize, RkyvDeserialize, NexusVerb, Debug, Clone, PartialEq)]
 pub enum MutateOperation {
     Node {
-        slot: Slot,
+        slot: Slot<Node>,
         new: Node,
         expected_rev: Option<Revision>,
     },
     Edge {
-        slot: Slot,
+        slot: Slot<Edge>,
         new: Edge,
         expected_rev: Option<Revision>,
     },
     Graph {
-        slot: Slot,
+        slot: Slot<Graph>,
         new: Graph,
         expected_rev: Option<Revision>,
     },
 }
 
-/// Remove the record at a slot. Validator rejects if any
-/// outstanding references would dangle. No per-kind variants —
-/// the slot identifies the target uniquely.
-#[derive(Archive, RkyvSerialize, RkyvDeserialize, NotaRecord, Debug, Clone, Copy, PartialEq, Eq, Hash)]
-pub struct RetractOperation {
-    pub slot: Slot,
-    pub expected_rev: Option<Revision>,
+/// Remove an existing record. Per-kind variants for the same
+/// reason as `MutateOperation` and `AssertOperation`: the type
+/// system carries which kind is being retracted, so the validator
+/// can dispatch per-kind reachability checks without
+/// stringly-typed lookups.
+#[derive(Archive, RkyvSerialize, RkyvDeserialize, NexusVerb, Debug, Clone, PartialEq)]
+pub enum RetractOperation {
+    Node {
+        slot: Slot<Node>,
+        expected_rev: Option<Revision>,
+    },
+    Edge {
+        slot: Slot<Edge>,
+        expected_rev: Option<Revision>,
+    },
+    Graph {
+        slot: Slot<Graph>,
+        expected_rev: Option<Revision>,
+    },
 }
 
 /// Atomic envelope wrapping a sequence of edit operations.

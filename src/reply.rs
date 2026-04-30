@@ -69,7 +69,7 @@ pub enum OutcomeMessage {
 /// and `Edge.to` against the Node sequence's slot column.
 #[derive(Archive, RkyvSerialize, RkyvDeserialize, Debug, Clone, PartialEq)]
 pub enum Records {
-    Node(Vec<(crate::Slot, Node)>),
-    Edge(Vec<(crate::Slot, Edge)>),
-    Graph(Vec<(crate::Slot, Graph)>),
+    Node(Vec<(crate::Slot<Node>, Node)>),
+    Edge(Vec<(crate::Slot<Edge>, Edge)>),
+    Graph(Vec<(crate::Slot<Graph>, Graph)>),
 }
