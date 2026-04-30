@@ -10,12 +10,13 @@
 
 use nota_codec::{NexusPattern, NotaEnum, NotaRecord, PatternField};
 use rkyv::{Archive, Deserialize as RkyvDeserialize, Serialize as RkyvSerialize};
+use signal_derive::Schema;
 
 use crate::flow::{Graph, Node};
 use crate::slot::Slot;
 
 /// Workbench pane layout intent.
-#[derive(Archive, RkyvSerialize, RkyvDeserialize, NotaRecord, Debug, Clone, PartialEq, Eq, Hash)]
+#[derive(Archive, RkyvSerialize, RkyvDeserialize, NotaRecord, Schema, Debug, Clone, PartialEq, Eq, Hash)]
 pub struct Layout {
     pub display_name: String,
     pub left_nav_width: SizeIntent,
@@ -28,7 +29,7 @@ pub struct Layout {
 
 /// Per-Graph per-Node 2D position on the canvas. One record
 /// per (graph, node) pair; identity is the slot.
-#[derive(Archive, RkyvSerialize, RkyvDeserialize, NotaRecord, Debug, Clone, Copy, PartialEq, Eq, Hash)]
+#[derive(Archive, RkyvSerialize, RkyvDeserialize, NotaRecord, Schema, Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub struct NodePlacement {
     pub graph: Slot<Graph>,
     pub node: Slot<Node>,
@@ -48,7 +49,7 @@ pub struct NodePlacement {
 /// ever needed, will land as a separate `pixel_override:
 /// Option<u32>` field on Layout — keeping the semantic-intent
 /// names clean.
-#[derive(Archive, RkyvSerialize, RkyvDeserialize, NotaEnum, Debug, Clone, Copy, PartialEq, Eq, Hash)]
+#[derive(Archive, RkyvSerialize, RkyvDeserialize, NotaEnum, Schema, Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum SizeIntent {
     /// Compact.
     Narrow,

@@ -8,6 +8,7 @@ repository   = "https://github.com/LiGoldragon/signal"
 description  = "signal — the criome binary language. Wire envelope (Frame, handshake) + per-verb typed payloads + sema record kinds. Anything criome is signal."
 
 [dependencies]
-rkyv       = { version = "0.8", default-features = false, features = ["std", "bytecheck", "little_endian", "pointer_width_32", "unaligned"] }
-nota-codec = { git = "https://github.com/LiGoldragon/nota-codec.git", branch = "main" }
-thiserror  = "2"
+rkyv          = { version = "0.8", default-features = false, features = ["std", "bytecheck", "little_endian", "pointer_width_32", "unaligned"] }
+nota-codec    = { git = "https://github.com/LiGoldragon/nota-codec.git", branch = "main" }
+signal-derive = { git = "https://github.com/LiGoldragon/signal-derive.git", branch = "main" }
+thiserror     = "2"

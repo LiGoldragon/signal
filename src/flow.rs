@@ -29,6 +29,7 @@
 
 use nota_codec::{NexusPattern, NotaEnum, NotaRecord, PatternField};
 use rkyv::{Archive, Deserialize as RkyvDeserialize, Serialize as RkyvSerialize};
+use signal_derive::Schema;
 
 use crate::slot::Slot;
 
@@ -39,7 +40,7 @@ use crate::slot::Slot;
 /// name; two nodes with the same name are two different nodes
 /// (different slots). Names exist for display, never for
 /// reference.
-#[derive(Archive, RkyvSerialize, RkyvDeserialize, NotaRecord, Debug, Clone, PartialEq, Eq, Hash)]
+#[derive(Archive, RkyvSerialize, RkyvDeserialize, NotaRecord, Schema, Debug, Clone, PartialEq, Eq, Hash)]
 pub struct Node {
     pub name: String,
 }
@@ -47,7 +48,7 @@ pub struct Node {
 /// A directed edge from one node to another, typed by its relation
 /// kind. Per Li 2026-04-26: every edge declares what relation it
 /// carries — strongly-typed, closed vocabulary.
-#[derive(Archive, RkyvSerialize, RkyvDeserialize, NotaRecord, Debug, Clone, Copy, PartialEq, Eq, Hash)]
+#[derive(Archive, RkyvSerialize, RkyvDeserialize, NotaRecord, Schema, Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub struct Edge {
     pub from: Slot<Node>,
     pub to: Slot<Node>,
@@ -57,7 +58,7 @@ pub struct Edge {
 /// Closed vocabulary of relation kinds an Edge can carry. Covers
 /// PROV-O / UML / Mermaid-class precedent. Extend as new relation
 /// semantics are needed; deletions are breaking changes.
-#[derive(Archive, RkyvSerialize, RkyvDeserialize, NotaEnum, Debug, Clone, Copy, PartialEq, Eq, Hash)]
+#[derive(Archive, RkyvSerialize, RkyvDeserialize, NotaEnum, Schema, Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum RelationKind {
     /// Generic forward flow — data, control, anything moving from
     /// `from` to `to`.
@@ -82,7 +83,7 @@ pub enum RelationKind {
 
 /// A flow-graph: a titled collection of nodes and edges, with
 /// optional nested subgraphs.
-#[derive(Archive, RkyvSerialize, RkyvDeserialize, NotaRecord, Debug, Clone, PartialEq, Eq, Hash)]
+#[derive(Archive, RkyvSerialize, RkyvDeserialize, NotaRecord, Schema, Debug, Clone, PartialEq, Eq, Hash)]
 pub struct Graph {
     pub title: String,
     pub nodes: Vec<Slot<Node>>,
@@ -124,5 +125,5 @@ pub struct GraphQuery {
 /// presence of `(Ok)` at a reply position means the request
 /// succeeded with no further information. Failure replies use
 /// the existing `Diagnostic` kind.
-#[derive(Archive, RkyvSerialize, RkyvDeserialize, NotaRecord, Debug, Clone, Copy, PartialEq, Eq, Hash, Default)]
+#[derive(Archive, RkyvSerialize, RkyvDeserialize, NotaRecord, Schema, Debug, Clone, Copy, PartialEq, Eq, Hash, Default)]
 pub struct Ok {}

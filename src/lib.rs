@@ -33,6 +33,14 @@
 //! the framing (both parties know it). Discipline:
 //! [tools-documentation/rust/rkyv.md](https://github.com/LiGoldragon/tools-documentation/blob/main/rust/rkyv.md).
 //! Text format: nota-codec + nota-derive at the nexus dialect.
+//! Schema introspection: signal-derive's `#[derive(Schema)]` emits
+//! per-kind descriptors consumers walk via [`ALL_KINDS`].
+
+// `extern crate self as signal` makes `::signal::...` paths
+// resolve from inside this crate, so the `signal-derive` macros
+// can emit absolute paths that work both here and in downstream
+// crates that use the derive.
+extern crate self as signal;
 
 // ─── Wire envelope ──────────────────────────────────────────
 pub mod auth;
@@ -47,6 +55,7 @@ pub mod edit;
 pub mod hash;
 pub mod pattern;
 pub mod query;
+pub mod schema;
 pub mod slot;
 
 // ─── Flow-graph kinds (criome's first-milestone substrate) ──
@@ -79,6 +88,10 @@ pub use edit::{
 pub use hash::Hash;
 pub use pattern::PatternField;
 pub use query::QueryOperation;
+pub use schema::{
+    ALL_KINDS, FieldDescriptor, FieldType, Kind, KindDescriptor, KindShape,
+};
+pub use signal_derive::Schema;
 pub use slot::{AnyKind, Revision, Slot};
 
 // ─── Flow-graph re-exports ──────────────────────────────────

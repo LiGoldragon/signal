@@ -13,10 +13,11 @@
 
 use nota_codec::{NexusPattern, NotaRecord, PatternField};
 use rkyv::{Archive, Deserialize as RkyvDeserialize, Serialize as RkyvSerialize};
+use signal_derive::Schema;
 
 /// Identifies a participant. Concrete fields are first-cut;
 /// they grow as the authz model fills in.
-#[derive(Archive, RkyvSerialize, RkyvDeserialize, NotaRecord, Debug, Clone, PartialEq, Eq, Hash)]
+#[derive(Archive, RkyvSerialize, RkyvDeserialize, NotaRecord, Schema, Debug, Clone, PartialEq, Eq, Hash)]
 pub struct Principal {
     /// Human-readable label for the principal — display name,
     /// not identity. Identity is the slot.

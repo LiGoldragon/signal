@@ -13,6 +13,7 @@
 
 use nota_codec::{NexusPattern, NotaRecord, PatternField};
 use rkyv::{Archive, Deserialize as RkyvDeserialize, Serialize as RkyvSerialize};
+use signal_derive::Schema;
 
 use crate::identity::Principal;
 use crate::keybind::KeybindMap;
@@ -21,7 +22,7 @@ use crate::slot::Slot;
 use crate::style::Theme;
 
 /// Per-Principal index of style/configuration records.
-#[derive(Archive, RkyvSerialize, RkyvDeserialize, NotaRecord, Debug, Clone, Copy, PartialEq, Eq, Hash)]
+#[derive(Archive, RkyvSerialize, RkyvDeserialize, NotaRecord, Schema, Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub struct Tweaks {
     /// Whose Tweaks these are.
     pub principal: Slot<Principal>,

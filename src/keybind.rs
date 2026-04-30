@@ -8,16 +8,17 @@
 
 use nota_codec::{NexusPattern, NotaEnum, NotaRecord, PatternField};
 use rkyv::{Archive, Deserialize as RkyvDeserialize, Serialize as RkyvSerialize};
+use signal_derive::Schema;
 
 /// Map of input → action.
-#[derive(Archive, RkyvSerialize, RkyvDeserialize, NotaRecord, Debug, Clone, PartialEq, Eq, Hash)]
+#[derive(Archive, RkyvSerialize, RkyvDeserialize, NotaRecord, Schema, Debug, Clone, PartialEq, Eq, Hash)]
 pub struct KeybindMap {
     pub display_name: String,
     pub bindings: Vec<KeybindEntry>,
 }
 
 /// One binding.
-#[derive(Archive, RkyvSerialize, RkyvDeserialize, NotaRecord, Debug, Clone, PartialEq, Eq, Hash)]
+#[derive(Archive, RkyvSerialize, RkyvDeserialize, NotaRecord, Schema, Debug, Clone, PartialEq, Eq, Hash)]
 pub struct KeybindEntry {
     /// Input description as a string ("Cmd+S",
     /// "Shift+LeftClick", "Backspace"). Concrete grammar
@@ -29,7 +30,7 @@ pub struct KeybindEntry {
 /// Abstract action names the workbench understands. New
 /// actions added here are added to every shell's binding
 /// dispatch.
-#[derive(Archive, RkyvSerialize, RkyvDeserialize, NotaEnum, Debug, Clone, Copy, PartialEq, Eq, Hash)]
+#[derive(Archive, RkyvSerialize, RkyvDeserialize, NotaEnum, Schema, Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum ActionToken {
     /// Toggle the wire pane.
     ToggleWirePane,

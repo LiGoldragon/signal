@@ -219,7 +219,18 @@ version = "0.1.0"
 dependencies = [
  "nota-codec",
  "rkyv",
+ "signal-derive",
  "thiserror",
+]
+
+[[package]]
+name = "signal-derive"
+version = "0.1.0"
+source = "git+https://github.com/LiGoldragon/signal-derive.git?branch=main#6f7b380eac5aedf69a29123d0ebc5b6e74538ce0"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "syn",
 ]
 
 [[package]]
