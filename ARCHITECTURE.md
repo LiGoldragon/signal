@@ -146,7 +146,7 @@ are not authoritative until `prism` and a real reader exist.
 ## Wire format
 
 rkyv 0.8 with the canonical pinned feature set per
-[tools-documentation/rust/rkyv.md](https://github.com/LiGoldragon/tools-documentation/blob/main/rust/rkyv.md):
+[lore/rust/rkyv.md](https://github.com/LiGoldragon/lore/blob/main/rust/rkyv.md):
 `default-features = false, features = ["std", "bytecheck",
 "little_endian", "pointer_width_32", "unaligned"]`.
 
