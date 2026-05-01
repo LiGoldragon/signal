@@ -1,30 +1,14 @@
 //! Schema-introspection types — `KindDescriptor`, `FieldDescriptor`,
 //! `FieldType`, the `Kind` trait, and the `ALL_KINDS` catalogue.
 //!
-//! **Role: bootstrap source, NOT runtime catalogue.**
-//!
-//! Per [mentci/reports/119](https://github.com/LiGoldragon/mentci/blob/main/reports/119-schema-in-sema-corrected-direction-2026-04-30.md):
-//! the runtime authority for "what kinds exist" is **sema-resident
-//! `KindDecl` records**, not these compile-time consts. These types
-//! exist as the input to a build-time projection: the seed step
-//! reads `ALL_KINDS` once at engine boot and asserts equivalent
-//! `KindDecl` / `FieldDecl` / `VariantDecl` records into sema.
-//! From then on, every consumer (mentci-lib's constructor flow,
-//! the nexus renderer, agents) queries sema, never reads
-//! `ALL_KINDS` directly.
-//!
-//! Why both: nota-codec needs the type knowledge at compile time
-//! for wire encoding/decoding (it's baked into `NotaEnum` /
-//! `NotaRecord` derives). Sema needs the same knowledge as data
-//! for runtime introspection. Both come from the same source —
-//! the Rust type definitions in this crate. Neither is the other's
-//! authority. See [reports/119 §2.1](https://github.com/LiGoldragon/mentci/blob/main/reports/119-schema-in-sema-corrected-direction-2026-04-30.md#21--are-we-re-implementing-parts-of-nexus)
-//! for the full reasoning.
-//!
-//! Tracked-as-known-wrong: the consumer-side reading `ALL_KINDS`
-//! directly (instead of sema) — see beads `mentci-next-lvg`. The
-//! `Kind` trait + `ALL_KINDS` const stay; only the consumer path
-//! changes.
+//! **Status: role under review.** Per criome's `ARCHITECTURE.md`
+//! §10.2 + §10.3, the runtime authority for "what kinds exist"
+//! is sema-resident records (Kind, Field, Variant, TypeExpression,
+//! Localization), constructed by criome's init at engine boot.
+//! These compile-time descriptor consts no longer have an obvious
+//! consumer. The crate's continuation, repurposing, or retirement
+//! is tracked under bd issue `mentci-next-4v6`. The mechanism
+//! below stays in place pending decision.
 
 /// Describe a record kind's shape — name + structural shape.
 #[derive(Debug, Clone, Copy)]
@@ -55,9 +39,7 @@ pub struct FieldDescriptor {
 /// Mechanically-derivable field-type categories.
 ///
 /// Compound shapes (`Vec<Option<T>>`, `Option<Vec<T>>`) flatten
-/// into `is_optional` + `is_list` flags on the `FieldDescriptor`;
-/// see [reports/115 §1](https://github.com/LiGoldragon/mentci/blob/main/reports/115-schema-derive-design-2026-04-30.md#1--type--fieldtype-mapping)
-/// for the mapping rules the derive applies.
+/// into `is_optional` + `is_list` flags on the `FieldDescriptor`.
 #[derive(Debug, Clone, Copy)]
 pub enum FieldType {
     /// `String`.

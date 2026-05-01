@@ -16,13 +16,11 @@
 //!    closed enums. All derive both rkyv (for the wire) and the
 //!    appropriate `nota-codec` derive (for nexus text).
 //!
-//! Per the perfect-specificity invariant
-//! ([criome/ARCHITECTURE.md §2 Invariant D
-//! ](https://github.com/LiGoldragon/criome/blob/main/ARCHITECTURE.md#invariant-d)):
-//! every verb's payload is its own closed enum of typed kinds —
-//! [`AssertOperation`], [`MutateOperation`], [`QueryOperation`],
-//! [`Records`] each name exactly the kinds they operate on. No
-//! generic record wrapper; no string kind-name dispatch.
+//! Per the perfect-specificity invariant (criome's `ARCHITECTURE.md`
+//! Invariant D): every verb's payload is its own closed enum of
+//! typed kinds — [`AssertOperation`], [`MutateOperation`],
+//! [`QueryOperation`], [`Records`] each name exactly the kinds
+//! they operate on.
 //!
 //! ```text
 //! nexus (text) → nexus daemon (translates) → signal (rkyv) → criome
@@ -30,11 +28,9 @@
 //! ```
 //!
 //! Wire format: rkyv 0.8 portable feature set; the frame schema is
-//! the framing (both parties know it). Discipline:
-//! [tools-documentation/rust/rkyv.md](https://github.com/LiGoldragon/tools-documentation/blob/main/rust/rkyv.md).
-//! Text format: nota-codec + nota-derive at the nexus dialect.
-//! Schema introspection: signal-derive's `#[derive(Schema)]` emits
-//! per-kind descriptors consumers walk via [`ALL_KINDS`].
+//! the framing (both parties know it). Discipline lives in lore's
+//! `rust/rkyv.md`. Text format: nota-codec + nota-derive at the
+//! nexus dialect.
 
 // `extern crate self as signal` makes `::signal::...` paths
 // resolve from inside this crate, so the `signal-derive` macros
