@@ -13,9 +13,9 @@ handshake, auth, sema record kinds, and the front-end verbs every
 client speaks (`Assert`, `Mutate`, `Retract`, `AtomicBatch`,
 `Query`, `Subscribe`, `Validate`). Effect-bearing wires layered
 atop signal — currently
-[signal-forge](https://github.com/LiGoldragon/signal-forge) for
+signal-forge for
 the criome ↔ forge leg and
-[signal-arca](https://github.com/LiGoldragon/signal-arca) for the
+signal-arca for the
 writers ↔ arca-daemon leg — re-use signal's `Frame`, handshake,
 and auth, and add their own per-verb payloads. Builder-internal
 churn in those layered crates does not recompile front-end
@@ -85,7 +85,7 @@ Owns:
   `RelationKind` (closed enum of 9 relation variants — Flow,
   DependsOn, Contains, References, Produces, Consumes, Calls,
   Implements, IsA). Encoding/decoding handled by the
-  [nota-derive](https://github.com/LiGoldragon/nota-derive)
+  nota-derive
   derives — no hand-written `from_variant_name` /
   `variant_name` helpers needed. The node-kind taxonomy
   (Source / Transformer / Sink / Junction / Supervisor) is the
@@ -102,7 +102,7 @@ Owns:
 
 Does not own:
 
-- Nexus text grammar or parser — see [github.com/LiGoldragon/nexus](https://github.com/LiGoldragon/nexus).
+- Nexus text grammar or parser — see github.com/LiGoldragon/nexus.
 - Sema state — owned by criome.
 - Validator pipeline — owned by criome.
 
@@ -119,8 +119,8 @@ of evolving signal.
 
 ### Perfect specificity at the wire
 
-Signal carries the project's [perfect-specificity
-invariant](https://github.com/LiGoldragon/criome/blob/main/ARCHITECTURE.md#invariant-d)
+Signal carries the project's perfect-specificity
+invariant
 in its concrete shape. Every verb's payload is its own closed
 enum of typed kinds — `AssertOperation { Node(Node) | Edge(Edge) | … }`,
 `MutateOperation { Node { slot, new, expected_rev } | … }`,
@@ -146,7 +146,7 @@ are not authoritative until `prism` and a real reader exist.
 ## Wire format
 
 rkyv 0.8 with the canonical pinned feature set per
-[lore/rust/rkyv.md](https://github.com/LiGoldragon/lore/blob/main/rust/rkyv.md):
+lore/rust/rkyv.md:
 `default-features = false, features = ["std", "bytecheck",
 "little_endian", "pointer_width_32", "unaligned"]`.
 
@@ -234,6 +234,6 @@ across every verb shape, pattern, and typed `Records` reply.
 ## Cross-cutting context
 
 - Project-wide architecture:
-  [criome/ARCHITECTURE.md](https://github.com/LiGoldragon/criome/blob/main/ARCHITECTURE.md)
+  criome/ARCHITECTURE.md
 - The text-translator daemon at the boundary:
-  [nexus/ARCHITECTURE.md](https://github.com/LiGoldragon/nexus/blob/main/ARCHITECTURE.md)
+  nexus/ARCHITECTURE.md

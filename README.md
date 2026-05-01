@@ -16,10 +16,10 @@ criome (response) → signal → nexus daemon (translates) → nexus (text)
 Effect-bearing wires layer atop signal — re-using its `Frame`,
 handshake, and auth — and add their own per-verb payloads:
 
-- [signal-forge](https://github.com/LiGoldragon/signal-forge)
+- signal-forge
   carries the criome ↔ forge leg (effect-bearing build / deploy
   / store-entry verbs).
-- [signal-arca](https://github.com/LiGoldragon/signal-arca)
+- signal-arca
   carries the writers ↔ arca-daemon leg (`Deposit`-class verbs
   authorised by criome-signed capability tokens).
 
@@ -64,9 +64,9 @@ surface; the layered crates own only the leg-specific verbs.
 
 - **The nexus text language itself** (the syntax humans type) —
   defined by the
-  [nexus](https://github.com/LiGoldragon/nexus) grammar and
+  nexus grammar and
   parsed by
-  [nota-codec](https://github.com/LiGoldragon/nota-codec).
+  nota-codec.
 - **Sema state** — owned by criome.
 - **The validator pipeline** — owned by criome.
 
@@ -93,7 +93,7 @@ Both paths arrive at criome as signal frames.
 ## Wire format
 
 rkyv 0.8 with the canonical pinned feature set per
-[lore/rust/rkyv.md](https://github.com/LiGoldragon/lore/blob/main/rust/rkyv.md):
+lore/rust/rkyv.md:
 `default-features = false, features = ["std", "bytecheck",
 "little_endian", "pointer_width_32", "unaligned"]`.
 
