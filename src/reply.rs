@@ -19,7 +19,7 @@
 //!
 //! Wire-only: text rendering of replies is done by the nexus
 //! daemon in a custom shape (per-position dispatch on the verb
-//! the reply pairs to), not via a uniform NexusVerb derive on
+//! the reply pairs to), not via a uniform NotaSum derive on
 //! `Reply` itself.
 
 use rkyv::{Archive, Deserialize as RkyvDeserialize, Serialize as RkyvSerialize};

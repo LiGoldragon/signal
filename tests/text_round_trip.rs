@@ -95,7 +95,7 @@ fn graph_with_populated_collections_round_trips() {
     );
 }
 
-// ─── NexusVerb — RetractOperation per-kind variants ────────
+// ─── NotaSum — RetractOperation per-kind variants ──────────
 
 #[test]
 fn retract_node_with_optional_revision_present_round_trips() {
@@ -115,7 +115,7 @@ fn retract_node_with_optional_revision_absent_round_trips() {
 // inner operations needs a hand-written codec impl that lands
 // in M1+. No text round-trip tests here today.
 
-// ─── NexusVerb — closed-kind dispatch ──────────────────────
+// ─── NotaSum — closed-kind dispatch ────────────────────────
 
 #[test]
 fn assert_operation_node_round_trips() {

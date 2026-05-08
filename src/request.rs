@@ -17,7 +17,7 @@ use crate::query::QueryOperation;
 
 /// Wire-only envelope. Text-bound dispatch happens at the codec
 /// layer's `Decoder::next_request` (sigil + delimiter routing);
-/// `Request` itself is not a `NexusVerb` because its variants
+/// `Request` itself is not a `NotaSum` because its variants
 /// dispatch on different surface forms (sigils, delimiters, the
 /// Handshake special-case) rather than on a uniform record-head.
 #[derive(Archive, RkyvSerialize, RkyvDeserialize, Debug, Clone, PartialEq)]
