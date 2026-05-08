@@ -9,20 +9,20 @@
 
 use nota_codec::{Decoder, Encoder, NotaDecode, NotaEncode};
 use signal::{
-    AssertOperation, Edge, EdgeQuery, Graph, GraphQuery, MutateOperation, Node, NodeQuery, Ok,
-    PatternField, QueryOperation, RelationKind, RetractOperation, Revision, Slot,
+    AssertOperation, Edge, EdgeQuery, Graph, GraphQuery, MutateOperation, Node, NodeQuery, Ok, PatternField,
+    QueryOperation, RelationKind, RetractOperation, Revision, Slot,
 };
 
 fn round_trip<T>(value: T, expected_text: &str)
 where
     T: NotaEncode + NotaDecode + PartialEq + std::fmt::Debug,
 {
-    let mut encoder = Encoder::nexus();
+    let mut encoder = Encoder::new();
     value.encode(&mut encoder).unwrap();
     let text = encoder.into_string();
     assert_eq!(text, expected_text, "encode produced unexpected text");
 
-    let mut decoder = Decoder::nexus(&text);
+    let mut decoder = Decoder::new(&text);
     let recovered = T::decode(&mut decoder).unwrap();
     assert_eq!(value, recovered, "decode did not round-trip the value");
 }
@@ -54,10 +54,10 @@ fn every_relation_kind_round_trips() {
         RelationKind::Implements,
         RelationKind::IsA,
     ] {
-        let mut encoder = Encoder::nexus();
+        let mut encoder = Encoder::new();
         kind.encode(&mut encoder).unwrap();
         let text = encoder.into_string();
-        let mut decoder = Decoder::nexus(&text);
+        let mut decoder = Decoder::new(&text);
         assert_eq!(RelationKind::decode(&mut decoder).unwrap(), kind);
     }
 }
@@ -71,17 +71,13 @@ fn ok_unit_record_round_trips() {
 
 #[test]
 fn node_round_trips() {
-    round_trip(Node { name: "User".into() }, "(Node \"User\")");
+    round_trip(Node { name: "User".into() }, "(Node User)");
 }
 
 #[test]
 fn edge_round_trips() {
     round_trip(
-        Edge {
-            from: Slot::from(100u64),
-            to: Slot::from(200u64),
-            kind: RelationKind::DependsOn,
-        },
+        Edge { from: Slot::from(100u64), to: Slot::from(200u64), kind: RelationKind::DependsOn },
         "(Edge 100 200 DependsOn)",
     );
 }
@@ -104,23 +100,14 @@ fn graph_with_populated_collections_round_trips() {
 #[test]
 fn retract_node_with_optional_revision_present_round_trips() {
     round_trip(
-        RetractOperation::Node {
-            slot: Slot::from(50u64),
-            expected_rev: Some(Revision::from(7u64)),
-        },
+        RetractOperation::Node { slot: Slot::from(50u64), expected_rev: Some(Revision::from(7u64)) },
         "(Node 50 7)",
     );
 }
 
 #[test]
 fn retract_node_with_optional_revision_absent_round_trips() {
-    round_trip(
-        RetractOperation::Node {
-            slot: Slot::from(50u64),
-            expected_rev: None,
-        },
-        "(Node 50 None)",
-    );
+    round_trip(RetractOperation::Node { slot: Slot::from(50u64), expected_rev: None }, "(Node 50 None)");
 }
 
 // `AtomicBatch` + `BatchOperation` are wire-only for M0 — the
@@ -132,20 +119,13 @@ fn retract_node_with_optional_revision_absent_round_trips() {
 
 #[test]
 fn assert_operation_node_round_trips() {
-    round_trip(
-        AssertOperation::Node(Node { name: "User".into() }),
-        "(Node \"User\")",
-    );
+    round_trip(AssertOperation::Node(Node { name: "User".into() }), "(Node User)");
 }
 
 #[test]
 fn assert_operation_edge_round_trips() {
     round_trip(
-        AssertOperation::Edge(Edge {
-            from: Slot::from(1u64),
-            to: Slot::from(2u64),
-            kind: RelationKind::Flow,
-        }),
+        AssertOperation::Edge(Edge { from: Slot::from(1u64), to: Slot::from(2u64), kind: RelationKind::Flow }),
         "(Edge 1 2 Flow)",
     );
 }
@@ -158,46 +138,33 @@ fn mutate_operation_struct_variant_with_present_optional_round_trips() {
             new: Node { name: "Alice".into() },
             expected_rev: Some(Revision::from(7u64)),
         },
-        "(Node 100 (Node \"Alice\") 7)",
+        "(Node 100 (Node Alice) 7)",
     );
 }
 
 #[test]
 fn mutate_operation_struct_variant_with_absent_optional_round_trips() {
     round_trip(
-        MutateOperation::Node {
-            slot: Slot::from(100u64),
-            new: Node { name: "Alice".into() },
-            expected_rev: None,
-        },
-        "(Node 100 (Node \"Alice\") None)",
+        MutateOperation::Node { slot: Slot::from(100u64), new: Node { name: "Alice".into() }, expected_rev: None },
+        "(Node 100 (Node Alice) None)",
     );
 }
 
 #[test]
 fn query_operation_dispatches_to_node_query() {
-    round_trip(
-        QueryOperation::Node(NodeQuery { name: PatternField::Wildcard }),
-        "(| Node _ |)",
-    );
+    round_trip(QueryOperation::Node(NodeQuery { name: PatternField::Wildcard }), "(NodeQuery (Wildcard))");
 }
 
-// ─── NexusPattern — query records ──────────────────────────
+// ─── PatternField — typed marker records ───────────────────
 
 #[test]
 fn node_query_with_bind_round_trips() {
-    round_trip(
-        NodeQuery { name: PatternField::Bind },
-        "(| Node @name |)",
-    );
+    round_trip(NodeQuery { name: PatternField::Bind }, "(NodeQuery (Bind))");
 }
 
 #[test]
 fn node_query_with_match_round_trips() {
-    round_trip(
-        NodeQuery { name: PatternField::Match("User".into()) },
-        "(| Node \"User\" |)",
-    );
+    round_trip(NodeQuery { name: PatternField::Match("User".into()) }, "(NodeQuery User)");
 }
 
 #[test]
@@ -208,7 +175,7 @@ fn edge_query_with_three_mixed_pattern_fields_round_trips() {
             to: PatternField::Bind,
             kind: PatternField::Wildcard,
         },
-        "(| Edge 102 @to _ |)",
+        "(EdgeQuery 102 (Bind) (Wildcard))",
     );
 }
 
@@ -216,7 +183,13 @@ fn edge_query_with_three_mixed_pattern_fields_round_trips() {
 fn graph_query_round_trips() {
     round_trip(
         GraphQuery { title: PatternField::Match("criome request flow".into()) },
-        "(| Graph \"criome request flow\" |)",
+        "(GraphQuery \"criome request flow\")",
     );
 }
 
+#[test]
+fn bind_record_does_not_decode_as_string_field() {
+    let mut decoder = Decoder::new("(Node (Bind))");
+    let error = Node::decode(&mut decoder).unwrap_err();
+    assert!(matches!(error, nota_codec::Error::UnexpectedToken { expected: "string literal or bare identifier", .. }));
+}

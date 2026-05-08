@@ -52,9 +52,7 @@ impl Frame {
     /// bytes across machines (little_endian + pointer_width_32
     /// + unaligned).
     pub fn encode(&self) -> Vec<u8> {
-        rkyv::to_bytes::<rkyv::rancor::Error>(self)
-            .expect("rkyv serialisation does not fail for owned values")
-            .to_vec()
+        rkyv::to_bytes::<rkyv::rancor::Error>(self).expect("rkyv serialisation does not fail for owned values").to_vec()
     }
 
     /// Decode from rkyv-archive bytes off the socket. Validates

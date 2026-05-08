@@ -13,10 +13,11 @@
 //! intent slot. The shells map the glyph/stroke names to their
 //! native idioms.
 
-use nota_codec::{NexusPattern, NotaEnum, NotaRecord, PatternField};
+use nota_codec::{NotaEnum, NotaRecord};
 use rkyv::{Archive, Deserialize as RkyvDeserialize, Serialize as RkyvSerialize};
 use signal_derive::Schema;
 
+use crate::PatternField;
 use crate::flow::RelationKind;
 
 /// A semantic-intent palette.
@@ -117,20 +118,17 @@ pub enum StrokeToken {
 }
 
 /// Paired query kinds — first cut.
-#[derive(Archive, RkyvSerialize, RkyvDeserialize, NexusPattern, Debug, Clone)]
-#[nota(queries = "Theme")]
+#[derive(Archive, RkyvSerialize, RkyvDeserialize, NotaRecord, Debug, Clone)]
 pub struct ThemeQuery {
     pub display_name: PatternField<String>,
 }
 
-#[derive(Archive, RkyvSerialize, RkyvDeserialize, NexusPattern, Debug, Clone)]
-#[nota(queries = "KindStyle")]
+#[derive(Archive, RkyvSerialize, RkyvDeserialize, NotaRecord, Debug, Clone)]
 pub struct KindStyleQuery {
     pub kind_name: PatternField<String>,
 }
 
-#[derive(Archive, RkyvSerialize, RkyvDeserialize, NexusPattern, Debug, Clone)]
-#[nota(queries = "RelationKindStyle")]
+#[derive(Archive, RkyvSerialize, RkyvDeserialize, NotaRecord, Debug, Clone)]
 pub struct RelationKindStyleQuery {
     pub relation: PatternField<RelationKind>,
 }

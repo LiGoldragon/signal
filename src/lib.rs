@@ -30,7 +30,7 @@
 //! Wire format: rkyv 0.8 portable feature set; the frame schema is
 //! the framing (both parties know it). Discipline lives in lore's
 //! `rust/rkyv.md`. Text format: nota-codec + nota-derive at the
-//! nexus dialect.
+//! nota text projection.
 
 // `extern crate self as signal` makes `::signal::...` paths
 // resolve from inside this crate, so the `signal-derive` macros
@@ -68,25 +68,19 @@ pub mod tweaks;
 pub use auth::{AuthProof, BlsG1, CommittedMutation};
 pub use frame::{Body, Frame, FrameDecodeError};
 pub use handshake::{
-    CriomeDaemonInstance, HandshakeRejectionReason, HandshakeReply, HandshakeRequest,
-    ProtocolVersion, SIGNAL_PROTOCOL_VERSION,
+    CriomeDaemonInstance, HandshakeRejectionReason, HandshakeReply, HandshakeRequest, ProtocolVersion,
+    SIGNAL_PROTOCOL_VERSION,
 };
 pub use reply::{OutcomeMessage, Records, Reply};
 pub use request::{Request, ValidateOperation};
 
 // ─── Typed records re-exports ───────────────────────────────
-pub use diagnostic::{
-    Applicability, Diagnostic, DiagnosticLevel, DiagnosticSite, DiagnosticSuggestion,
-};
-pub use edit::{
-    AssertOperation, AtomicBatch, BatchOperation, MutateOperation, RetractOperation,
-};
+pub use diagnostic::{Applicability, Diagnostic, DiagnosticLevel, DiagnosticSite, DiagnosticSuggestion};
+pub use edit::{AssertOperation, AtomicBatch, BatchOperation, MutateOperation, RetractOperation};
 pub use hash::Hash;
 pub use pattern::PatternField;
 pub use query::QueryOperation;
-pub use schema::{
-    ALL_KINDS, FieldDescriptor, FieldType, Kind, KindDescriptor, KindShape,
-};
+pub use schema::{ALL_KINDS, FieldDescriptor, FieldType, Kind, KindDescriptor, KindShape};
 pub use signal_derive::Schema;
 pub use slot::{AnyKind, Revision, Slot};
 
@@ -98,7 +92,7 @@ pub use identity::{Principal, PrincipalQuery};
 pub use keybind::{ActionToken, KeybindEntry, KeybindMap, KeybindMapQuery};
 pub use layout::{Layout, LayoutQuery, NodePlacement, NodePlacementQuery, SizeIntent};
 pub use style::{
-    GlyphToken, IntentToken, KindStyle, KindStyleQuery, RelationKindStyle,
-    RelationKindStyleQuery, StrokeToken, Theme, ThemeQuery,
+    GlyphToken, IntentToken, KindStyle, KindStyleQuery, RelationKindStyle, RelationKindStyleQuery, StrokeToken, Theme,
+    ThemeQuery,
 };
 pub use tweaks::{Tweaks, TweaksQuery};

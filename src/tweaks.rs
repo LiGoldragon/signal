@@ -11,10 +11,11 @@
 //! change appears in the wire pane, lands in the change log,
 //! and is recursively introspectable.
 
-use nota_codec::{NexusPattern, NotaRecord, PatternField};
+use nota_codec::NotaRecord;
 use rkyv::{Archive, Deserialize as RkyvDeserialize, Serialize as RkyvSerialize};
 use signal_derive::Schema;
 
+use crate::PatternField;
 use crate::identity::Principal;
 use crate::keybind::KeybindMap;
 use crate::layout::Layout;
@@ -35,8 +36,7 @@ pub struct Tweaks {
 }
 
 /// Paired query kind for Tweaks.
-#[derive(Archive, RkyvSerialize, RkyvDeserialize, NexusPattern, Debug, Clone)]
-#[nota(queries = "Tweaks")]
+#[derive(Archive, RkyvSerialize, RkyvDeserialize, NotaRecord, Debug, Clone)]
 pub struct TweaksQuery {
     pub principal: PatternField<Slot<Principal>>,
     pub theme: PatternField<Slot<Theme>>,

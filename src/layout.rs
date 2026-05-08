@@ -8,10 +8,11 @@
 //! semantic size hints (Narrow / Medium / Wide / Pixels(N)) to
 //! their native pixel/em systems.
 
-use nota_codec::{NexusPattern, NotaEnum, NotaRecord, PatternField};
+use nota_codec::{NotaEnum, NotaRecord};
 use rkyv::{Archive, Deserialize as RkyvDeserialize, Serialize as RkyvSerialize};
 use signal_derive::Schema;
 
+use crate::PatternField;
 use crate::flow::{Graph, Node};
 use crate::slot::Slot;
 
@@ -60,14 +61,12 @@ pub enum SizeIntent {
 }
 
 /// Paired queries.
-#[derive(Archive, RkyvSerialize, RkyvDeserialize, NexusPattern, Debug, Clone)]
-#[nota(queries = "Layout")]
+#[derive(Archive, RkyvSerialize, RkyvDeserialize, NotaRecord, Debug, Clone)]
 pub struct LayoutQuery {
     pub display_name: PatternField<String>,
 }
 
-#[derive(Archive, RkyvSerialize, RkyvDeserialize, NexusPattern, Debug, Clone)]
-#[nota(queries = "NodePlacement")]
+#[derive(Archive, RkyvSerialize, RkyvDeserialize, NotaRecord, Debug, Clone)]
 pub struct NodePlacementQuery {
     pub graph: PatternField<Slot<Graph>>,
     pub node: PatternField<Slot<Node>>,

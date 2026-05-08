@@ -133,8 +133,9 @@ type; consumers `match` exhaustively.
 A pattern/query is itself a record kind: `NodeQuery` is paired
 with `Node`, hand-written today; once `prism` lands, data and
 query kinds will be projected from the same source records. The
-grammar `(| ... |)` dispatches to the `*Query` variant of the
-named kind — no parallel "pattern" type-system layer exists.
+query record carries `PatternField<T>` values using typed marker
+records such as `(Bind)` and `(Wildcard)` — no parallel
+"pattern" grammar exists.
 
 No `Unknown` escape variant. The closed enum is exhaustively
 closed; rebuilds bring the world forward together via the
@@ -215,12 +216,12 @@ src/
 ├── edit.rs       — AssertOperation / MutateOperation / RetractOperation
 │                    + AtomicBatch / BatchOperation (rkyv-only for M0)
 ├── query.rs      — QueryOperation closed enum of typed *Query payloads
-├── pattern.rs    — re-exports nota_codec::PatternField
+├── pattern.rs    — re-exports signal_core::PatternField
 ├── diagnostic.rs — Diagnostic, DiagnosticLevel, DiagnosticSite (incl. OperationInBatch),
 │                    DiagnosticSuggestion, Applicability
 ├── slot.rs       — Slot, Revision (NotaTransparent u64 newtypes)
 ├── hash.rs       — Hash (BLAKE3 32-byte alias)
-└── flow.rs       — Node, Edge, Graph (with paired *Query types via NexusPattern),
+└── flow.rs       — Node, Edge, Graph (with paired *Query types via NotaRecord),
                     Ok, RelationKind (NotaEnum)
 ```
 

@@ -6,9 +6,11 @@
 //! ActionToken → native gesture; the user's KeybindMap
 //! overrides per-action when present.
 
-use nota_codec::{NexusPattern, NotaEnum, NotaRecord, PatternField};
+use nota_codec::{NotaEnum, NotaRecord};
 use rkyv::{Archive, Deserialize as RkyvDeserialize, Serialize as RkyvSerialize};
 use signal_derive::Schema;
+
+use crate::PatternField;
 
 /// Map of input → action.
 #[derive(Archive, RkyvSerialize, RkyvDeserialize, NotaRecord, Schema, Debug, Clone, PartialEq, Eq, Hash)]
@@ -56,8 +58,7 @@ pub enum ActionToken {
 }
 
 /// Paired query.
-#[derive(Archive, RkyvSerialize, RkyvDeserialize, NexusPattern, Debug, Clone)]
-#[nota(queries = "KeybindMap")]
+#[derive(Archive, RkyvSerialize, RkyvDeserialize, NotaRecord, Debug, Clone)]
 pub struct KeybindMapQuery {
     pub display_name: PatternField<String>,
 }

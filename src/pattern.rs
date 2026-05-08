@@ -1,11 +1,7 @@
-//! `PatternField<T>` — re-exported from `nota-codec`.
+//! `PatternField<T>` — re-exported from `signal-core`.
 //!
-//! The shape lives in nota-codec because the codec needs to
-//! pattern-match it during pattern-record encoding/decoding.
-//!
-//! Variants: `Wildcard` (`_` in nexus text), `Bind` (`@<schema-
-//! field-name>`), `Match(value)`. The bind name is implicit from
-//! the field's position in the surrounding `*Query` record — the
-//! IR carries no string.
+//! Variants: `Wildcard` (`(Wildcard)` in nota text), `Bind`
+//! (`(Bind)`), `Match(value)`. Bind captures by field position;
+//! the IR carries no string.
 
-pub use nota_codec::PatternField;
+pub use signal_core::PatternField;

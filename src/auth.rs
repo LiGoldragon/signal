@@ -10,8 +10,8 @@
 
 use rkyv::{Archive, Deserialize as RkyvDeserialize, Serialize as RkyvSerialize};
 
-use crate::identity::Principal;
 use crate::Slot;
+use crate::identity::Principal;
 
 /// Marker for the `CommittedMutation` record kind referenced by
 /// `AuthProof::QuorumProof`. The full record shape lands when

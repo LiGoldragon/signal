@@ -27,10 +27,11 @@
 //! Rust. Lands alongside the prism skeleton; until then nodes are
 //! relation-only.
 
-use nota_codec::{NexusPattern, NotaEnum, NotaRecord, PatternField};
+use nota_codec::{NotaEnum, NotaRecord};
 use rkyv::{Archive, Deserialize as RkyvDeserialize, Serialize as RkyvSerialize};
 use signal_derive::Schema;
 
+use crate::PatternField;
 use crate::slot::Slot;
 
 // ─── Data kinds ──────────────────────────────────────────────
@@ -94,16 +95,14 @@ pub struct Graph {
 // ─── Query kinds ─────────────────────────────────────────────
 
 /// Query for `Node` records. Match by `name` field.
-#[derive(Archive, RkyvSerialize, RkyvDeserialize, NexusPattern, Debug, Clone, PartialEq)]
-#[nota(queries = "Node")]
+#[derive(Archive, RkyvSerialize, RkyvDeserialize, NotaRecord, Debug, Clone, PartialEq)]
 pub struct NodeQuery {
     pub name: PatternField<String>,
 }
 
 /// Query for `Edge` records. Match by any combination of `from`,
 /// `to`, `kind`.
-#[derive(Archive, RkyvSerialize, RkyvDeserialize, NexusPattern, Debug, Clone, PartialEq)]
-#[nota(queries = "Edge")]
+#[derive(Archive, RkyvSerialize, RkyvDeserialize, NotaRecord, Debug, Clone, PartialEq)]
 pub struct EdgeQuery {
     pub from: PatternField<Slot<Node>>,
     pub to: PatternField<Slot<Node>>,
@@ -113,8 +112,7 @@ pub struct EdgeQuery {
 /// Query for `Graph` records. Match by `title`. List-shaped fields
 /// (`nodes`, `edges`, `subgraphs`) are not patternable in M0 —
 /// list patterns are M1+.
-#[derive(Archive, RkyvSerialize, RkyvDeserialize, NexusPattern, Debug, Clone, PartialEq)]
-#[nota(queries = "Graph")]
+#[derive(Archive, RkyvSerialize, RkyvDeserialize, NotaRecord, Debug, Clone, PartialEq)]
 pub struct GraphQuery {
     pub title: PatternField<String>,
 }
@@ -125,5 +123,7 @@ pub struct GraphQuery {
 /// presence of `(Ok)` at a reply position means the request
 /// succeeded with no further information. Failure replies use
 /// the existing `Diagnostic` kind.
-#[derive(Archive, RkyvSerialize, RkyvDeserialize, NotaRecord, Schema, Debug, Clone, Copy, PartialEq, Eq, Hash, Default)]
+#[derive(
+    Archive, RkyvSerialize, RkyvDeserialize, NotaRecord, Schema, Debug, Clone, Copy, PartialEq, Eq, Hash, Default,
+)]
 pub struct Ok {}

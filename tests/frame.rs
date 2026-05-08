@@ -5,10 +5,9 @@
 //! file `src/frame.rs` no longer carries them inline.
 
 use signal::{
-    AssertOperation, AtomicBatch, AuthProof, BatchOperation, Body, Diagnostic, DiagnosticLevel,
-    Edge, EdgeQuery, Frame, FrameDecodeError, Graph, GraphQuery, HandshakeRequest,
-    MutateOperation, Node, NodeQuery, Ok, OutcomeMessage, PatternField, ProtocolVersion,
-    QueryOperation, Records, RelationKind, Reply, Request, RetractOperation, Revision,
+    AssertOperation, AtomicBatch, AuthProof, BatchOperation, Body, Diagnostic, DiagnosticLevel, Edge, EdgeQuery, Frame,
+    FrameDecodeError, Graph, GraphQuery, HandshakeRequest, MutateOperation, Node, NodeQuery, Ok, OutcomeMessage,
+    PatternField, ProtocolVersion, QueryOperation, Records, RelationKind, Reply, Request, RetractOperation, Revision,
     SIGNAL_PROTOCOL_VERSION, Slot,
 };
 
@@ -58,9 +57,7 @@ fn assert_node_round_trip() {
     round_trip(Frame {
         principal_hint: None,
         auth_proof: None,
-        body: Body::Request(Request::Assert(AssertOperation::Node(Node {
-            name: "User".into(),
-        }))),
+        body: Body::Request(Request::Assert(AssertOperation::Node(Node { name: "User".into() }))),
     });
 }
 
@@ -109,10 +106,7 @@ fn retract_round_trip() {
     round_trip(Frame {
         principal_hint: None,
         auth_proof: None,
-        body: Body::Request(Request::Retract(RetractOperation::Node {
-            slot: Slot::from(100u64),
-            expected_rev: None,
-        })),
+        body: Body::Request(Request::Retract(RetractOperation::Node { slot: Slot::from(100u64), expected_rev: None })),
     });
 }
 
@@ -129,10 +123,7 @@ fn atomic_batch_round_trip() {
                     new: Node { name: "B".into() },
                     expected_rev: None,
                 }),
-                BatchOperation::Retract(RetractOperation::Node {
-                    slot: Slot::from(60u64),
-                    expected_rev: None,
-                }),
+                BatchOperation::Retract(RetractOperation::Node { slot: Slot::from(60u64), expected_rev: None }),
             ],
         })),
     });
@@ -143,9 +134,7 @@ fn query_node_with_bind_round_trip() {
     round_trip(Frame {
         principal_hint: None,
         auth_proof: None,
-        body: Body::Request(Request::Query(QueryOperation::Node(NodeQuery {
-            name: PatternField::Bind,
-        }))),
+        body: Body::Request(Request::Query(QueryOperation::Node(NodeQuery { name: PatternField::Bind }))),
     });
 }
 

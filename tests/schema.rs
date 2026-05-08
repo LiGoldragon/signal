@@ -5,9 +5,7 @@
 //! derive's lowering rules change or when a record kind grows
 //! a field.
 
-use signal::{
-    ALL_KINDS, Edge, FieldType, Graph, Kind, KindShape, Node, RelationKind,
-};
+use signal::{ALL_KINDS, Edge, FieldType, Graph, Kind, KindShape, Node, RelationKind};
 
 #[test]
 fn node_descriptor_has_one_text_field_named_name() {
@@ -35,22 +33,13 @@ fn edge_descriptor_routes_slot_kinds_to_node_and_relation_to_record() {
     assert_eq!(fields.len(), 3);
 
     assert_eq!(fields[0].name, "from");
-    assert!(matches!(
-        fields[0].field_type,
-        FieldType::SlotRef { of_kind: "Node" }
-    ));
+    assert!(matches!(fields[0].field_type, FieldType::SlotRef { of_kind: "Node" }));
 
     assert_eq!(fields[1].name, "to");
-    assert!(matches!(
-        fields[1].field_type,
-        FieldType::SlotRef { of_kind: "Node" }
-    ));
+    assert!(matches!(fields[1].field_type, FieldType::SlotRef { of_kind: "Node" }));
 
     assert_eq!(fields[2].name, "kind");
-    assert!(matches!(
-        fields[2].field_type,
-        FieldType::Record { kind_name: "RelationKind" }
-    ));
+    assert!(matches!(fields[2].field_type, FieldType::Record { kind_name: "RelationKind" }));
 }
 
 #[test]
@@ -68,24 +57,15 @@ fn graph_descriptor_sees_lists_of_kind_typed_slots() {
 
     assert_eq!(fields[1].name, "nodes");
     assert!(fields[1].is_list);
-    assert!(matches!(
-        fields[1].field_type,
-        FieldType::SlotRef { of_kind: "Node" }
-    ));
+    assert!(matches!(fields[1].field_type, FieldType::SlotRef { of_kind: "Node" }));
 
     assert_eq!(fields[2].name, "edges");
     assert!(fields[2].is_list);
-    assert!(matches!(
-        fields[2].field_type,
-        FieldType::SlotRef { of_kind: "Edge" }
-    ));
+    assert!(matches!(fields[2].field_type, FieldType::SlotRef { of_kind: "Edge" }));
 
     assert_eq!(fields[3].name, "subgraphs");
     assert!(fields[3].is_list);
-    assert!(matches!(
-        fields[3].field_type,
-        FieldType::SlotRef { of_kind: "Graph" }
-    ));
+    assert!(matches!(fields[3].field_type, FieldType::SlotRef { of_kind: "Graph" }));
 }
 
 #[test]
@@ -98,17 +78,7 @@ fn relation_kind_descriptor_lists_all_nine_variants() {
     };
     assert_eq!(
         variants,
-        &[
-            "Flow",
-            "DependsOn",
-            "Contains",
-            "References",
-            "Produces",
-            "Consumes",
-            "Calls",
-            "Implements",
-            "IsA",
-        ]
+        &["Flow", "DependsOn", "Contains", "References", "Produces", "Consumes", "Calls", "Implements", "IsA",]
     );
 }
 

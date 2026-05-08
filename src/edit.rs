@@ -42,21 +42,9 @@ pub enum AssertOperation {
 /// `expected_rev` for compare-and-swap semantics.
 #[derive(Archive, RkyvSerialize, RkyvDeserialize, NexusVerb, Debug, Clone, PartialEq)]
 pub enum MutateOperation {
-    Node {
-        slot: Slot<Node>,
-        new: Node,
-        expected_rev: Option<Revision>,
-    },
-    Edge {
-        slot: Slot<Edge>,
-        new: Edge,
-        expected_rev: Option<Revision>,
-    },
-    Graph {
-        slot: Slot<Graph>,
-        new: Graph,
-        expected_rev: Option<Revision>,
-    },
+    Node { slot: Slot<Node>, new: Node, expected_rev: Option<Revision> },
+    Edge { slot: Slot<Edge>, new: Edge, expected_rev: Option<Revision> },
+    Graph { slot: Slot<Graph>, new: Graph, expected_rev: Option<Revision> },
 }
 
 /// Remove an existing record. Per-kind variants for the same
@@ -66,18 +54,9 @@ pub enum MutateOperation {
 /// stringly-typed lookups.
 #[derive(Archive, RkyvSerialize, RkyvDeserialize, NexusVerb, Debug, Clone, PartialEq)]
 pub enum RetractOperation {
-    Node {
-        slot: Slot<Node>,
-        expected_rev: Option<Revision>,
-    },
-    Edge {
-        slot: Slot<Edge>,
-        expected_rev: Option<Revision>,
-    },
-    Graph {
-        slot: Slot<Graph>,
-        expected_rev: Option<Revision>,
-    },
+    Node { slot: Slot<Node>, expected_rev: Option<Revision> },
+    Edge { slot: Slot<Edge>, expected_rev: Option<Revision> },
+    Graph { slot: Slot<Graph>, expected_rev: Option<Revision> },
 }
 
 /// Atomic envelope wrapping a sequence of edit operations.
