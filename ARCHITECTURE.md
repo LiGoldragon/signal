@@ -1,29 +1,37 @@
 # ARCHITECTURE — signal
 
-Signal is the **sema/criome base contract in the signal
-family**. It carries the native binary form of the records
-criome holds: sema records are directly computer-cognizable; the
-bytes a record occupies at rest *are* its meaning, no parsing, no
-interpretation. Criome IS sema's engine, so criome receives and
-serves sema in its native form. Signal is that form on the wire.
+Signal is the **sema-ecosystem's record vocabulary** layered atop
+the shared `signal-core` wire kernel. It carries the native binary
+form of the records **criome** holds in its records database: those
+records are directly computer-cognizable; the bytes a record
+occupies at rest *are* its meaning, no parsing, no interpretation.
+Signal is that form on the wire.
 
-The wider workspace uses **signal** as the family name for
-typed inter-component communication. `signal-core` owns the
-generic frame kernel; this repo owns the sema/criome request and
-reply vocabulary on top of it. Persona's channel contracts follow
-the same family pattern in their own `signal-persona-*` repos;
-they do not add Persona payloads here.
+The wider workspace uses **signal** as the family name for typed
+inter-component communication. `signal-core` owns the generic frame
+kernel — `Frame`, handshake, `AuthProof`, `SemaVerb`, `Slot<T>`,
+`Revision`, and pattern markers (`Bind`, `Wildcard`,
+`PatternField<T>`). This repo layers the sema-ecosystem's
+request/reply vocabulary on top. Persona's channel contracts follow
+the same family pattern in their own `signal-persona-*` repos; they
+do not add Persona payloads here.
 
-Signal owns the sema/criome primitives — the `Frame` envelope,
-handshake, auth, sema record kinds, and the front-end verbs every
-criome client speaks (`Assert`, `Mutate`, `Retract`,
-`AtomicBatch`, `Query`, `Subscribe`, `Validate`). Effect-bearing
-wires layered atop signal — currently signal-forge for the
-criome ↔ forge leg and signal-arca for the writers ↔ arca-daemon
-leg — re-use signal's `Frame`, handshake, and auth, and add their
-own per-verb payloads. Builder-internal churn in those layered
-crates does not recompile front-end clients that depend only on
-signal.
+Signal owns the sema-ecosystem's per-verb typed payloads —
+`AssertOperation`, `MutateOperation`, `RetractOperation`,
+`AtomicBatch`/`BatchOperation`, `QueryOperation`, `Records` — plus
+the flow-graph kinds (`Node`, `Edge`, `Graph`, paired `*Query`
+types, `RelationKind`), the auxiliary diagnostic types, and the
+typed `Hash` alias. The frame envelope, handshake, auth, verb spine,
+and identity primitives moved to `signal-core` (per the
+kernel-extraction trigger in
+`~/primary/skills/contract-repo.md` §"Kernel extraction trigger").
+
+Effect-bearing wires layered atop signal — currently signal-forge
+for the criome ↔ forge leg and signal-arca for the writers ↔
+arca-daemon leg — re-use `signal-core`'s `Frame`, handshake, and
+auth, and add their own per-verb payloads. Builder-internal churn
+in those layered crates does not recompile front-end clients that
+depend only on signal.
 
 Nexus records in NOTA syntax are the human-facing translation. The
 mechanical-translation rule (every Nexus NOTA record has exactly one
@@ -67,38 +75,14 @@ flowchart LR
 
 ## Boundaries
 
-Owns:
+Owns the **sema-ecosystem record vocabulary** layered atop the
+shared `signal-core` wire kernel:
 
-- `Frame` envelope: `principal_hint`, `auth_proof`, `body`. No
-  correlation id — replies pair to requests by **position** on
-  the connection (FIFO).
-- `Body { Request, Reply }`.
-- `Request` enum: `Handshake`, `Assert`, `Mutate`, `Retract`,
-  `AtomicBatch`, `Query`, `Subscribe`, `Validate`. `BuildRequest`
-  is the next expected verb — a front-end-visible verb that
-  asks criome to forward a build to forge; criome validates the
-  target and forwards over signal-forge. Lands alongside
-  forge-daemon.
-- `Reply` enum: `HandshakeAccepted` / `HandshakeRejected`,
-  `Outcome` (single-element edit reply), `Outcomes` (multi-element
-  edit reply), `Records` (query result).
-- `OutcomeMessage`: `Ok` (success record kind) or `Diagnostic`
-  (failure record kind).
-- `HandshakeRequest` / `HandshakeReply` /
-  `HandshakeRejectionReason` — the protocol-version exchange
-  that opens a connection.
-- `ProtocolVersion { major, minor, patch }` and the
-  major-exact / minor-forward compatibility rule.
-- `AuthProof` (`SingleOperator` MVP, `BlsSig` and `QuorumProof`
-  post-MVP skeletons).
-- The **per-verb typed payloads**: `AssertOperation` /
-  `MutateOperation` / `RetractOperation` / `AtomicBatch` /
-  `BatchOperation` for edits; `QueryOperation` for queries;
-  `Records` for typed query results. Each is a closed enum
-  of typed kinds (no generic wrapper).
-- The **pattern field** type: `PatternField<T>` with
-  `Wildcard | Bind | Match(T)` variants, used per-field in
-  `*Query` types.
+- The **per-verb typed payloads** for the sema-ecosystem's verbs:
+  `AssertOperation` / `MutateOperation` / `RetractOperation` /
+  `AtomicBatch` / `BatchOperation` for edits; `QueryOperation`
+  for queries; `Records` for typed query results. Each is a
+  closed enum of typed kinds (no generic wrapper).
 - The **flow-graph kinds**: `Node`, `Edge`, `Graph` (with
   paired `NodeQuery` / `EdgeQuery` / `GraphQuery`), `Ok`,
   `RelationKind` (closed enum of 9 relation variants — Flow,
@@ -111,16 +95,41 @@ Owns:
   here when prism needs flow-graph records to express what each
   node *does* in the dataflow rather than only how nodes connect.
 - Auxiliary types: `Diagnostic` + `DiagnosticLevel` +
-  `DiagnosticSite` + `DiagnosticSuggestion`; `Slot` and
-  `Revision` (private-field `u64` newtypes deriving
-  `NotaTransparent` so the wire form is the bare integer
-  + `From<u64>` and `From<Slot> for u64` conversions for
-  ergonomic construction); `Hash` (32-byte BLAKE3 alias).
+  `DiagnosticSite` + `DiagnosticSuggestion`; `Hash` (32-byte
+  BLAKE3 alias).
+- The criome-side `Request` / `Reply` aliases over
+  `signal_core::Request<Payload>` / `signal_core::Reply<Payload>`
+  with the sema-ecosystem's payload types — `BuildRequest` is the
+  next expected verb (asks criome to forward a build to forge over
+  signal-forge; lands alongside forge-daemon).
+- `OutcomeMessage`: `Ok` (success record kind) or `Diagnostic`
+  (failure record kind).
+
+Owned by the kernel (`signal-core`), not here:
+
+- The `Frame` envelope, `Body`, length-prefix encode/decode.
+- The closed verb spine (`SemaVerb`: Assert · Subscribe · Constrain
+  · Mutate · Match · Infer · Retract · Aggregate · Project ·
+  Atomic · Validate · Recurse).
+- `ProtocolVersion`, handshake records, handshake-rejection
+  reasons.
+- `AuthProof` shell.
+- `Slot<T>`, `Revision` — typed wire identity values.
+- `PatternField<T>` with the typed marker records `(Bind)` and
+  `(Wildcard)`.
+
+These moved to `signal-core` per the kernel-extraction trigger in
+`~/primary/skills/contract-repo.md` §"Kernel extraction trigger";
+this crate now layers the sema-ecosystem's record vocabulary on
+top, the same way `signal-persona` layers Persona's vocabulary on
+top, the same way `signal-forge` and `signal-arca` layer
+effect-bearing verbs on top.
 
 Does not own:
 
 - Nexus's NOTA record vocabulary or parser — see github.com/LiGoldragon/nexus.
-- Sema state — owned by criome.
+- Criome's records database — owned by criome (criome.redb,
+  managed through the sema library).
 - Validator pipeline — owned by criome.
 - Persona channel payloads — owned by `signal-persona` and the
   per-channel `signal-persona-*` contract repos.
@@ -167,45 +176,41 @@ are not authoritative until `prism` and a real reader exist.
 
 ## Wire format
 
-rkyv 0.8 with the canonical pinned feature set per
-lore/rust/rkyv.md:
-`default-features = false, features = ["std", "bytecheck",
-"little_endian", "pointer_width_32", "unaligned"]`.
+The wire format is owned by `signal-core` (see
+signal-core/ARCHITECTURE.md):
+rkyv 0.8 with the canonical pinned feature set
+(`default-features = false, features = ["std", "bytecheck",
+"little_endian", "pointer_width_32", "unaligned"]`); 4-byte
+big-endian length prefix; bytecheck validation on read.
 
-Schema-as-framing: reader and writer both know the record kinds.
-Frames are length-prefixed (4-byte big-endian) so a stream socket
-can find frame boundaries; everything after the prefix is a rkyv
-archive of `Frame`. Nothing in the bytes describes itself.
-
-`Frame::encode` / `Frame::decode` use `rkyv::to_bytes` /
-`rkyv::from_bytes` with `bytecheck` validation on read.
+This crate defines the typed payloads that travel inside that
+wire envelope. The reader and writer both know the record kinds
+because they compile against the same closed enums in this crate.
 
 ## Channel boilerplate
 
-Channel boilerplate is handled conservatively. The first real
-channel contracts are written by hand so the repetition is visible
-before it is abstracted. A derive on a single request or reply enum
-does not own a channel, because a channel is a paired request enum,
-reply enum, and transport boundary.
-
-The macro shape that fits a repeated channel is a function-style
-channel macro that sees both sides of the pair. The first shared
-kernel helper is smaller: a `FrameEnvelopable` marker trait in
-`signal-core` can collapse repeated rkyv bound chains without any
-derive macro. `signal-derive` remains outside this repo's critical
-path until multiple channel contracts show the actual repetition.
+The `signal_channel!` macro in `signal-core` emits paired
+request/reply enums + the channel's `Frame` / `FrameBody` aliases
++ `From<payload>` impls, given a per-channel request enum and
+reply enum. The sema-ecosystem's `Request` / `Reply` here use that
+macro the same way `signal-persona-*` channels do — the kernel
+helper is shared.
 
 ## Handshake
 
-Every connection opens with `Request::Handshake`:
+Handshake records (`HandshakeRequest`, `HandshakeReply`,
+`HandshakeRejectionReason`, `ProtocolVersion`) and the major-exact
+/ minor-forward compatibility rule live in `signal-core`. Every
+sema-ecosystem connection opens with the kernel handshake:
 
-1. Initiator sends `Frame { body: Request::Handshake(...) }`.
+1. Initiator sends a length-prefixed handshake frame.
 2. Server validates compatibility (major-exact, minor-forward).
 3. Server replies `HandshakeAccepted` or `HandshakeRejected`.
 4. On accepted: subsequent frames carry the agreed protocol
    version implicitly.
 
-`SIGNAL_PROTOCOL_VERSION = 0.1.0`. Bump per semver.
+The sema-ecosystem's protocol version is bumped per semver as
+this crate's record vocabulary evolves.
 
 ## Reply protocol
 
@@ -243,25 +248,31 @@ Both paths arrive at criome as signal frames.
 
 ## Code map
 
+This crate's owned source — the sema-ecosystem record vocabulary
+that layers atop `signal-core`'s kernel:
+
 ```
 src/
 ├── lib.rs        — module entry + re-exports
-├── frame.rs      — Frame envelope, encode/decode, FrameDecodeError
-├── handshake.rs  — ProtocolVersion, HandshakeRequest/Reply, HandshakeRejectionReason
-├── auth.rs       — AuthProof variants (BlsSignature, ...), BlsG1
-├── request.rs    — Request enum (per-verb dispatch) + ValidateOperation
-├── reply.rs      — Reply enum, OutcomeMessage, Records (typed per kind)
+├── request.rs    — Request alias + ValidateOperation
+├── reply.rs      — Reply alias, OutcomeMessage, Records (typed per kind)
 ├── edit.rs       — AssertOperation / MutateOperation / RetractOperation
 │                    + AtomicBatch / BatchOperation (rkyv-only for M0)
 ├── query.rs      — QueryOperation closed enum of typed *Query payloads
-├── pattern.rs    — re-exports signal_core::PatternField
 ├── diagnostic.rs — Diagnostic, DiagnosticLevel, DiagnosticSite (incl. OperationInBatch),
 │                    DiagnosticSuggestion, Applicability
-├── slot.rs       — Slot, Revision (NotaTransparent u64 newtypes)
 ├── hash.rs       — Hash (BLAKE3 32-byte alias)
 └── flow.rs       — Node, Edge, Graph (with paired *Query types via NotaRecord),
                     Ok, RelationKind (NotaEnum)
 ```
+
+Transitional source — `frame.rs`, `handshake.rs`, `auth.rs`,
+`slot.rs`, `pattern.rs`, `identity.rs` — currently exists in this
+repo as duplicates of `signal-core`'s kernel primitives. The
+target shape is for those to be re-exports from `signal-core`;
+the file collapse follows the kernel-extraction code rebalance
+(tracked in `~/primary/reports/designer/91-workspace-snapshot-skills-and-architecture-2026-05-09.md`
+§3.1 drift register).
 
 ## Status
 
