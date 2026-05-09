@@ -211,11 +211,11 @@ Every connection opens with `Request::Handshake`:
 
 Replies are paired to requests by **position** on the connection:
 the N-th reply is for the N-th request. No correlation IDs.
-Replies use the same record kinds as requests; the verb sigil
-discipline carries through (`(R)` ↔ `(R)`, `~(R)` ↔ `~(R)`,
-`!(R)` ↔ `!(R)`, etc.). Sequence-shaped replies (Query results)
-are atomic at the position — never half-emitted; partial failure
-becomes a `Diagnostic` *instead of* the sequence at that position.
+Replies use typed record kinds corresponding to the request position;
+the human text projection is explicit Nexus records in NOTA syntax, not
+shorthand delimiter forms. Sequence-shaped replies (Query results) are atomic
+at the position — never half-emitted; partial failure becomes a `Diagnostic`
+*instead of* the sequence at that position.
 
 For dependent edits where a later request needs the slot
 assigned by an earlier one, the **client orchestrates** —
