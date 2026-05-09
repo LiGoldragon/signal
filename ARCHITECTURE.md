@@ -1,25 +1,29 @@
 # ARCHITECTURE — signal
 
-Signal is the **base wire-protocol crate of the sema-ecosystem**.
-It carries the native binary form of the records criome holds:
-sema — the records — is by definition directly computer-
-cognizable; the bytes a record occupies at rest *are* its meaning,
-no parsing, no interpretation. Criome IS sema's engine, so criome
-receives and serves sema in its native form. Signal is that form
-on the wire.
+Signal is the **sema/criome base contract in the signal
+family**. It carries the native binary form of the records
+criome holds: sema records are directly computer-cognizable; the
+bytes a record occupies at rest *are* its meaning, no parsing, no
+interpretation. Criome IS sema's engine, so criome receives and
+serves sema in its native form. Signal is that form on the wire.
 
-Signal owns the universal primitives — the `Frame` envelope,
+The wider workspace uses **signal** as the family name for
+typed inter-component communication. `signal-core` owns the
+generic frame kernel; this repo owns the sema/criome request and
+reply vocabulary on top of it. Persona's channel contracts follow
+the same family pattern in their own `signal-persona-*` repos;
+they do not add Persona payloads here.
+
+Signal owns the sema/criome primitives — the `Frame` envelope,
 handshake, auth, sema record kinds, and the front-end verbs every
-client speaks (`Assert`, `Mutate`, `Retract`, `AtomicBatch`,
-`Query`, `Subscribe`, `Validate`). Effect-bearing wires layered
-atop signal — currently
-signal-forge for
-the criome ↔ forge leg and
-signal-arca for the
-writers ↔ arca-daemon leg — re-use signal's `Frame`, handshake,
-and auth, and add their own per-verb payloads. Builder-internal
-churn in those layered crates does not recompile front-end
-clients that depend only on signal.
+criome client speaks (`Assert`, `Mutate`, `Retract`,
+`AtomicBatch`, `Query`, `Subscribe`, `Validate`). Effect-bearing
+wires layered atop signal — currently signal-forge for the
+criome ↔ forge leg and signal-arca for the writers ↔ arca-daemon
+leg — re-use signal's `Frame`, handshake, and auth, and add their
+own per-verb payloads. Builder-internal churn in those layered
+crates does not recompile front-end clients that depend only on
+signal.
 
 Nexus text exists as the human-facing translation. The mechanical-
 translation rule (every nexus text construct has exactly one signal
@@ -45,6 +49,20 @@ text-speaking peers                  signal-speaking peers
 
 Nexus text is the only non-signal surface in the sema-ecosystem.
 Once a request crosses the daemon, it is signal end-to-end.
+
+```mermaid
+flowchart LR
+    core["signal-core<br/>frame kernel"]
+    signal["signal<br/>sema/criome contract"]
+    forge["signal-forge<br/>criome ↔ forge"]
+    arca["signal-arca<br/>writers ↔ arca-daemon"]
+    persona["signal-persona-*<br/>Persona channels"]
+
+    signal --> core
+    forge --> signal
+    arca --> signal
+    persona --> core
+```
 
 ## Boundaries
 
@@ -88,11 +106,9 @@ Owns:
   nota-derive
   derives — no hand-written `from_variant_name` /
   `variant_name` helpers needed. The node-kind taxonomy
-  (Source / Transformer / Sink / Junction / Supervisor) is the
-  next expected addition here — it lets a flow-graph express
-  what each node *does* in the dataflow rather than only how
-  nodes connect; lands when prism's first emission template
-  needs it.
+  (Source / Transformer / Sink / Junction / Supervisor) belongs
+  here when prism needs flow-graph records to express what each
+  node *does* in the dataflow rather than only how nodes connect.
 - Auxiliary types: `Diagnostic` + `DiagnosticLevel` +
   `DiagnosticSite` + `DiagnosticSuggestion`; `Slot` and
   `Revision` (private-field `u64` newtypes deriving
@@ -105,6 +121,10 @@ Does not own:
 - Nexus text grammar or parser — see github.com/LiGoldragon/nexus.
 - Sema state — owned by criome.
 - Validator pipeline — owned by criome.
+- Persona channel payloads — owned by `signal-persona` and the
+  per-channel `signal-persona-*` contract repos.
+- Runtime transport policy — owned by the daemons that use the
+  contract, not by this wire crate.
 
 ## Schema discipline
 
@@ -158,6 +178,21 @@ archive of `Frame`. Nothing in the bytes describes itself.
 
 `Frame::encode` / `Frame::decode` use `rkyv::to_bytes` /
 `rkyv::from_bytes` with `bytecheck` validation on read.
+
+## Channel boilerplate
+
+Channel boilerplate is handled conservatively. The first real
+channel contracts are written by hand so the repetition is visible
+before it is abstracted. A derive on a single request or reply enum
+does not own a channel, because a channel is a paired request enum,
+reply enum, and transport boundary.
+
+The macro shape that fits a repeated channel is a function-style
+channel macro that sees both sides of the pair. The first shared
+kernel helper is smaller: a `FrameEnvelopable` marker trait in
+`signal-core` can collapse repeated rkyv bound chains without any
+derive macro. `signal-derive` remains outside this repo's critical
+path until multiple channel contracts show the actual repetition.
 
 ## Handshake
 
