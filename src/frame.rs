@@ -13,9 +13,9 @@
 //! know the rkyv schema, so a single `rkyv::to_bytes` /
 //! `rkyv::from_bytes` per Frame covers transport.
 //!
-//! Wire-only: never crosses the nexus text boundary as a Frame —
-//! the daemon parses verb-payloads from text and assembles them
-//! into Frames internally.
+//! Wire-only: never crosses the Nexus projection boundary as a
+//! Frame. The daemon parses Nexus records in NOTA syntax and
+//! assembles Frames internally.
 
 use rkyv::{Archive, Deserialize as RkyvDeserialize, Serialize as RkyvSerialize};
 

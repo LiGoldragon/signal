@@ -25,11 +25,11 @@ own per-verb payloads. Builder-internal churn in those layered
 crates does not recompile front-end clients that depend only on
 signal.
 
-Nexus text exists as the human-facing translation. The mechanical-
-translation rule (every nexus text construct has exactly one signal
-form, and vice versa) keeps the two surfaces in lockstep. Inside
-the nexus daemon, text-in becomes signal-out; signal-replies become
-text-out.
+Nexus records in NOTA syntax are the human-facing translation. The
+mechanical-translation rule (every Nexus NOTA record has exactly one
+signal form, and vice versa) keeps the two surfaces in lockstep.
+Inside the nexus daemon, NOTA-in becomes signal-out; signal-replies
+become NOTA-out.
 
 ```
 text-speaking peers                  signal-speaking peers
@@ -37,8 +37,8 @@ text-speaking peers                  signal-speaking peers
  nexus-cli, editor LSPs)              to criome — and any peer
                                        holding typed records)
         │                                       │
-        │ pure nexus text                       │ length-prefixed
-        │ in / out                              │ rkyv frames
+        │ Nexus records                         │ length-prefixed
+        │ in NOTA syntax                        │ rkyv frames
         ▼                                       ▼
 ┌──────────────────┐                    ┌─────────────────┐
 │ /tmp/nexus.sock  │                    │ /tmp/criome.sock│
@@ -47,8 +47,9 @@ text-speaking peers                  signal-speaking peers
 └──────────────────┘                    └─────────────────┘
 ```
 
-Nexus text is the only non-signal surface in the sema-ecosystem.
-Once a request crosses the daemon, it is signal end-to-end.
+Nexus's NOTA surface is the only non-signal request surface in the
+sema-ecosystem. Once a request crosses the daemon, it is signal
+end-to-end.
 
 ```mermaid
 flowchart LR
@@ -118,7 +119,7 @@ Owns:
 
 Does not own:
 
-- Nexus text grammar or parser — see github.com/LiGoldragon/nexus.
+- Nexus's NOTA record vocabulary or parser — see github.com/LiGoldragon/nexus.
 - Sema state — owned by criome.
 - Validator pipeline — owned by criome.
 - Persona channel payloads — owned by `signal-persona` and the
@@ -224,15 +225,17 @@ no variables, no scoping, no cross-request state. For
 parallelism, open multiple connections — each is its own serial
 lane.
 
-## Direct authoring — peer to nexus
+## Direct authoring — peer to Nexus NOTA records
 
-Architecturally, signal is peer-shaped to nexus text:
+Architecturally, signal is peer-shaped to Nexus records written in
+NOTA syntax:
 
 - ✓ **Programmatic Rust clients** (services, CI, the daemon itself)
   may compose typed records directly and send them as signal
   frames — no text round-trip.
-- ✗ **LLM agents** author nexus text and let the daemon translate.
-  The text is the form they're trained on. Per Li 2026-04-25:
+- ✗ **LLM agents** author Nexus records in NOTA syntax and let
+  the daemon translate. The text is the form they're trained on.
+  Per Li 2026-04-25:
   *"not yet, not until llm models are trained using binary
   signal data."*
 

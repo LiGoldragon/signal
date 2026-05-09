@@ -18,8 +18,9 @@
 //! kind-typed because it indexes the global write sequence, not a
 //! per-kind reference.
 //!
-//! Wire form is the bare integer in nota / nexus text — `(Edge 100
-//! 101 Flow)`, not `(Edge (Slot 100) (Slot 101) Flow)`. The wrapped
+//! Wire form is the bare integer in Nexus records written in NOTA
+//! syntax — `(Edge 100 101 Flow)`, not
+//! `(Edge (Slot 100) (Slot 101) Flow)`. The wrapped
 //! `u64` is private; construction goes through `Slot::from(value)`
 //! and read-out through `let n: u64 = slot.into()` (or
 //! `slot.value()`).

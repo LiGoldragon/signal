@@ -8,13 +8,14 @@
 //!
 //! 1. **Wire envelope** — [`Frame`], [`Body`], [`Request`],
 //!    [`Reply`], handshake, auth. rkyv-only — never crosses the
-//!    nexus text boundary in raw form.
+//!    Nexus projection boundary in raw form.
 //! 2. **Typed records and per-verb payloads** — [`Node`], [`Edge`],
 //!    [`Graph`], the data kinds and their paired `*Query` kinds,
 //!    plus `AssertOperation` / `MutateOperation` /
 //!    `RetractOperation` / `QueryOperation` / `BatchOperation`
 //!    closed enums. All derive both rkyv (for the wire) and the
-//!    appropriate `nota-codec` derive (for nexus text).
+//!    appropriate `nota-codec` derive (for Nexus records in NOTA
+//!    syntax).
 //!
 //! Per the perfect-specificity invariant (criome's `ARCHITECTURE.md`
 //! Invariant D): every verb's payload is its own closed enum of
@@ -23,14 +24,14 @@
 //! they operate on.
 //!
 //! ```text
-//! nexus (text) → nexus daemon (translates) → signal (rkyv) → criome
-//! criome (response) → signal → nexus daemon (translates) → nexus (text)
+//! nexus (NOTA) → nexus daemon (translates) → signal (rkyv) → criome
+//! criome (response) → signal → nexus daemon (translates) → nexus (NOTA)
 //! ```
 //!
 //! Wire format: rkyv 0.8 portable feature set; the frame schema is
 //! the framing (both parties know it). Discipline lives in lore's
-//! `rust/rkyv.md`. Text format: nota-codec + nota-derive at the
-//! nota text projection.
+//! `rust/rkyv.md`. Text syntax: NOTA via nota-codec + nota-derive;
+//! Nexus is a NOTA-using request surface.
 
 // `extern crate self as signal` makes `::signal::...` paths
 // resolve from inside this crate, so the `signal-derive` macros

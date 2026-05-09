@@ -3,14 +3,14 @@
 The base rkyv wire-protocol crate of the sema-ecosystem.
 Signal is the **native binary form** of the records criome holds:
 sema is by definition computer-cognizable, so its native form is
-binary. Nexus text is the human-facing translation; signal is what
-criome receives and emits on the wire — and what every front-end
-client (nexus, the GUI editor, mentci-lib, agents speaking signal
-directly) sends in.
+binary. Nexus records in NOTA syntax are the human-facing
+translation; signal is what criome receives and emits on the wire —
+and what every front-end client (nexus, the GUI editor, mentci-lib,
+agents speaking signal directly) sends in.
 
 ```
-nexus (text) → nexus daemon (translates) → signal (rkyv) → criome
-criome (response) → signal → nexus daemon (translates) → nexus (text)
+nexus (NOTA) → nexus daemon (translates) → signal (rkyv) → criome
+criome (response) → signal → nexus daemon (translates) → nexus (NOTA)
 ```
 
 Effect-bearing wires layer atop signal — re-using its `Frame`,
@@ -62,7 +62,7 @@ surface; the layered crates own only the leg-specific verbs.
 
 ## What this crate does *not* define
 
-- **The nexus text language itself** (the syntax humans type) —
+- **The Nexus NOTA record vocabulary itself** (the records humans type) —
   defined by the
   nexus grammar and
   parsed by
@@ -72,18 +72,18 @@ surface; the layered crates own only the leg-specific verbs.
 
 ## Direct authoring — architecturally permitted, practically narrow
 
-Signal is **architecturally peer-shaped** to nexus text. The
-mechanical-translation rule guarantees the two forms agree, and a
-client that *can* compose rkyv frames directly is doing a
-legitimate thing.
+Signal is **architecturally peer-shaped** to Nexus records in NOTA
+syntax. The mechanical-translation rule guarantees the two forms
+agree, and a client that *can* compose rkyv frames directly is doing
+a legitimate thing.
 
 - ✓ **Programmatic Rust clients** — services, CI tools, the
   daemon itself. They compose `AssertOp` / `MutateOp` /
   `AtomicBatch` in rkyv directly and send.
 - ✗ **LLM agents** — current LLMs are trained on text and cannot
   author rkyv binary structures directly. The practical client
-  interface for an LLM is **nexus text**, parsed into signal by
-  the nexus daemon. Direct LLM signal authoring is a future
+  interface for an LLM is **Nexus records in NOTA syntax**, parsed
+  into signal by the nexus daemon. Direct LLM signal authoring is a future
   capability — it lands when LLM models are trained against
   binary signal formats. Per Li 2026-04-25: *"not yet, not until
   llm models are trained using binary signal data."*

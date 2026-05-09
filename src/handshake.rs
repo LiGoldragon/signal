@@ -11,7 +11,7 @@
 //! ignored.
 //!
 //! Wire-only: handshake messages travel as rkyv frames and never
-//! cross the nexus text boundary.
+//! cross the Nexus projection boundary.
 
 use rkyv::{Archive, Deserialize as RkyvDeserialize, Serialize as RkyvSerialize};
 

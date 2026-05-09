@@ -63,8 +63,8 @@ pub enum RetractOperation {
 /// All-or-nothing commit at one Revision in one transaction.
 /// The reply is per-element `OutcomeMessage` paired by index.
 ///
-/// **Wire form (rkyv only for M0).** The canonical nexus text
-/// form is `[| op1 op2 op3 |]` with sigil-dispatched inner
+/// **Wire form (rkyv only for M0).** The canonical Nexus record
+/// form in NOTA syntax is `[| op1 op2 op3 |]` with sigil-dispatched inner
 /// operations (`(Node …)` for assert, `~(Node …)` for mutate,
 /// `!slot` for retract). That dispatch can't be derived
 /// uniformly because the inner shape switches by sigil; the
