@@ -63,10 +63,7 @@ surface; the layered crates own only the leg-specific verbs.
 ## What this crate does *not* define
 
 - **The Nexus NOTA record vocabulary itself** (the records humans type) —
-  defined by the
-  nexus grammar and
-  parsed by
-  nota-codec.
+  defined by the Nexus vocabulary/spec and parsed by nota-codec.
 - **Sema state** — owned by criome.
 - **The validator pipeline** — owned by criome.
 
