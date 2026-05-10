@@ -4,7 +4,11 @@ You **MUST** read AGENTS.md at `github:ligoldragon/lore` — the workspace contr
 
 ## Repo role
 
-The **wire format** — `Frame` envelope + per-verb typed payloads (rkyv) + protocol-level types (`HandshakeRequest`, `Diagnostic`, `Slot`, etc.) + the flow-graph data kinds (`Node`, `Edge`, `Graph` plus paired `*Query` types).
+The **sema / criome record vocabulary** layered over
+`signal-core`'s shared wire kernel. `signal-core` owns the generic
+frame, handshake, auth, slot, revision, pattern-field, and verb spine
+types. This repo owns the sema-ecosystem's per-verb payloads and
+record kinds (`Node`, `Edge`, `Graph` plus paired `*Query` types).
 
 ---
 

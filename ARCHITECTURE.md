@@ -7,6 +7,12 @@ records are directly computer-cognizable; the bytes a record
 occupies at rest *are* its meaning, no parsing, no interpretation.
 Signal is that form on the wire.
 
+Relation sentence: `signal` is the sema / criome vocabulary
+relation; front-end translators and effect daemons exchange typed
+sema record operations with criome through `signal-core` frames, while
+criome owns validation, storage authority, and the slot/revision
+state those operations affect.
+
 The wider workspace uses **signal** as the family name for typed
 inter-component communication. `signal-core` owns the generic frame
 kernel — `Frame`, handshake, `AuthProof`, `SemaVerb`, `Slot<T>`,

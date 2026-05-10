@@ -5,7 +5,7 @@ edition      = "2024"
 rust-version = "1.85"
 license      = "MIT OR Apache-2.0"
 repository   = "https://github.com/LiGoldragon/signal"
-description  = "signal — the criome binary language. Wire envelope (Frame, handshake) + per-verb typed payloads + sema record kinds. Anything criome is signal."
+description  = "signal — sema/criome record vocabulary over the shared signal-core wire kernel."
 
 [dependencies]
 rkyv          = { version = "0.8", default-features = false, features = ["std", "bytecheck", "little_endian", "pointer_width_32", "unaligned"] }
