@@ -7,6 +7,14 @@ records are directly computer-cognizable; the bytes a record
 occupies at rest *are* its meaning, no parsing, no interpretation.
 Signal is that form on the wire.
 
+> **Scope.** "criome" throughout this doc is today's `criome` daemon
+> (sema-ecosystem records validator). The eventual `Criome` is the
+> universal computing paradigm in Sema; in that world, signal-* as a
+> separate vocabulary layer disappears because wire and state are one
+> Sema substrate. Today's signal is a realization step. See
+> `~/primary/ESSENCE.md` §"Today and eventually — different things,
+> different names".
+
 Relation sentence: `signal` is the sema / criome vocabulary
 relation; front-end translators and effect daemons exchange typed
 sema record operations with criome through `signal-core` frames, while
