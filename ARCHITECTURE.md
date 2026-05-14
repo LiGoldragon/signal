@@ -124,11 +124,9 @@ Owned by the kernel (`signal-core`), not here:
 - The `Frame` envelope, `Body`, length-prefix encode/decode.
 - The closed root-verb spine (`SignalVerb`, currently still named
   `SemaVerb` in code; seven roots: Assert · Mutate · Retract · Match
-  · Subscribe · Atomic · Validate — per
-  `~/primary/reports/designer-assistant/50-signal-core-base-verb-shape.md`
-  and `~/primary/reports/designer/162-signal-verb-roots-synthesis.md`).
-  Read-algebra (`Project`, `Aggregate`, `Constrain`, `Infer`,
-  `Recurse`) lives in `sema-engine`'s `ReadPlan`, not as root verbs.
+  · Subscribe · Atomic · Validate). Read-algebra (`Project`,
+  `Aggregate`, `Constrain`, `Infer`, `Recurse`) lives in
+  `sema-engine`'s `ReadPlan`, not as root verbs.
 - `ProtocolVersion`, handshake records, handshake-rejection
   reasons.
 - `AuthProof` shell.
@@ -288,9 +286,7 @@ Transitional source — `frame.rs`, `handshake.rs`, `auth.rs`,
 `slot.rs`, `pattern.rs`, `identity.rs` — currently exists in this
 repo as duplicates of `signal-core`'s kernel primitives. The
 target shape is for those to be re-exports from `signal-core`;
-the file collapse follows the kernel-extraction code rebalance
-(tracked in `~/primary/reports/designer/91-workspace-snapshot-skills-and-architecture-2026-05-09.md`
-§3.1 drift register).
+the file collapse follows the kernel-extraction code rebalance.
 
 ## Status
 

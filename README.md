@@ -26,10 +26,9 @@ frames plus relation-specific payload vocabularies:
 
 `signal-core` owns the universal envelope and seven-root verb spine
 (`Assert`, `Mutate`, `Retract`, `Match`, `Subscribe`, `Atomic`,
-`Validate` — per `~/primary/reports/designer-assistant/50-signal-core-base-verb-shape.md`
-and `~/primary/reports/designer/162-signal-verb-roots-synthesis.md`;
-the code rename from `SemaVerb` to `SignalVerb` is pending). This
-crate owns the sema / criome payload vocabulary beneath that spine.
+`Validate`; the code rename from `SemaVerb` to `SignalVerb` is
+pending). This crate owns the sema / criome payload vocabulary
+beneath that spine.
 Read-algebra (`Project`, `Aggregate`, `Constrain`, `Infer`, `Recurse`)
 lives in `sema-engine`'s `ReadPlan`, not as root verbs. The source
 still contains transitional duplicate kernel modules while the
