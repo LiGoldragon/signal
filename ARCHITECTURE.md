@@ -122,9 +122,13 @@ shared `signal-core` wire kernel:
 Owned by the kernel (`signal-core`), not here:
 
 - The `Frame` envelope, `Body`, length-prefix encode/decode.
-- The closed verb spine (`SemaVerb`: Assert · Subscribe · Constrain
-  · Mutate · Match · Infer · Retract · Aggregate · Project ·
-  Atomic · Validate · Recurse).
+- The closed root-verb spine (`SignalVerb`, currently still named
+  `SemaVerb` in code; seven roots: Assert · Mutate · Retract · Match
+  · Subscribe · Atomic · Validate — per
+  `~/primary/reports/designer-assistant/50-signal-core-base-verb-shape.md`
+  and `~/primary/reports/designer/162-signal-verb-roots-synthesis.md`).
+  Read-algebra (`Project`, `Aggregate`, `Constrain`, `Infer`,
+  `Recurse`) lives in `sema-engine`'s `ReadPlan`, not as root verbs.
 - `ProtocolVersion`, handshake records, handshake-rejection
   reasons.
 - `AuthProof` shell.
