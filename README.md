@@ -24,11 +24,11 @@ frames plus relation-specific payload vocabularies:
   carries the writers ↔ arca-daemon leg (`Deposit`-class verbs
   authorised by criome-signed capability tokens).
 
-`signal-core` owns the universal envelope and seven-root verb spine
-(`Assert`, `Mutate`, `Retract`, `Match`, `Subscribe`, `Atomic`,
-`Validate`; the code rename from `SemaVerb` to `SignalVerb` is
-pending). This crate owns the sema / criome payload vocabulary
-beneath that spine.
+`signal-core` owns the universal envelope and six-root verb spine
+(`Assert`, `Mutate`, `Retract`, `Match`, `Subscribe`, `Validate`).
+Atomicity is structural — multi-op `Request<Payload>` commits as one
+unit via its `NonEmpty<Operation>` sequence. This crate owns the
+sema / criome payload vocabulary beneath that spine.
 Read-algebra (`Project`, `Aggregate`, `Constrain`, `Infer`, `Recurse`)
 lives in `sema-engine`'s `ReadPlan`, not as root verbs. The source
 still contains transitional duplicate kernel modules while the
@@ -42,10 +42,11 @@ authority for those kernel primitives.
 - **`OutcomeMessage`** — `Ok` (success record kind) or
   `Diagnostic` (failure record kind).
 - **Per-verb typed payloads** — `AssertOperation` /
-  `MutateOperation` / `RetractOperation` / `AtomicBatch` /
-  `BatchOperation` for edits; `QueryOperation` for queries;
-  `Records` for typed query results. Each is a closed enum of typed
-  kinds — no generic record wrapper, no string kind-name lookup.
+  `MutateOperation` / `RetractOperation` for edits; `QueryOperation`
+  for queries; `Records` for typed query results. Multi-op atomic
+  commits compose as `Request<Payload>` with `NonEmpty<Operation>`
+  via `signal-core::RequestBuilder`. Each payload enum is closed —
+  no generic record wrapper, no string kind-name lookup.
 - **Flow-graph kinds** — `Node`, `Edge`, `Graph` (with
   paired `NodeQuery` / `EdgeQuery` / `GraphQuery`), `Ok`,
   `RelationKind` (closed 9-variant enum exposing `::ALL`,
@@ -75,8 +76,9 @@ agree, and a client that *can* compose rkyv frames directly is doing
 a legitimate thing.
 
 - ✓ **Programmatic Rust clients** — services, CI tools, the
-  daemon itself. They compose `AssertOperation` /
-  `MutateOperation` / `AtomicBatch` in rkyv directly and send.
+  daemon itself. They compose `AssertOperation` / `MutateOperation`
+  payloads — single-op via `into_request()`, multi-op via
+  `signal-core::RequestBuilder` — in rkyv directly and send.
 - ✗ **LLM agents** — current LLMs are trained on text and cannot
   author rkyv binary structures directly. The practical client
   interface for an LLM is **Nexus records in NOTA syntax**, parsed
