@@ -23,7 +23,11 @@ state those operations affect.
 
 The wider workspace uses **signal** as the family name for typed
 inter-component communication. `signal-core` owns the generic frame
-kernel — `Frame`, handshake, `AuthProof`, `SemaVerb`, `Slot<T>`,
+kernel — `ExchangeFrame` / `ExchangeFrameBody` (non-streaming),
+`StreamingFrame` / `StreamingFrameBody` (streaming with subscription
+events), handshake records, `SignalVerb` (six-root spine), the
+`Operation`/`Request`/`Reply` typed shapes, `ExchangeIdentifier` and
+`StreamEventIdentifier` for async request/reply matching, `Slot<T>`,
 `Revision`, and pattern markers (`Bind`, `Wildcard`,
 `PatternField<T>`). This repo layers the sema-ecosystem's
 request/reply vocabulary on top. Persona's channel contracts follow
@@ -44,10 +48,10 @@ moved to `signal-core` (per the kernel-extraction trigger in
 
 Effect-bearing wires layered atop signal — currently signal-forge
 for the criome ↔ forge leg and signal-arca for the writers ↔
-arca-daemon leg — re-use `signal-core`'s `Frame`, handshake, and
-auth, and add their own per-verb payloads. Builder-internal churn
-in those layered crates does not recompile front-end clients that
-depend only on signal.
+arca-daemon leg — re-use `signal-core`'s frame types, handshake, and
+verb spine, and add their own per-verb payloads. Builder-internal
+churn in those layered crates does not recompile front-end clients
+that depend only on signal.
 
 Nexus records in NOTA syntax are the human-facing translation. The
 mechanical-translation rule (every Nexus NOTA record has exactly one
