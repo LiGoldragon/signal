@@ -63,22 +63,27 @@ fn every_relation_kind_round_trips() {
 }
 
 // ─── NotaRecord — flow data kinds ──────────────────────────
+//
+// NotaRecord-derived structs encode without a type tag per the
+// three-case PascalCase rule (case 2: `(fields…)` with no leading
+// PascalCase identifier). The struct type is determined by the
+// schema position the record sits at.
 
 #[test]
 fn ok_unit_record_round_trips() {
-    round_trip(Ok {}, "(Ok)");
+    round_trip(Ok {}, "()");
 }
 
 #[test]
 fn node_round_trips() {
-    round_trip(Node { name: "User".into() }, "(Node User)");
+    round_trip(Node { name: "alice".into() }, "(alice)");
 }
 
 #[test]
 fn edge_round_trips() {
     round_trip(
         Edge { from: Slot::from(100u64), to: Slot::from(200u64), kind: RelationKind::DependsOn },
-        "(Edge 100 200 DependsOn)",
+        "(100 200 DependsOn)",
     );
 }
 
@@ -91,17 +96,20 @@ fn graph_with_populated_collections_round_trips() {
             edges: vec![Slot::from(10u64), Slot::from(11u64)],
             subgraphs: vec![],
         },
-        "(Graph \"criome request flow\" [1 2 3] [10 11] [])",
+        "(\"criome request flow\" [1 2 3] [10 11] [])",
     );
 }
 
 // ─── NotaSum — RetractOperation per-kind variants ──────────
+//
+// NotaSum struct variants keep the variant tag (case 1). Option<T>
+// present wraps as `(Some inner)`.
 
 #[test]
 fn retract_node_with_optional_revision_present_round_trips() {
     round_trip(
         RetractOperation::Node { slot: Slot::from(50u64), expected_rev: Some(Revision::from(7u64)) },
-        "(Node 50 7)",
+        "(Node 50 (Some 7))",
     );
 }
 
@@ -116,17 +124,21 @@ fn retract_node_with_optional_revision_absent_round_trips() {
 // in M1+. No text round-trip tests here today.
 
 // ─── NotaSum — closed-kind dispatch ────────────────────────
+//
+// NotaSum newtype variants wrap the payload with the variant tag:
+// `(VariantName <payload>)`. When the payload is a NotaRecord
+// struct, the inner appears as a tag-less nested record.
 
 #[test]
 fn assert_operation_node_round_trips() {
-    round_trip(AssertOperation::Node(Node { name: "User".into() }), "(Node User)");
+    round_trip(AssertOperation::Node(Node { name: "alice".into() }), "(Node (alice))");
 }
 
 #[test]
 fn assert_operation_edge_round_trips() {
     round_trip(
         AssertOperation::Edge(Edge { from: Slot::from(1u64), to: Slot::from(2u64), kind: RelationKind::Flow }),
-        "(Edge 1 2 Flow)",
+        "(Edge (1 2 Flow))",
     );
 }
 
@@ -135,36 +147,36 @@ fn mutate_operation_struct_variant_with_present_optional_round_trips() {
     round_trip(
         MutateOperation::Node {
             slot: Slot::from(100u64),
-            new: Node { name: "Alice".into() },
+            new: Node { name: "alice".into() },
             expected_rev: Some(Revision::from(7u64)),
         },
-        "(Node 100 (Node Alice) 7)",
+        "(Node 100 (alice) (Some 7))",
     );
 }
 
 #[test]
 fn mutate_operation_struct_variant_with_absent_optional_round_trips() {
     round_trip(
-        MutateOperation::Node { slot: Slot::from(100u64), new: Node { name: "Alice".into() }, expected_rev: None },
-        "(Node 100 (Node Alice) None)",
+        MutateOperation::Node { slot: Slot::from(100u64), new: Node { name: "alice".into() }, expected_rev: None },
+        "(Node 100 (alice) None)",
     );
 }
 
 #[test]
 fn query_operation_dispatches_to_node_query() {
-    round_trip(QueryOperation::Node(NodeQuery { name: PatternField::Wildcard }), "(NodeQuery (Wildcard))");
+    round_trip(QueryOperation::Node(NodeQuery { name: PatternField::Wildcard }), "(Node ((Wildcard)))");
 }
 
 // ─── PatternField — typed marker records ───────────────────
 
 #[test]
 fn node_query_with_bind_round_trips() {
-    round_trip(NodeQuery { name: PatternField::Bind }, "(NodeQuery (Bind))");
+    round_trip(NodeQuery { name: PatternField::Bind }, "((Bind))");
 }
 
 #[test]
 fn node_query_with_match_round_trips() {
-    round_trip(NodeQuery { name: PatternField::Match("User".into()) }, "(NodeQuery User)");
+    round_trip(NodeQuery { name: PatternField::Match("alice".into()) }, "(alice)");
 }
 
 #[test]
@@ -175,7 +187,7 @@ fn edge_query_with_three_mixed_pattern_fields_round_trips() {
             to: PatternField::Bind,
             kind: PatternField::Wildcard,
         },
-        "(EdgeQuery 102 (Bind) (Wildcard))",
+        "(102 (Bind) (Wildcard))",
     );
 }
 
@@ -183,13 +195,16 @@ fn edge_query_with_three_mixed_pattern_fields_round_trips() {
 fn graph_query_round_trips() {
     round_trip(
         GraphQuery { title: PatternField::Match("criome request flow".into()) },
-        "(GraphQuery \"criome request flow\")",
+        "(\"criome request flow\")",
     );
 }
 
 #[test]
 fn bind_record_does_not_decode_as_string_field() {
-    let mut decoder = Decoder::new("(Node (Bind))");
+    // A `(Bind)` marker can't appear at the Node.name String
+    // position. With Node now tag-less, the wire `((Bind))` opens
+    // Node then encounters `(` where the name string is expected.
+    let mut decoder = Decoder::new("((Bind))");
     let error = Node::decode(&mut decoder).unwrap_err();
     assert!(matches!(error, nota_codec::Error::UnexpectedToken { expected: "string literal or bare identifier", .. }));
 }
