@@ -32,12 +32,14 @@ do not add Persona payloads here.
 
 Signal owns the sema-ecosystem's per-verb typed payloads —
 `AssertOperation`, `MutateOperation`, `RetractOperation`,
-`AtomicBatch`/`BatchOperation`, `QueryOperation`, `Records` — plus
-the flow-graph kinds (`Node`, `Edge`, `Graph`, paired `*Query`
-types, `RelationKind`), the auxiliary diagnostic types, and the
-typed `Hash` alias. The frame envelope, handshake, auth, verb spine,
-and identity primitives moved to `signal-core` (per the
-kernel-extraction trigger in
+`QueryOperation`, `Records` — plus the flow-graph kinds (`Node`,
+`Edge`, `Graph`, paired `*Query` types, `RelationKind`), the
+auxiliary diagnostic types, and the typed `Hash` alias.
+Multi-operation atomic commits compose as `Request<Payload>` with
+`NonEmpty<Operation>` via `signal-core::RequestBuilder`; there is
+no separate `AtomicBatch`/`BatchOperation` payload. The frame
+envelope, handshake, auth, verb spine, and identity primitives
+moved to `signal-core` (per the kernel-extraction trigger in
 `~/primary/skills/contract-repo.md` §"Kernel extraction trigger").
 
 Effect-bearing wires layered atop signal — currently signal-forge
@@ -93,10 +95,12 @@ Owns the **sema-ecosystem record vocabulary** layered atop the
 shared `signal-core` wire kernel:
 
 - The **per-verb typed payloads** for the sema-ecosystem's verbs:
-  `AssertOperation` / `MutateOperation` / `RetractOperation` /
-  `AtomicBatch` / `BatchOperation` for edits; `QueryOperation`
-  for queries; `Records` for typed query results. Each is a
-  closed enum of typed kinds (no generic wrapper).
+  `AssertOperation` / `MutateOperation` / `RetractOperation` for
+  edits; `QueryOperation` for queries; `Records` for typed query
+  results. Multi-op atomic commits compose as `Request<Payload>`
+  with `NonEmpty<Operation>` via `signal-core::RequestBuilder` —
+  no separate `AtomicBatch` payload. Each payload enum is closed
+  (no generic wrapper).
 - The **flow-graph kinds**: `Node`, `Edge`, `Graph` (with
   paired `NodeQuery` / `EdgeQuery` / `GraphQuery`), `Ok`,
   `RelationKind` (closed enum of 9 relation variants — Flow,
@@ -122,11 +126,12 @@ shared `signal-core` wire kernel:
 Owned by the kernel (`signal-core`), not here:
 
 - The `Frame` envelope, `Body`, length-prefix encode/decode.
-- The closed root-verb spine (`SignalVerb`, currently still named
-  `SemaVerb` in code; seven roots: Assert · Mutate · Retract · Match
-  · Subscribe · Atomic · Validate). Read-algebra (`Project`,
-  `Aggregate`, `Constrain`, `Infer`, `Recurse`) lives in
-  `sema-engine`'s `ReadPlan`, not as root verbs.
+- The closed root-verb spine (`SignalVerb`; six roots: Assert ·
+  Mutate · Retract · Match · Subscribe · Validate). Atomicity is
+  structural — multi-op `Request<Payload>` commits as one unit
+  via its `NonEmpty<Operation>` sequence; no separate `Atomic`
+  verb. Read-algebra (`Project`, `Aggregate`, `Constrain`, `Infer`,
+  `Recurse`) lives in `sema-engine`'s `ReadPlan`, not as root verbs.
 - `ProtocolVersion`, handshake records, handshake-rejection
   reasons.
 - `AuthProof` shell.
@@ -273,7 +278,8 @@ src/
 ├── request.rs    — Request alias + ValidateOperation
 ├── reply.rs      — Reply alias, OutcomeMessage, Records (typed per kind)
 ├── edit.rs       — AssertOperation / MutateOperation / RetractOperation
-│                    + AtomicBatch / BatchOperation (rkyv-only for M0)
+│                    (multi-op atomic commits compose via
+│                    signal-core::RequestBuilder)
 ├── query.rs      — QueryOperation closed enum of typed *Query payloads
 ├── diagnostic.rs — Diagnostic, DiagnosticLevel, DiagnosticSite (incl. OperationInBatch),
 │                    DiagnosticSuggestion, Applicability
