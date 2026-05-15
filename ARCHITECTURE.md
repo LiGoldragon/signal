@@ -129,16 +129,23 @@ shared `signal-core` wire kernel:
 
 Owned by the kernel (`signal-core`), not here:
 
-- The `Frame` envelope, `Body`, length-prefix encode/decode.
+- The `ExchangeFrame` / `ExchangeFrameBody` envelope (non-streaming)
+  and `StreamingFrame` / `StreamingFrameBody` envelope (streaming),
+  plus length-prefix encode/decode.
 - The closed root-verb spine (`SignalVerb`; six roots: Assert ·
   Mutate · Retract · Match · Subscribe · Validate). Atomicity is
   structural — multi-op `Request<Payload>` commits as one unit
   via its `NonEmpty<Operation>` sequence; no separate `Atomic`
   verb. Read-algebra (`Project`, `Aggregate`, `Constrain`, `Infer`,
   `Recurse`) lives in `sema-engine`'s `ReadPlan`, not as root verbs.
+- `Operation<Payload>` / `Request<Payload>` / `Reply<ReplyPayload>`
+  generic shapes, including `Reply::Accepted` vs `Reply::Rejected`
+  and per-op `SubReply` (`Ok` / `Invalidated` / `Failed` / `Skipped`).
+- `ExchangeIdentifier` (request/reply pair identity) and
+  `StreamEventIdentifier` (subscription event identity) at the
+  frame layer. Domain payloads carry no transport identifiers.
 - `ProtocolVersion`, handshake records, handshake-rejection
   reasons.
-- `AuthProof` shell.
 - `Slot<T>`, `Revision` — typed wire identity values.
 - `PatternField<T>` with the typed marker records `(Bind)` and
   `(Wildcard)`.
@@ -214,12 +221,20 @@ because they compile against the same closed enums in this crate.
 
 ## Channel boilerplate
 
-The `signal_channel!` macro in `signal-core` emits paired
-request/reply enums + the channel's `Frame` / `FrameBody` aliases
-+ `From<payload>` impls, given a per-channel request enum and
-reply enum. The sema-ecosystem's `Request` / `Reply` here use that
-macro the same way `signal-persona-*` channels do — the kernel
-helper is shared.
+The `signal_channel!` proc-macro in `signal-core` (re-exported from
+the sibling `signal-core-macros` crate) takes a typed channel
+declaration wrapped in `channel <ChannelName> { ... }` with
+`request`/`reply` blocks (and optional `event`/`stream` blocks for
+streaming channels) and emits the typed payload enums, per-variant
+`SignalVerb` witness, auto-generated kind enums, the appropriate
+frame aliases (`ExchangeFrame` for non-streaming, `StreamingFrame`
+for streaming), stream-relation witnesses, and NOTA codec impls
+for the payload enums. Verb-wrapping (`(Assert ...)`) and request-
+sequence brackets are owned by `signal-core`'s `Operation` / `Request`
+NOTA codecs, not by per-channel macros. The macro does not emit
+blanket `From<Payload>` impls — variant constructors are already
+ergonomic. The sema-ecosystem's `Request` / `Reply` here use that
+proc-macro the same way `signal-persona-*` channels do.
 
 ## Handshake
 
