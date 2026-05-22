@@ -96,7 +96,7 @@ fn graph_with_populated_collections_round_trips() {
             edges: vec![Slot::from(10u64), Slot::from(11u64)],
             subgraphs: vec![],
         },
-        "(\"criome request flow\" [1 2 3] [10 11] [])",
+        "([criome request flow] [1 2 3] [10 11] [])",
     );
 }
 
@@ -193,10 +193,7 @@ fn edge_query_with_three_mixed_pattern_fields_round_trips() {
 
 #[test]
 fn graph_query_round_trips() {
-    round_trip(
-        GraphQuery { title: PatternField::Match("criome request flow".into()) },
-        "(\"criome request flow\")",
-    );
+    round_trip(GraphQuery { title: PatternField::Match("criome request flow".into()) }, "([criome request flow])");
 }
 
 #[test]

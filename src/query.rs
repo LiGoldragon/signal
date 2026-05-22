@@ -9,12 +9,12 @@
 //! …) are M2+ work and live outside this enum when they land. M0
 //! supports kind-and-field matching only.
 
-use nota_codec::NotaSum;
+use nota_codec::NotaEnum;
 use rkyv::{Archive, Deserialize as RkyvDeserialize, Serialize as RkyvSerialize};
 
 use crate::flow::{EdgeQuery, GraphQuery, NodeQuery};
 
-#[derive(Archive, RkyvSerialize, RkyvDeserialize, NotaSum, Debug, Clone, PartialEq)]
+#[derive(Archive, RkyvSerialize, RkyvDeserialize, NotaEnum, Debug, Clone, PartialEq)]
 pub enum QueryOperation {
     Node(NodeQuery),
     Edge(EdgeQuery),

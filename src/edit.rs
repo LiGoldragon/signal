@@ -17,10 +17,10 @@
 //! Atomic batches wrap a sequence of edit operations as
 //! all-or-nothing.
 
-use nota_codec::NotaSum;
+use nota_codec::NotaEnum;
 
 // `AtomicBatch` and `BatchOperation` derive only rkyv (no
-// `NotaRecord` / `NotaSum`) for M0 — see their per-type docs
+// `NotaRecord` / `NotaEnum`) for M0 — see their per-type docs
 // for the M1+ hand-impl plan.
 use rkyv::{Archive, Deserialize as RkyvDeserialize, Serialize as RkyvSerialize};
 
@@ -30,7 +30,7 @@ use crate::slot::{Revision, Slot};
 /// Introduce a new record. Criome assigns the slot internally on
 /// commit. Genesis runs the same flow as user-authored asserts —
 /// no backdoor for pre-assigned slots.
-#[derive(Archive, RkyvSerialize, RkyvDeserialize, NotaSum, Debug, Clone, PartialEq)]
+#[derive(Archive, RkyvSerialize, RkyvDeserialize, NotaEnum, Debug, Clone, PartialEq)]
 pub enum AssertOperation {
     Node(Node),
     Edge(Edge),
@@ -40,7 +40,7 @@ pub enum AssertOperation {
 /// Whole-record replacement at a slot. Each variant carries the
 /// target slot, the typed replacement, and an optional
 /// `expected_rev` for compare-and-swap semantics.
-#[derive(Archive, RkyvSerialize, RkyvDeserialize, NotaSum, Debug, Clone, PartialEq)]
+#[derive(Archive, RkyvSerialize, RkyvDeserialize, NotaEnum, Debug, Clone, PartialEq)]
 pub enum MutateOperation {
     Node { slot: Slot<Node>, new: Node, expected_rev: Option<Revision> },
     Edge { slot: Slot<Edge>, new: Edge, expected_rev: Option<Revision> },
@@ -52,7 +52,7 @@ pub enum MutateOperation {
 /// system carries which kind is being retracted, so the validator
 /// can dispatch per-kind reachability checks without
 /// stringly-typed lookups.
-#[derive(Archive, RkyvSerialize, RkyvDeserialize, NotaSum, Debug, Clone, PartialEq)]
+#[derive(Archive, RkyvSerialize, RkyvDeserialize, NotaEnum, Debug, Clone, PartialEq)]
 pub enum RetractOperation {
     Node { slot: Slot<Node>, expected_rev: Option<Revision> },
     Edge { slot: Slot<Edge>, expected_rev: Option<Revision> },
