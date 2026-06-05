@@ -1,0 +1,118 @@
+# INTENT — signal
+
+*The sema-ecosystem's record vocabulary, layered atop the shared
+`signal-core` wire kernel. Carries the native binary form of the records
+`criome` holds in its records database. Companion to `ARCHITECTURE.md`
+and `Cargo.toml`. Maintenance: `primary/skills/repo-intent.md`.*
+
+## Repo-scope only
+
+This file carries only the intent that is FOR this `signal` crate.
+Workspace-shape intent stays in the primary workspace `primary/INTENT.md`.
+Frame-kernel intent stays in `signal-core`'s files; Persona channel
+intent stays in the `signal-persona-*` contracts.
+
+## Today and eventually
+
+Throughout this repo, "criome" is today's `criome` daemon — the
+sema-ecosystem records validator. The eventual `Criome` is the universal
+computing paradigm in Sema; in that world, `signal-*` as a separate
+vocabulary layer disappears because wire and state are one Sema
+substrate. Today's `signal` is a realization step on that path, per
+`primary/ESSENCE.md` §"Today and eventually — different things, different
+names". This is a scope boundary, not a license to cut corners.
+
+## Why this repo exists
+
+`signal` is the **sema-ecosystem's record vocabulary** layered atop the
+`signal-core` kernel. The records it carries are directly
+computer-cognizable: the bytes a record occupies at rest ARE its
+meaning — no parsing, no interpretation. `signal` is that form on the
+wire. Front-end translators and effect daemons exchange typed sema
+record operations with criome through `signal-core` frames; criome owns
+validation, storage authority, and the slot/revision state those
+operations affect.
+
+`signal` is the place where new typed kinds and enum variants land as the
+system grows. The kernel (frame envelope, handshake, verb spine,
+identity primitives) lives in `signal-core`; this crate layers the
+sema-ecosystem's request/reply vocabulary on top, the same way
+`signal-persona` layers Persona's vocabulary and `signal-forge` /
+`signal-arca` layer effect-bearing verbs.
+
+## What this crate owns
+
+- The per-verb typed payloads for the sema-ecosystem's verbs:
+  `AssertOperation` / `MutateOperation` / `RetractOperation` for edits,
+  `QueryOperation` for queries, `Records` for typed query results.
+- The flow-graph kinds: `Node`, `Edge`, `Graph` (with paired
+  `*Query` types), `Ok`, and the closed `RelationKind` enum.
+- Auxiliary diagnostic types and the typed `Hash` (BLAKE3 32-byte)
+  alias.
+- The criome-side `Request` / `Reply` aliases over
+  `signal_core::Request<Payload>` / `Reply<Payload>` with the
+  sema-ecosystem's payload types.
+
+The frame envelope, handshake, root-verb spine, `Operation`/`Request`/
+`Reply` generic shapes, exchange identifiers, `Slot<T>`, `Revision`, and
+pattern markers are owned by `signal-core`, not here.
+
+## Constraints — perfect specificity at the wire
+
+- Every verb's payload is its own closed enum of typed kinds. No shared
+  `KnownRecord` wrapper, no generic record envelope, no string kind-name
+  lookup at runtime. The wire knows what it carries by type; consumers
+  `match` exhaustively.
+- No `Unknown` escape variant. Closed enums are exhaustively closed;
+  rebuilds bring the world forward together via the criome self-host
+  loop. New kinds land by adding the typed struct plus the closed-enum
+  variant.
+- Multi-operation atomic commits compose as `Request<Payload>` with
+  `NonEmpty<Operation>` via `signal-core::RequestBuilder` — there is no
+  separate `AtomicBatch` / `BatchOperation` payload and no `Atomic` root
+  verb. Atomicity is structural.
+- A pattern/query is itself a record kind (`NodeQuery` paired with
+  `Node`), carrying `PatternField<T>` values via typed marker records
+  `(Bind)` and `(Wildcard)`. No parallel pattern grammar exists.
+- The wire format is rkyv with `signal-core`'s canonical pinned feature
+  set; 4-byte big-endian length prefix; bytecheck validation on read.
+- The contract owns both the wire form (rkyv) and the text form (NOTA)
+  of its typed records; consumers do not carry shadow types that
+  re-derive text projection. Round-trip witnesses for both forms live in
+  `tests/`.
+
+## NOTA and the text boundary
+
+Nexus records in NOTA syntax are the human-facing translation. The
+mechanical-translation rule — every Nexus NOTA record has exactly one
+signal form, and vice versa — keeps the two surfaces in lockstep. NOTA is
+not the inter-component wire: once a request crosses the nexus daemon, it
+is signal end-to-end. Programmatic Rust clients may compose typed records
+directly; LLM agents author NOTA and let the daemon translate, per the
+psyche's statement that binary authoring waits *until llm models are
+trained using binary signal data*.
+
+## Non-ownership
+
+This crate does not own:
+
+- the frame kernel, handshake, verb spine, or identity primitives
+  (`signal-core`);
+- Nexus's NOTA record vocabulary or parser (`nexus`);
+- criome's records database, validator pipeline, or storage authority
+  (`criome`);
+- Persona channel payloads (`signal-persona` and the per-channel
+  `signal-persona-*` repos);
+- runtime transport policy (the daemons that use the contract).
+
+## See also
+
+- `ARCHITECTURE.md` — the layered family, the per-verb payloads, the
+  flow-graph kinds, schema discipline, and the reply protocol.
+- `../signal-core/ARCHITECTURE.md` — the frame kernel this crate layers
+  on.
+- `../criome/ARCHITECTURE.md` — the validator and storage authority that
+  consumes these records.
+- `../nexus/ARCHITECTURE.md` — the human-facing NOTA translation surface.
+- `primary/skills/contract-repo.md` §"Kernel extraction trigger" — why
+  the kernel split out of `signal`.
