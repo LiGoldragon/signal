@@ -5,11 +5,11 @@ edition      = "2024"
 rust-version = "1.85"
 license      = "MIT OR Apache-2.0"
 repository   = "https://github.com/LiGoldragon/signal"
-description  = "signal — sema/criome record vocabulary over the shared signal-core wire kernel."
+description  = "signal — sema/criome record vocabulary with a local legacy wire envelope."
 
 [dependencies]
 rkyv          = { version = "0.8", default-features = false, features = ["std", "bytecheck", "little_endian", "pointer_width_32", "unaligned"] }
 nota-codec    = { git = "https://github.com/LiGoldragon/nota-codec.git", branch = "main" }
-signal-core   = { git = "https://github.com/LiGoldragon/signal-core.git", branch = "main" }
+signal-sema   = { git = "https://github.com/LiGoldragon/signal-sema.git", branch = "main" }
 signal-derive = { git = "https://github.com/LiGoldragon/signal-derive.git", branch = "main" }
 thiserror     = "2"

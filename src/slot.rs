@@ -119,7 +119,7 @@ pub struct ArchivedSlot<T>(rkyv::rend::u64_le, PhantomData<T>);
 
 impl<T> Clone for ArchivedSlot<T> {
     fn clone(&self) -> Self {
-        ArchivedSlot(self.0, PhantomData)
+        *self
     }
 }
 

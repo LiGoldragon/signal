@@ -4,11 +4,11 @@ You **MUST** read AGENTS.md at `github:ligoldragon/lore` — the workspace contr
 
 ## Repo role
 
-The **sema / criome record vocabulary** layered over
-`signal-core`'s shared wire kernel. `signal-core` owns the generic
-frame, handshake, auth, slot, revision, pattern-field, and verb spine
-types. This repo owns the sema-ecosystem's per-verb payloads and
+The **sema / criome record vocabulary** with a local legacy wire
+envelope. This repo owns its current `Frame`, handshake, auth, slot,
+revision, request/reply roots, sema-ecosystem per-verb payloads, and
 record kinds (`Node`, `Edge`, `Graph` plus paired `*Query` types).
+Reusable pattern markers are imported from `signal-sema`.
 
 ---
 

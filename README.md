@@ -1,7 +1,7 @@
 # signal
 
-The sema / criome record-vocabulary crate over the shared
-`signal-core` wire kernel.
+The sema / criome record-vocabulary crate with a local legacy wire
+envelope.
 
 Signal is the **native binary form** of the records criome holds:
 sema is by definition computer-cognizable, so its native form is
@@ -14,8 +14,8 @@ nexus (NOTA) → nexus daemon (translates) → signal (rkyv) → criome
 criome (response) → signal → nexus daemon (translates) → nexus (NOTA)
 ```
 
-Effect-bearing wires use the same family shape — `signal-core`
-frames plus relation-specific payload vocabularies:
+Effect-bearing wires use the same family shape: typed rkyv frames plus
+relation-specific payload vocabularies.
 
 - signal-forge
   carries the criome ↔ forge leg (effect-bearing build / deploy
@@ -24,16 +24,14 @@ frames plus relation-specific payload vocabularies:
   carries the writers ↔ arca-daemon leg (`Deposit`-class verbs
   authorised by criome-signed capability tokens).
 
-`signal-core` owns the universal envelope and six-root verb spine
-(`Assert`, `Mutate`, `Retract`, `Match`, `Subscribe`, `Validate`).
-Atomicity is structural — multi-op `Request<Payload>` commits as one
-unit via its `NonEmpty<Operation>` sequence. This crate owns the
-sema / criome payload vocabulary beneath that spine.
+This crate currently owns a local legacy envelope and request/reply
+roots for the sema / criome vocabulary. The current shared component
+frame kernel lives in `signal-frame`; reusable Sema pattern markers live
+in `signal-sema`.
 Read-algebra (`Project`, `Aggregate`, `Constrain`, `Infer`, `Recurse`)
 lives in `sema-engine`'s `ReadPlan`, not as root verbs. The source
-still contains transitional duplicate kernel modules while the
-kernel-extraction code rebalance finishes; treat `signal-core` as the
-authority for those kernel primitives.
+still contains transitional local frame modules until this crate cuts
+over to the shared contract-shaped stack.
 
 ## What this crate defines
 
@@ -44,9 +42,9 @@ authority for those kernel primitives.
 - **Per-verb typed payloads** — `AssertOperation` /
   `MutateOperation` / `RetractOperation` for edits; `QueryOperation`
   for queries; `Records` for typed query results. Multi-op atomic
-  commits compose as `Request<Payload>` with `NonEmpty<Operation>`
-  via `signal-core::RequestBuilder`. Each payload enum is closed —
-  no generic record wrapper, no string kind-name lookup.
+  commits still use this crate's local `AtomicBatch` legacy shape.
+  Each payload enum is closed: no generic record wrapper, no string
+  kind-name lookup.
 - **Flow-graph kinds** — `Node`, `Edge`, `Graph` (with
   paired `NodeQuery` / `EdgeQuery` / `GraphQuery`), `Ok`,
   `RelationKind` (closed 9-variant enum exposing `::ALL`,
@@ -57,14 +55,14 @@ authority for those kernel primitives.
   `DiagnosticLevel` / `DiagnosticSite` / `DiagnosticSuggestion`;
   `Hash` (BLAKE3 32-byte alias).
 
-`signal-core` defines `Frame`, handshake records, `AuthProof`,
-`SemaVerb`, `Slot<T>`, `Revision`, and `PatternField<T>`.
+This crate defines `Frame`, handshake records, `AuthProof`, `Slot<T>`,
+and `Revision`; `PatternField<T>` is re-exported from `signal-sema`.
 
 ## What this crate does *not* define
 
 - **The Nexus NOTA record vocabulary itself** (the records humans type) —
   defined by the Nexus vocabulary/spec and parsed by nota-codec.
-- **The Signal kernel** — owned by `signal-core`.
+- **The current shared Signal kernel** — owned by `signal-frame`.
 - **Sema state** — owned by criome.
 - **The validator pipeline** — owned by criome.
 
@@ -77,8 +75,7 @@ a legitimate thing.
 
 - ✓ **Programmatic Rust clients** — services, CI tools, the
   daemon itself. They compose `AssertOperation` / `MutateOperation`
-  payloads — single-op via `into_request()`, multi-op via
-  `signal-core::RequestBuilder` — in rkyv directly and send.
+  payloads in rkyv directly and send.
 - ✗ **LLM agents** — current LLMs are trained on text and cannot
   author rkyv binary structures directly. The practical client
   interface for an LLM is **Nexus records in NOTA syntax**, parsed

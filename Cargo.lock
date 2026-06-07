@@ -225,30 +225,9 @@ version = "0.1.0"
 dependencies = [
  "nota-codec",
  "rkyv",
- "signal-core",
  "signal-derive",
+ "signal-sema",
  "thiserror",
-]
-
-[[package]]
-name = "signal-core"
-version = "0.1.0"
-source = "git+https://github.com/LiGoldragon/signal-core.git?branch=main#494da25305183f286b889697617ed6d01b8e4593"
-dependencies = [
- "nota-codec",
- "rkyv",
- "signal-core-macros",
- "thiserror",
-]
-
-[[package]]
-name = "signal-core-macros"
-version = "0.1.0"
-source = "git+https://github.com/LiGoldragon/signal-core.git?branch=main#494da25305183f286b889697617ed6d01b8e4593"
-dependencies = [
- "proc-macro2",
- "quote",
- "syn",
 ]
 
 [[package]]
@@ -259,6 +238,16 @@ dependencies = [
  "proc-macro2",
  "quote",
  "syn",
+]
+
+[[package]]
+name = "signal-sema"
+version = "0.1.0"
+source = "git+https://github.com/LiGoldragon/signal-sema.git?branch=main#c132e9a06431617055bad2a9bae7bbecdeacd4b0"
+dependencies = [
+ "nota-codec",
+ "rkyv",
+ "thiserror",
 ]
 
 [[package]]

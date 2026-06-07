@@ -1,16 +1,17 @@
 # INTENT — signal
 
-*The sema-ecosystem's record vocabulary, layered atop the shared
-`signal-core` wire kernel. Carries the native binary form of the records
-`criome` holds in its records database. Companion to `ARCHITECTURE.md`
-and `Cargo.toml`. Maintenance: `primary/skills/repo-intent.md`.*
+*The sema-ecosystem's record vocabulary with a local legacy wire envelope.
+Carries the native binary form of the records `criome` holds in its records
+database. Companion to `ARCHITECTURE.md` and `Cargo.toml`. Maintenance:
+`primary/skills/repo-intent.md`.*
 
 ## Repo-scope only
 
 This file carries only the intent that is FOR this `signal` crate.
 Workspace-shape intent stays in the primary workspace `primary/INTENT.md`.
-Frame-kernel intent stays in `signal-core`'s files; Persona channel
-intent stays in the `signal-persona-*` contracts.
+Current shared frame-kernel intent lives in `signal-frame`; Persona channel
+intent stays in the `signal-persona-*` contracts. This crate still owns its
+local legacy `Frame` / `Request` / `Reply` envelope until a future cutover.
 
 ## Today and eventually
 
@@ -24,21 +25,20 @@ names". This is a scope boundary, not a license to cut corners.
 
 ## Why this repo exists
 
-`signal` is the **sema-ecosystem's record vocabulary** layered atop the
-`signal-core` kernel. The records it carries are directly
+`signal` is the **sema-ecosystem's record vocabulary** carried by this crate's
+local legacy signal envelope. The records it carries are directly
 computer-cognizable: the bytes a record occupies at rest ARE its
 meaning — no parsing, no interpretation. `signal` is that form on the
 wire. Front-end translators and effect daemons exchange typed sema
-record operations with criome through `signal-core` frames; criome owns
+record operations with criome through `signal` frames; criome owns
 validation, storage authority, and the slot/revision state those
 operations affect.
 
 `signal` is the place where new typed kinds and enum variants land as the
-system grows. The kernel (frame envelope, handshake, verb spine,
-identity primitives) lives in `signal-core`; this crate layers the
-sema-ecosystem's request/reply vocabulary on top, the same way
-`signal-persona` layers Persona's vocabulary and `signal-forge` /
-`signal-arca` layer effect-bearing verbs.
+system grows. This crate currently owns the legacy frame envelope, handshake,
+and request/reply roots for that vocabulary. Reusable pattern markers live in
+`signal-sema`; the current shared Signal frame kernel for component contracts is
+`signal-frame`.
 
 ## What this crate owns
 
@@ -49,13 +49,12 @@ sema-ecosystem's request/reply vocabulary on top, the same way
   `*Query` types), `Ok`, and the closed `RelationKind` enum.
 - Auxiliary diagnostic types and the typed `Hash` (BLAKE3 32-byte)
   alias.
-- The criome-side `Request` / `Reply` aliases over
-  `signal_core::Request<Payload>` / `Reply<Payload>` with the
-  sema-ecosystem's payload types.
+- The criome-side local `Request` / `Reply` roots with the sema-ecosystem's
+  payload types.
 
-The frame envelope, handshake, root-verb spine, `Operation`/`Request`/
-`Reply` generic shapes, exchange identifiers, `Slot<T>`, `Revision`, and
-pattern markers are owned by `signal-core`, not here.
+The current local frame envelope, handshake, request/reply roots, `Slot<T>`,
+and `Revision` live here. `PatternField<T>`, `(Bind)`, and `(Wildcard)` are
+re-exported from `signal-sema`.
 
 ## Constraints — perfect specificity at the wire
 
@@ -67,15 +66,14 @@ pattern markers are owned by `signal-core`, not here.
   rebuilds bring the world forward together via the criome self-host
   loop. New kinds land by adding the typed struct plus the closed-enum
   variant.
-- Multi-operation atomic commits compose as `Request<Payload>` with
-  `NonEmpty<Operation>` via `signal-core::RequestBuilder` — there is no
-  separate `AtomicBatch` / `BatchOperation` payload and no `Atomic` root
-  verb. Atomicity is structural.
+- Multi-operation atomic commits are still carried by this crate's local
+  `AtomicBatch` / `BatchOperation` legacy shape. Replacing that with the
+  current structural multi-operation Signal shape is future migration work.
 - A pattern/query is itself a record kind (`NodeQuery` paired with
   `Node`), carrying `PatternField<T>` values via typed marker records
   `(Bind)` and `(Wildcard)`. No parallel pattern grammar exists.
-- The wire format is rkyv with `signal-core`'s canonical pinned feature
-  set; 4-byte big-endian length prefix; bytecheck validation on read.
+- The wire format is rkyv with the canonical pinned feature set; 4-byte
+  big-endian length prefix; bytecheck validation on read.
 - The contract owns both the wire form (rkyv) and the text form (NOTA)
   of its typed records; consumers do not carry shadow types that
   re-derive text projection. Round-trip witnesses for both forms live in
@@ -96,8 +94,7 @@ trained using binary signal data*.
 
 This crate does not own:
 
-- the frame kernel, handshake, verb spine, or identity primitives
-  (`signal-core`);
+- the current shared Signal frame kernel (`signal-frame`);
 - Nexus's NOTA record vocabulary or parser (`nexus`);
 - criome's records database, validator pipeline, or storage authority
   (`criome`);
@@ -109,8 +106,8 @@ This crate does not own:
 
 - `ARCHITECTURE.md` — the layered family, the per-verb payloads, the
   flow-graph kinds, schema discipline, and the reply protocol.
-- `../signal-core/ARCHITECTURE.md` — the frame kernel this crate layers
-  on.
+- `../signal-frame/ARCHITECTURE.md` — the current shared Signal frame kernel
+  that future contract-shaped work targets.
 - `../criome/ARCHITECTURE.md` — the validator and storage authority that
   consumes these records.
 - `../nexus/ARCHITECTURE.md` — the human-facing NOTA translation surface.
