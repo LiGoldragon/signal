@@ -37,7 +37,7 @@ pub enum AuthProof {
 }
 
 /// 48-byte BLS signature in G1. Wire/auth-only — never crosses
-/// the Nexus projection boundary, so no `NotaTransparent` derive.
+/// the Nexus projection boundary, so it has no NOTA codec derive.
 #[derive(Archive, RkyvSerialize, RkyvDeserialize, Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub struct BlsG1([u8; 48]);
 

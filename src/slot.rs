@@ -27,7 +27,7 @@
 
 use core::marker::PhantomData;
 
-use nota_codec::{Decoder, Encoder, NotaDecode, NotaEncode, NotaTransparent, Result};
+use nota_next::{Block, NotaBlock, NotaDecode, NotaDecodeError, NotaEncode};
 use rkyv::{Archive, Deserialize as RkyvDeserialize, Serialize as RkyvSerialize};
 
 /// Marker for slots whose kind isn't statically known at the point
@@ -46,7 +46,7 @@ pub struct AnyKind;
 /// `Slot<Kind>`, not as content-hash.
 pub struct Slot<T>(u64, PhantomData<T>);
 
-// ─── Manual impls (NotaTransparent doesn't handle generics) ───
+// ─── Manual impls (derive does not handle generic transparent newtypes) ───
 
 impl<T> Slot<T> {
     /// Read out the underlying integer. Equivalent to `u64::from(slot)`.
@@ -98,15 +98,14 @@ impl<T> core::fmt::Debug for Slot<T> {
 }
 
 impl<T> NotaEncode for Slot<T> {
-    fn encode(&self, encoder: &mut Encoder) -> Result<()> {
-        <u64 as NotaEncode>::encode(&self.0, encoder)
+    fn to_nota(&self) -> String {
+        self.0.to_nota()
     }
 }
 
 impl<T> NotaDecode for Slot<T> {
-    fn decode(decoder: &mut Decoder<'_>) -> Result<Self> {
-        let inner = <u64 as NotaDecode>::decode(decoder)?;
-        Ok(Slot(inner, PhantomData))
+    fn from_nota_block(block: &Block) -> Result<Self, NotaDecodeError> {
+        Ok(Slot(NotaBlock::new(block).parse_integer()?, PhantomData))
     }
 }
 
@@ -183,5 +182,17 @@ where
 /// Revision — global monotone write-clock. Each successful
 /// transaction increments the revision; `expected_rev` carries
 /// CAS semantics for `MutateOperation` / `RetractOperation`.
-#[derive(Archive, RkyvSerialize, RkyvDeserialize, NotaTransparent, Debug, Clone, Copy, PartialEq, Eq, Hash)]
+#[derive(Archive, RkyvSerialize, RkyvDeserialize, NotaEncode, NotaDecode, Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub struct Revision(u64);
+
+impl From<u64> for Revision {
+    fn from(value: u64) -> Self {
+        Self(value)
+    }
+}
+
+impl From<Revision> for u64 {
+    fn from(revision: Revision) -> Self {
+        revision.0
+    }
+}

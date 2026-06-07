@@ -61,7 +61,7 @@ and `Revision`; `PatternField<T>` is re-exported from `signal-sema`.
 ## What this crate does *not* define
 
 - **The Nexus NOTA record vocabulary itself** (the records humans type) —
-  defined by the Nexus vocabulary/spec and parsed by nota-codec.
+  defined by the Nexus vocabulary/spec and parsed by nota-next.
 - **The current shared Signal kernel** — owned by `signal-frame`.
 - **Sema state** — owned by criome.
 - **The validator pipeline** — owned by criome.

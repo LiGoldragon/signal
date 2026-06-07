@@ -13,7 +13,7 @@
 //! intent slot. The shells map the glyph/stroke names to their
 //! native idioms.
 
-use nota_codec::{NotaEnum, NotaRecord};
+use nota_next::{NotaDecode, NotaEncode};
 use rkyv::{Archive, Deserialize as RkyvDeserialize, Serialize as RkyvSerialize};
 use signal_derive::Schema;
 
@@ -26,7 +26,9 @@ use crate::flow::RelationKind;
 /// the workbench surfaces new state distinctions. Each field
 /// names an *intent slot* (the meaning); shells map intent
 /// slots to concrete colours.
-#[derive(Archive, RkyvSerialize, RkyvDeserialize, NotaRecord, Schema, Debug, Clone, PartialEq, Eq, Hash)]
+#[derive(
+    Archive, RkyvSerialize, RkyvDeserialize, NotaEncode, NotaDecode, Schema, Debug, Clone, PartialEq, Eq, Hash,
+)]
 pub struct Theme {
     /// Display label for this theme.
     pub display_name: String,
@@ -45,7 +47,9 @@ pub struct Theme {
 /// A token naming an intent. Shells maintain a built-in
 /// mapping from token to native colour. New tokens added here
 /// are added to every shell's mapping table.
-#[derive(Archive, RkyvSerialize, RkyvDeserialize, NotaEnum, Schema, Debug, Clone, Copy, PartialEq, Eq, Hash)]
+#[derive(
+    Archive, RkyvSerialize, RkyvDeserialize, NotaEncode, NotaDecode, Schema, Debug, Clone, Copy, PartialEq, Eq, Hash,
+)]
 pub enum IntentToken {
     /// Use the shell's neutral background.
     NeutralBg,
@@ -65,7 +69,9 @@ pub enum IntentToken {
 }
 
 /// Per-node-kind visual encoding.
-#[derive(Archive, RkyvSerialize, RkyvDeserialize, NotaRecord, Schema, Debug, Clone, PartialEq, Eq, Hash)]
+#[derive(
+    Archive, RkyvSerialize, RkyvDeserialize, NotaEncode, NotaDecode, Schema, Debug, Clone, PartialEq, Eq, Hash,
+)]
 pub struct KindStyle {
     /// Which node-kind this style applies to (matches the
     /// node-kind name in the schema).
@@ -79,7 +85,9 @@ pub struct KindStyle {
 
 /// Named glyph tokens. Shells maintain a built-in mapping. New
 /// tokens are added when new visual idioms are needed.
-#[derive(Archive, RkyvSerialize, RkyvDeserialize, NotaEnum, Schema, Debug, Clone, Copy, PartialEq, Eq, Hash)]
+#[derive(
+    Archive, RkyvSerialize, RkyvDeserialize, NotaEncode, NotaDecode, Schema, Debug, Clone, Copy, PartialEq, Eq, Hash,
+)]
 pub enum GlyphToken {
     /// ⊙ Source-style glyph.
     SourceCircle,
@@ -96,14 +104,18 @@ pub enum GlyphToken {
 }
 
 /// Per-RelationKind visual encoding.
-#[derive(Archive, RkyvSerialize, RkyvDeserialize, NotaRecord, Schema, Debug, Clone, Copy, PartialEq, Eq, Hash)]
+#[derive(
+    Archive, RkyvSerialize, RkyvDeserialize, NotaEncode, NotaDecode, Schema, Debug, Clone, Copy, PartialEq, Eq, Hash,
+)]
 pub struct RelationKindStyle {
     pub relation: RelationKind,
     pub stroke: StrokeToken,
 }
 
 /// Named stroke tokens. Shells map to native line styles.
-#[derive(Archive, RkyvSerialize, RkyvDeserialize, NotaEnum, Schema, Debug, Clone, Copy, PartialEq, Eq, Hash)]
+#[derive(
+    Archive, RkyvSerialize, RkyvDeserialize, NotaEncode, NotaDecode, Schema, Debug, Clone, Copy, PartialEq, Eq, Hash,
+)]
 pub enum StrokeToken {
     /// Solid line with open arrowhead.
     SolidOpenArrow,
@@ -118,17 +130,17 @@ pub enum StrokeToken {
 }
 
 /// Paired query kinds — first cut.
-#[derive(Archive, RkyvSerialize, RkyvDeserialize, NotaRecord, Debug, Clone)]
+#[derive(Archive, RkyvSerialize, RkyvDeserialize, NotaEncode, NotaDecode, Debug, Clone)]
 pub struct ThemeQuery {
     pub display_name: PatternField<String>,
 }
 
-#[derive(Archive, RkyvSerialize, RkyvDeserialize, NotaRecord, Debug, Clone)]
+#[derive(Archive, RkyvSerialize, RkyvDeserialize, NotaEncode, NotaDecode, Debug, Clone)]
 pub struct KindStyleQuery {
     pub kind_name: PatternField<String>,
 }
 
-#[derive(Archive, RkyvSerialize, RkyvDeserialize, NotaRecord, Debug, Clone)]
+#[derive(Archive, RkyvSerialize, RkyvDeserialize, NotaEncode, NotaDecode, Debug, Clone)]
 pub struct RelationKindStyleQuery {
     pub relation: PatternField<RelationKind>,
 }

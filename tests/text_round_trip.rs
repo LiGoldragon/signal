@@ -1,33 +1,30 @@
 //! Text round-trip tests for every signal type that derives a
-//! nota-codec derive.
+//! nota-next derive.
 //!
-//! Closes the loop end-to-end: nota-codec's own tests use toy
+//! Closes the loop end-to-end: nota-next's own tests use toy
 //! types defined inside the codec crate; this file exercises
 //! the *real* signal types (Node, Edge, Graph, AssertOperation,
 //! MutateOperation, the three Query types, …) through the
-//! Decoder/Encoder protocol.
+//! value-shaped NotaSource/to_nota API.
 
-use nota_codec::{Decoder, Encoder, NotaDecode, NotaEncode};
+use nota_next::{NotaDecode, NotaDecodeError, NotaEncode, NotaSource};
 use signal::{
-    AssertOperation, Edge, EdgeQuery, Graph, GraphQuery, MutateOperation, Node, NodeQuery, Ok, PatternField,
-    QueryOperation, RelationKind, RetractOperation, Revision, Slot,
+    AssertOperation, Edge, EdgeQuery, Graph, GraphQuery, MutateOperation, Node, NodePlacement, NodeQuery, Ok,
+    PatternField, QueryOperation, RelationKind, RetractOperation, Revision, Slot,
 };
 
 fn round_trip<T>(value: T, expected_text: &str)
 where
     T: NotaEncode + NotaDecode + PartialEq + std::fmt::Debug,
 {
-    let mut encoder = Encoder::new();
-    value.encode(&mut encoder).unwrap();
-    let text = encoder.into_string();
+    let text = value.to_nota();
     assert_eq!(text, expected_text, "encode produced unexpected text");
 
-    let mut decoder = Decoder::new(&text);
-    let recovered = T::decode(&mut decoder).unwrap();
+    let recovered = NotaSource::new(&text).parse::<T>().unwrap();
     assert_eq!(value, recovered, "decode did not round-trip the value");
 }
 
-// ─── NotaTransparent — Slot / Revision ─────────────────────
+// ─── NotaEncode, NotaDecode — Slot / Revision ─────────────────────
 
 #[test]
 fn slot_round_trips_as_bare_integer() {
@@ -39,7 +36,7 @@ fn revision_round_trips_as_bare_integer() {
     round_trip(Revision::from(7u64), "7");
 }
 
-// ─── NotaEnum — RelationKind ───────────────────────────────
+// ─── NotaEncode, NotaDecode — RelationKind ───────────────────────────────
 
 #[test]
 fn every_relation_kind_round_trips() {
@@ -54,17 +51,14 @@ fn every_relation_kind_round_trips() {
         RelationKind::Implements,
         RelationKind::IsA,
     ] {
-        let mut encoder = Encoder::new();
-        kind.encode(&mut encoder).unwrap();
-        let text = encoder.into_string();
-        let mut decoder = Decoder::new(&text);
-        assert_eq!(RelationKind::decode(&mut decoder).unwrap(), kind);
+        let text = kind.to_nota();
+        assert_eq!(NotaSource::new(&text).parse::<RelationKind>().unwrap(), kind);
     }
 }
 
-// ─── NotaRecord — flow data kinds ──────────────────────────
+// ─── nota-next-derived flow data kinds ─────────────────────
 //
-// NotaRecord-derived structs encode without a type tag per the
+// Derived structs encode without a type tag per the
 // three-case PascalCase rule (case 2: `(fields…)` with no leading
 // PascalCase identifier). The struct type is determined by the
 // schema position the record sits at.
@@ -76,7 +70,7 @@ fn ok_unit_record_round_trips() {
 
 #[test]
 fn node_round_trips() {
-    round_trip(Node { name: "alice".into() }, "(alice)");
+    round_trip(Node { name: "alice".into() }, "([alice])");
 }
 
 #[test]
@@ -100,9 +94,17 @@ fn graph_with_populated_collections_round_trips() {
     );
 }
 
-// ─── NotaSum — RetractOperation per-kind variants ──────────
+#[test]
+fn node_placement_signed_coordinates_round_trip() {
+    round_trip(
+        NodePlacement { graph: Slot::from(1u64), node: Slot::from(2u64), x_hundredths: -125, y_hundredths: 300 },
+        "(1 2 -125 300)",
+    );
+}
+
+// ─── RetractOperation per-kind variants ────────────────────
 //
-// NotaSum struct variants keep the variant tag (case 1). Option<T>
+// Struct variants keep the variant tag. Option<T>
 // present wraps as `(Some inner)`.
 
 #[test]
@@ -123,15 +125,15 @@ fn retract_node_with_optional_revision_absent_round_trips() {
 // inner operations needs a hand-written codec impl that lands
 // in M1+. No text round-trip tests here today.
 
-// ─── NotaSum — closed-kind dispatch ────────────────────────
+// ─── Closed-kind dispatch ──────────────────────────────────
 //
-// NotaSum newtype variants wrap the payload with the variant tag:
-// `(VariantName <payload>)`. When the payload is a NotaRecord
-// struct, the inner appears as a tag-less nested record.
+// Newtype variants wrap the payload with the variant tag:
+// `(VariantName <payload>)`. When the payload is a derived struct,
+// the inner appears as a tag-less nested record.
 
 #[test]
 fn assert_operation_node_round_trips() {
-    round_trip(AssertOperation::Node(Node { name: "alice".into() }), "(Node (alice))");
+    round_trip(AssertOperation::Node(Node { name: "alice".into() }), "(Node ([alice]))");
 }
 
 #[test]
@@ -150,7 +152,7 @@ fn mutate_operation_struct_variant_with_present_optional_round_trips() {
             new: Node { name: "alice".into() },
             expected_rev: Some(Revision::from(7u64)),
         },
-        "(Node 100 (alice) (Some 7))",
+        "(Node 100 ([alice]) (Some 7))",
     );
 }
 
@@ -158,7 +160,7 @@ fn mutate_operation_struct_variant_with_present_optional_round_trips() {
 fn mutate_operation_struct_variant_with_absent_optional_round_trips() {
     round_trip(
         MutateOperation::Node { slot: Slot::from(100u64), new: Node { name: "alice".into() }, expected_rev: None },
-        "(Node 100 (alice) None)",
+        "(Node 100 ([alice]) None)",
     );
 }
 
@@ -176,7 +178,7 @@ fn node_query_with_bind_round_trips() {
 
 #[test]
 fn node_query_with_match_round_trips() {
-    round_trip(NodeQuery { name: PatternField::Match("alice".into()) }, "(alice)");
+    round_trip(NodeQuery { name: PatternField::Match("alice".into()) }, "([alice])");
 }
 
 #[test]
@@ -201,7 +203,9 @@ fn bind_record_does_not_decode_as_string_field() {
     // A `(Bind)` marker can't appear at the Node.name String
     // position. With Node now tag-less, the wire `((Bind))` opens
     // Node then encounters `(` where the name string is expected.
-    let mut decoder = Decoder::new("((Bind))");
-    let error = Node::decode(&mut decoder).unwrap_err();
-    assert!(matches!(error, nota_codec::Error::UnexpectedToken { expected: "string literal or bare identifier", .. }));
+    let error = NotaSource::new("((Bind))").parse::<Node>().unwrap_err();
+    assert!(matches!(
+        error,
+        NotaDecodeError::ExpectedDelimited { type_name: "String", delimiter: "string atom or square bracket" }
+    ));
 }

@@ -99,8 +99,7 @@ legacy wire envelope:
   paired `NodeQuery` / `EdgeQuery` / `GraphQuery`), `Ok`,
   `RelationKind` (closed enum of 9 relation variants — Flow,
   DependsOn, Contains, References, Produces, Consumes, Calls,
-  Implements, IsA). Encoding/decoding handled by the
-  nota-derive
+  Implements, IsA). Encoding/decoding handled by `nota-next`
   derives — no hand-written `from_variant_name` /
   `variant_name` helpers needed. The node-kind taxonomy
   (Source / Transformer / Sink / Junction / Supervisor) belongs
@@ -259,8 +258,8 @@ src/
 ├── diagnostic.rs — Diagnostic, DiagnosticLevel, DiagnosticSite (incl. OperationInBatch),
 │                    DiagnosticSuggestion, Applicability
 ├── hash.rs       — Hash (BLAKE3 32-byte alias)
-└── flow.rs       — Node, Edge, Graph (with paired *Query types via NotaRecord),
-                    Ok, RelationKind (NotaEnum)
+└── flow.rs       — Node, Edge, Graph (with paired *Query types),
+                    Ok, RelationKind (nota-next codecs)
 ```
 
 Local legacy envelope source — `frame.rs`, `handshake.rs`, `auth.rs`,

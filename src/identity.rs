@@ -11,7 +11,7 @@
 //! support comes when the authz model lands; the shape here
 //! does not preclude it.
 
-use nota_codec::NotaRecord;
+use nota_next::{NotaDecode, NotaEncode};
 use rkyv::{Archive, Deserialize as RkyvDeserialize, Serialize as RkyvSerialize};
 use signal_derive::Schema;
 
@@ -19,7 +19,9 @@ use crate::PatternField;
 
 /// Identifies a participant. Concrete fields are first-cut;
 /// they grow as the authz model fills in.
-#[derive(Archive, RkyvSerialize, RkyvDeserialize, NotaRecord, Schema, Debug, Clone, PartialEq, Eq, Hash)]
+#[derive(
+    Archive, RkyvSerialize, RkyvDeserialize, NotaEncode, NotaDecode, Schema, Debug, Clone, PartialEq, Eq, Hash,
+)]
 pub struct Principal {
     /// Human-readable label for the principal — display name,
     /// not identity. Identity is the slot.
@@ -31,7 +33,7 @@ pub struct Principal {
 }
 
 /// Paired query kind for Principal.
-#[derive(Archive, RkyvSerialize, RkyvDeserialize, NotaRecord, Debug, Clone)]
+#[derive(Archive, RkyvSerialize, RkyvDeserialize, NotaEncode, NotaDecode, Debug, Clone)]
 pub struct PrincipalQuery {
     pub display_name: PatternField<String>,
     pub note: PatternField<String>,

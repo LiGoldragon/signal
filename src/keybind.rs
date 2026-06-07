@@ -6,21 +6,25 @@
 //! ActionToken → native gesture; the user's KeybindMap
 //! overrides per-action when present.
 
-use nota_codec::{NotaEnum, NotaRecord};
+use nota_next::{NotaDecode, NotaEncode};
 use rkyv::{Archive, Deserialize as RkyvDeserialize, Serialize as RkyvSerialize};
 use signal_derive::Schema;
 
 use crate::PatternField;
 
 /// Map of input → action.
-#[derive(Archive, RkyvSerialize, RkyvDeserialize, NotaRecord, Schema, Debug, Clone, PartialEq, Eq, Hash)]
+#[derive(
+    Archive, RkyvSerialize, RkyvDeserialize, NotaEncode, NotaDecode, Schema, Debug, Clone, PartialEq, Eq, Hash,
+)]
 pub struct KeybindMap {
     pub display_name: String,
     pub bindings: Vec<KeybindEntry>,
 }
 
 /// One binding.
-#[derive(Archive, RkyvSerialize, RkyvDeserialize, NotaRecord, Schema, Debug, Clone, PartialEq, Eq, Hash)]
+#[derive(
+    Archive, RkyvSerialize, RkyvDeserialize, NotaEncode, NotaDecode, Schema, Debug, Clone, PartialEq, Eq, Hash,
+)]
 pub struct KeybindEntry {
     /// Input description as a string ("Cmd+S",
     /// "Shift+LeftClick", "Backspace"). Concrete grammar
@@ -32,7 +36,9 @@ pub struct KeybindEntry {
 /// Abstract action names the workbench understands. New
 /// actions added here are added to every shell's binding
 /// dispatch.
-#[derive(Archive, RkyvSerialize, RkyvDeserialize, NotaEnum, Schema, Debug, Clone, Copy, PartialEq, Eq, Hash)]
+#[derive(
+    Archive, RkyvSerialize, RkyvDeserialize, NotaEncode, NotaDecode, Schema, Debug, Clone, Copy, PartialEq, Eq, Hash,
+)]
 pub enum ActionToken {
     /// Toggle the wire pane.
     ToggleWirePane,
@@ -58,7 +64,7 @@ pub enum ActionToken {
 }
 
 /// Paired query.
-#[derive(Archive, RkyvSerialize, RkyvDeserialize, NotaRecord, Debug, Clone)]
+#[derive(Archive, RkyvSerialize, RkyvDeserialize, NotaEncode, NotaDecode, Debug, Clone)]
 pub struct KeybindMapQuery {
     pub display_name: PatternField<String>,
 }

@@ -13,8 +13,8 @@
 //! `Diagnostic`-family types are wire-only — text rendering for
 //! diagnostics happens ad-hoc in the nexus daemon (per-level
 //! formatting, suggestion-application UX, source-span highlight)
-//! rather than through the uniform `NotaRecord` derive.
-use nota_codec::NotaEnum;
+//! rather than through a uniform NOTA codec derive.
+use nota_next::{NotaDecode, NotaEncode};
 use rkyv::{Archive, Deserialize as RkyvDeserialize, Serialize as RkyvSerialize};
 
 use crate::slot::{AnyKind, Slot};
@@ -53,7 +53,7 @@ impl Diagnostic {
     }
 }
 
-#[derive(Archive, RkyvSerialize, RkyvDeserialize, NotaEnum, Debug, Clone, Copy, PartialEq, Eq, Hash)]
+#[derive(Archive, RkyvSerialize, RkyvDeserialize, NotaEncode, NotaDecode, Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum DiagnosticLevel {
     Error,
     Warning,
@@ -85,7 +85,7 @@ pub struct DiagnosticSuggestion {
     pub site: Option<DiagnosticSite>,
 }
 
-#[derive(Archive, RkyvSerialize, RkyvDeserialize, NotaEnum, Debug, Clone, Copy, PartialEq, Eq, Hash)]
+#[derive(Archive, RkyvSerialize, RkyvDeserialize, NotaEncode, NotaDecode, Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum Applicability {
     MachineApplicable,
     MaybeIncorrect,

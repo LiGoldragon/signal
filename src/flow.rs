@@ -27,7 +27,7 @@
 //! Rust. Lands alongside the prism skeleton; until then nodes are
 //! relation-only.
 
-use nota_codec::{NotaEnum, NotaRecord};
+use nota_next::{NotaDecode, NotaEncode};
 use rkyv::{Archive, Deserialize as RkyvDeserialize, Serialize as RkyvSerialize};
 use signal_derive::Schema;
 
@@ -41,7 +41,9 @@ use crate::slot::Slot;
 /// name; two nodes with the same name are two different nodes
 /// (different slots). Names exist for display, never for
 /// reference.
-#[derive(Archive, RkyvSerialize, RkyvDeserialize, NotaRecord, Schema, Debug, Clone, PartialEq, Eq, Hash)]
+#[derive(
+    Archive, RkyvSerialize, RkyvDeserialize, NotaEncode, NotaDecode, Schema, Debug, Clone, PartialEq, Eq, Hash,
+)]
 pub struct Node {
     pub name: String,
 }
@@ -49,7 +51,9 @@ pub struct Node {
 /// A directed edge from one node to another, typed by its relation
 /// kind. Per Li 2026-04-26: every edge declares what relation it
 /// carries — strongly-typed, closed vocabulary.
-#[derive(Archive, RkyvSerialize, RkyvDeserialize, NotaRecord, Schema, Debug, Clone, Copy, PartialEq, Eq, Hash)]
+#[derive(
+    Archive, RkyvSerialize, RkyvDeserialize, NotaEncode, NotaDecode, Schema, Debug, Clone, Copy, PartialEq, Eq, Hash,
+)]
 pub struct Edge {
     pub from: Slot<Node>,
     pub to: Slot<Node>,
@@ -59,7 +63,9 @@ pub struct Edge {
 /// Closed vocabulary of relation kinds an Edge can carry. Covers
 /// PROV-O / UML / Mermaid-class precedent. Extend as new relation
 /// semantics are needed; deletions are breaking changes.
-#[derive(Archive, RkyvSerialize, RkyvDeserialize, NotaEnum, Schema, Debug, Clone, Copy, PartialEq, Eq, Hash)]
+#[derive(
+    Archive, RkyvSerialize, RkyvDeserialize, NotaEncode, NotaDecode, Schema, Debug, Clone, Copy, PartialEq, Eq, Hash,
+)]
 pub enum RelationKind {
     /// Generic forward flow — data, control, anything moving from
     /// `from` to `to`.
@@ -84,7 +90,9 @@ pub enum RelationKind {
 
 /// A flow-graph: a titled collection of nodes and edges, with
 /// optional nested subgraphs.
-#[derive(Archive, RkyvSerialize, RkyvDeserialize, NotaRecord, Schema, Debug, Clone, PartialEq, Eq, Hash)]
+#[derive(
+    Archive, RkyvSerialize, RkyvDeserialize, NotaEncode, NotaDecode, Schema, Debug, Clone, PartialEq, Eq, Hash,
+)]
 pub struct Graph {
     pub title: String,
     pub nodes: Vec<Slot<Node>>,
@@ -95,14 +103,14 @@ pub struct Graph {
 // ─── Query kinds ─────────────────────────────────────────────
 
 /// Query for `Node` records. Match by `name` field.
-#[derive(Archive, RkyvSerialize, RkyvDeserialize, NotaRecord, Debug, Clone, PartialEq)]
+#[derive(Archive, RkyvSerialize, RkyvDeserialize, NotaEncode, NotaDecode, Debug, Clone, PartialEq)]
 pub struct NodeQuery {
     pub name: PatternField<String>,
 }
 
 /// Query for `Edge` records. Match by any combination of `from`,
 /// `to`, `kind`.
-#[derive(Archive, RkyvSerialize, RkyvDeserialize, NotaRecord, Debug, Clone, PartialEq)]
+#[derive(Archive, RkyvSerialize, RkyvDeserialize, NotaEncode, NotaDecode, Debug, Clone, PartialEq)]
 pub struct EdgeQuery {
     pub from: PatternField<Slot<Node>>,
     pub to: PatternField<Slot<Node>>,
@@ -112,7 +120,7 @@ pub struct EdgeQuery {
 /// Query for `Graph` records. Match by `title`. List-shaped fields
 /// (`nodes`, `edges`, `subgraphs`) are not patternable in M0 —
 /// list patterns are M1+.
-#[derive(Archive, RkyvSerialize, RkyvDeserialize, NotaRecord, Debug, Clone, PartialEq)]
+#[derive(Archive, RkyvSerialize, RkyvDeserialize, NotaEncode, NotaDecode, Debug, Clone, PartialEq)]
 pub struct GraphQuery {
     pub title: PatternField<String>,
 }
@@ -124,6 +132,18 @@ pub struct GraphQuery {
 /// succeeded with no further information. Failure replies use
 /// the existing `Diagnostic` kind.
 #[derive(
-    Archive, RkyvSerialize, RkyvDeserialize, NotaRecord, Schema, Debug, Clone, Copy, PartialEq, Eq, Hash, Default,
+    Archive,
+    RkyvSerialize,
+    RkyvDeserialize,
+    NotaEncode,
+    NotaDecode,
+    Schema,
+    Debug,
+    Clone,
+    Copy,
+    PartialEq,
+    Eq,
+    Hash,
+    Default,
 )]
 pub struct Ok {}

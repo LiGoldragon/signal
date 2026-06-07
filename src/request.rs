@@ -15,11 +15,11 @@ use crate::edit::{AssertOperation, AtomicBatch, BatchOperation, MutateOperation,
 use crate::handshake::HandshakeRequest;
 use crate::query::QueryOperation;
 
-/// Wire-only envelope. Text-bound dispatch happens at the codec
-/// layer's `Decoder::next_request` (sigil + delimiter routing);
-/// `Request` itself is not a `NotaSum` because its variants
-/// dispatch on different surface forms (sigils, delimiters, the
-/// Handshake special-case) rather than on a uniform record-head.
+/// Wire-only envelope. Text-bound dispatch happens at the Nexus
+/// translator boundary; `Request` itself does not derive a NOTA
+/// codec because its variants dispatch on different surface forms
+/// (sigils, delimiters, the Handshake special-case) rather than on
+/// a uniform record head.
 #[derive(Archive, RkyvSerialize, RkyvDeserialize, Debug, Clone, PartialEq)]
 pub enum Request {
     /// MUST be the first request on a new connection. See

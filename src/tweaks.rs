@@ -11,7 +11,7 @@
 //! change appears in the wire pane, lands in the change log,
 //! and is recursively introspectable.
 
-use nota_codec::NotaRecord;
+use nota_next::{NotaDecode, NotaEncode};
 use rkyv::{Archive, Deserialize as RkyvDeserialize, Serialize as RkyvSerialize};
 use signal_derive::Schema;
 
@@ -23,7 +23,9 @@ use crate::slot::Slot;
 use crate::style::Theme;
 
 /// Per-Principal index of style/configuration records.
-#[derive(Archive, RkyvSerialize, RkyvDeserialize, NotaRecord, Schema, Debug, Clone, Copy, PartialEq, Eq, Hash)]
+#[derive(
+    Archive, RkyvSerialize, RkyvDeserialize, NotaEncode, NotaDecode, Schema, Debug, Clone, Copy, PartialEq, Eq, Hash,
+)]
 pub struct Tweaks {
     /// Whose Tweaks these are.
     pub principal: Slot<Principal>,
@@ -36,7 +38,7 @@ pub struct Tweaks {
 }
 
 /// Paired query kind for Tweaks.
-#[derive(Archive, RkyvSerialize, RkyvDeserialize, NotaRecord, Debug, Clone)]
+#[derive(Archive, RkyvSerialize, RkyvDeserialize, NotaEncode, NotaDecode, Debug, Clone)]
 pub struct TweaksQuery {
     pub principal: PatternField<Slot<Principal>>,
     pub theme: PatternField<Slot<Theme>>,
