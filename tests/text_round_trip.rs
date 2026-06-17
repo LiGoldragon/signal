@@ -70,7 +70,7 @@ fn ok_unit_record_round_trips() {
 
 #[test]
 fn node_round_trips() {
-    round_trip(Node { name: "alice".into() }, "([alice])");
+    round_trip(Node { name: "alice".into() }, "(alice)");
 }
 
 #[test]
@@ -133,7 +133,7 @@ fn retract_node_with_optional_revision_absent_round_trips() {
 
 #[test]
 fn assert_operation_node_round_trips() {
-    round_trip(AssertOperation::Node(Node { name: "alice".into() }), "(Node ([alice]))");
+    round_trip(AssertOperation::Node(Node { name: "alice".into() }), "(Node (alice))");
 }
 
 #[test]
@@ -152,7 +152,7 @@ fn mutate_operation_struct_variant_with_present_optional_round_trips() {
             new: Node { name: "alice".into() },
             expected_rev: Some(Revision::from(7u64)),
         },
-        "(Node 100 ([alice]) (Some 7))",
+        "(Node 100 (alice) (Some 7))",
     );
 }
 
@@ -160,7 +160,7 @@ fn mutate_operation_struct_variant_with_present_optional_round_trips() {
 fn mutate_operation_struct_variant_with_absent_optional_round_trips() {
     round_trip(
         MutateOperation::Node { slot: Slot::from(100u64), new: Node { name: "alice".into() }, expected_rev: None },
-        "(Node 100 ([alice]) None)",
+        "(Node 100 (alice) None)",
     );
 }
 
@@ -178,7 +178,7 @@ fn node_query_with_bind_round_trips() {
 
 #[test]
 fn node_query_with_match_round_trips() {
-    round_trip(NodeQuery { name: PatternField::Match("alice".into()) }, "([alice])");
+    round_trip(NodeQuery { name: PatternField::Match("alice".into()) }, "(alice)");
 }
 
 #[test]

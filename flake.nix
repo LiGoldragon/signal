@@ -32,9 +32,18 @@
           inherit cargoArtifacts;
         });
 
-        checks.default = craneLib.cargoTest (commonArgs // {
-          inherit cargoArtifacts;
-        });
+        checks = {
+          test = craneLib.cargoTest (commonArgs // {
+            inherit cargoArtifacts;
+          });
+          fmt = craneLib.cargoFmt {
+            inherit src;
+          };
+          clippy = craneLib.cargoClippy (commonArgs // {
+            inherit cargoArtifacts;
+            cargoClippyExtraArgs = "--all-targets --all-features -- -D warnings";
+          });
+        };
 
         devShells.default = pkgs.mkShell {
           name = "signal";
