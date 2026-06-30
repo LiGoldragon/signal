@@ -271,6 +271,150 @@ Local legacy envelope source — `frame.rs`, `handshake.rs`, `auth.rs`,
 `slot.rs`, and `identity.rs` — still exists in this repo. `pattern.rs`
 is now only a re-export of `signal-sema::PatternField`.
 
+## Target Signal direction
+
+This crate is a realization step. The workspace target is the shared
+**Signal Protocol** — one universal mail mechanism every component
+speaks — with the framing, dispatch, and route-derivation declared in
+schema rather than hand-rolled per crate. When this local envelope is
+cut over, the following discipline governs it. (Today's crate is the
+legacy precursor; the target shape is owned by `signal-frame` and the
+per-component `signal-*` contract crates.)
+
+### Signal is binary only
+
+Signal carries binary/rkyv only. `signal-frame` and the `signal-*` /
+`meta-signal-*` contract crates carry no NOTA encoding or projection on
+their request/reply types. NOTA is a separate text-edge concern that
+lives outside Signal entirely, applied only by the text-translator
+daemon at the boundary. A binary-only client structurally rejects NOTA
+text at the wire; only DOUBLE clients (text + binary, e.g. a CLI) carry
+the NOTA derive at all, and that derive lives in the consumer, not in
+the contract.
+
+### Signal is message triage
+
+A Signal engine does admission, dispatch, identity-stamping,
+validation, and wire-frame handling — nothing more. It owns no heavy
+algorithmic logic or decision-making: it routes input to Nexus and
+routes Nexus replies back to wire output. CLIs are thin Signal clients.
+A component's CLI is the *complete* typed text edge for that component:
+every operation reachable through a GUI or agent-facing client is also
+reachable through the thin CLI as a signal-backed call, with multi-step
+interaction carried by returned identifiers a later invocation
+references rather than by a persistent REPL.
+
+### Origin route — implicit return address
+
+Every message carries an **origin route** as automatic metadata that is
+*not* declared in the schema: a short, statistically-unique identifier
+acting as a return address that travels the whole way through Signal,
+then Nexus, then SEMA, and back, so a reply is associated with its
+originating query when it returns. It is internal to each component and
+need not be a long hash — just an echoed return address. This is the
+concrete form of request-reply correlation; the wire protocol's message
+data types carry correlation identity and lifecycle state
+(sent / queued / processing / replied) at the data-type level rather
+than through an external dispatcher table.
+
+`Communicate` is the wire trait between any two components, over binary
+rkyv with `signal-frame` (connection setup, async correlation
+identifiers, handshake). A universal mail-queue manager commits intent
+on accept, and the reply carries a database marker (hash plus counter)
+so a client verifies the transaction and keeps local state consistent
+against the daemon's authoritative database.
+
+### Short header — the 64-bit per-message prefix
+
+Every message carries a **short header**: a 64-bit prefix made of eight
+enums (one root verb plus seven sub-enums) that discriminates any
+namespace object in constant time, emitted by every signal contract.
+Everything past the header is body; the header carries discriminator
+information only, never payload.
+
+- Byte 0 is the **root verb** (e.g. Help / Query / Message); bytes 1–7
+  are verb-namespace sub-variants. In schema the header is a positional
+  `[Variant ...]` vector: data-carrying variants take the low slots and
+  bare unit variants follow, so adding a unit variant is a no-op wire
+  upgrade.
+- The root-verb namespace is **per-component**, not workspace-wide:
+  byte 0 is each channel's own root-verb enum (up to 256 verbs), keyed
+  for decoding by which channel produced the message. The namespace is
+  partitioned into a `SignalCore` system-types zone (universal
+  primitives) and a component-specific zone with pre-allocated sizes;
+  repartitioning is a major-version event. Byte 0 may split by golden
+  ratio between an owner-contract zone and a public-contract zone, with
+  both contracts required to agree at compile time. `SignalCore`
+  survives as a namespace concept even though the prior rename moved
+  content out of it.
+- Sub-enums default to one byte but pack tighter by inner type
+  (`Bool` = 1 bit, `Option` = 2, a 16-variant enum = 4 bits), letting
+  SEMA beat raw rkyv; freed bits and multi-byte sub-enums cover
+  more than 256 variants within 64 bits. Integers are typed values,
+  not sub-enum kinds.
+- **Universal data variants** (`U8`, `U16`, and other small primitives)
+  are pre-allocated across every signal namespace so each namespace
+  inherits them — used for things like a Criome 16-bit short public-key
+  identifier, generic counters, and small shared fixed-size values.
+- **Version is not in the header.** The engine enforces schema version
+  at the database level (one schema version per database; migration
+  changes the database, not per-message tags). Per-repo `signal-X`
+  versioned schema libraries are what enable cross-version decoding and
+  recovery.
+
+The wire-header pattern grows by **extension, not replacement**. The
+8-byte Tier-1 micro header is the base and lives as a parseable prefix
+inside longer headers; the prefix doubles as a default-on tap-anywhere
+observation channel after the network-fingerprint check that precedes
+zero-copy rkyv access. Three sizing tiers exist: (1) the 64-bit micro
+header, (2) a fixed extended Tier-2 header for payloads needing public
+keys, identities, signatures, or short descriptions (e.g. a Criome
+quorum authorization payload), and (3) the full unrestricted rkyv
+message.
+
+### Schema as protocol substrate
+
+The framing, short-header dispatch, route-enum derivation, and codec
+object belong declaratively in a root-level `signal-frame.schema`
+imported by component schemas, which inherit frame methods on their
+`Input` / `Output` surfaces — schema-as-protocol-substrate replacing
+hand-rolled transport route tables and frame codecs. The root
+schema-generated signal object carries the `signal-frame` protocol
+behavior for rkyv serialization and process-to-process dispatch.
+
+Schema files live with their contract's source-of-truth, named
+`<crate>/<contract-name>.schema`. Wire/signal schemas live in
+`signal-<component>` as the cross-component compilation boundary Rust
+sees as one canonical source, separate from daemon logic so consumers
+are not rebuilt on internal changes. A daemon's configuration type
+lives in the signal contract (imported for binary startup decode; a
+meta-signal `Configure` wraps it), not hand-written in the daemon.
+
+A daemon may expose more than one signal surface; configuration is just
+another typed signal surface, differentiated inside the **root
+enumerator** that contains the daemon's accepted signal surfaces.
+Real-time streaming is a separate Signal capability (working name
+`signal-real-time`) — it is Signal, not SEMA, and its storage format is
+open.
+
+### Authorization at the wire
+
+Owner / permission distinction can live as a typed `Permission` variant
+(`Owner` / `Permission` / `Unpermission`) inside the signal, with a
+general socket routing by variant prefix. The current implementation
+keeps the two-socket filesystem-managed approach (ordinary socket +
+owner socket); the contract is generated *as if* two sockets so a
+message is authenticated by the socket it arrived on, and
+permission-in-variant is deferred until needed.
+
+A **universal `Magnitude`** type in the shared typed-record crate
+(`signal-core` / `signal-sema`) replaces small ordinal enums. Its eight
+variants — `Zero`, `Minimum`, `VeryLow`, `Low`, `Medium`, `High`,
+`VeryHigh`, `Maximum` — declare `Zero` first so derived `Ord` places
+the neutral absent rung lowest (chosen over `Option`/`None`). The
+fixed-byte rkyv discriminant makes the width free; each consumer picks
+its own subset.
+
 ## Status
 
 **Working core.** Wire envelope + per-verb typed payloads +
