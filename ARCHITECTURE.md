@@ -172,6 +172,11 @@ struct + the closed-enum variant in this crate, propagating
 through criome's hand-coded dispatch — schema-as-data records
 are not authoritative until `prism` and a real reader exist.
 
+This crate owns both the wire form (rkyv) and the text form (NOTA)
+of its typed records. Consumers do not carry shadow types that
+re-derive the text projection; round-trip witnesses for both forms
+live in `tests/`.
+
 ## Wire format
 
 This crate's local wire format is rkyv 0.8 with the canonical pinned feature set
@@ -279,3 +284,8 @@ across every verb shape, pattern, and typed `Records` reply.
   criome/ARCHITECTURE.md
 - The text-translator daemon at the boundary:
   nexus/ARCHITECTURE.md
+- The current shared Signal frame kernel that future contract-shaped
+  work targets when this local envelope is cut over:
+  signal-frame/ARCHITECTURE.md
+- Why the kernel split out of `signal`:
+  `~/primary/skills/contract-repo.md` §"Kernel extraction trigger".
