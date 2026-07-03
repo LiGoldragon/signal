@@ -8,7 +8,7 @@
 //! semantic size hints (Narrow / Medium / Wide / Pixels(N)) to
 //! their native pixel/em systems.
 
-use nota_next::{Block, Delimiter, NotaBlock, NotaDecode, NotaDecodeError, NotaEncode};
+use nota::{Block, Delimiter, NotaBlock, NotaDecode, NotaDecodeError, NotaEncode};
 use rkyv::{Archive, Deserialize as RkyvDeserialize, Serialize as RkyvSerialize};
 use signal_derive::Schema;
 

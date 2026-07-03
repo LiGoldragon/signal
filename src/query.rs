@@ -9,7 +9,7 @@
 //! …) are M2+ work and live outside this enum when they land. M0
 //! supports kind-and-field matching only.
 
-use nota_next::{NotaDecode, NotaEncode};
+use nota::{NotaDecode, NotaEncode};
 use rkyv::{Archive, Deserialize as RkyvDeserialize, Serialize as RkyvSerialize};
 
 use crate::flow::{EdgeQuery, GraphQuery, NodeQuery};

@@ -11,7 +11,7 @@
 //! change appears in the wire pane, lands in the change log,
 //! and is recursively introspectable.
 
-use nota_next::{NotaDecode, NotaEncode};
+use nota::{NotaDecode, NotaEncode};
 use rkyv::{Archive, Deserialize as RkyvDeserialize, Serialize as RkyvSerialize};
 use signal_derive::Schema;
 

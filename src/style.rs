@@ -13,7 +13,7 @@
 //! intent slot. The shells map the glyph/stroke names to their
 //! native idioms.
 
-use nota_next::{NotaDecode, NotaEncode};
+use nota::{NotaDecode, NotaEncode};
 use rkyv::{Archive, Deserialize as RkyvDeserialize, Serialize as RkyvSerialize};
 use signal_derive::Schema;
 

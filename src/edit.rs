@@ -17,7 +17,7 @@
 //! Atomic batches wrap a sequence of edit operations as
 //! all-or-nothing.
 
-use nota_next::{Block, Delimiter, NotaBlock, NotaDecode, NotaDecodeError, NotaEncode};
+use nota::{Block, Delimiter, NotaBlock, NotaDecode, NotaDecodeError, NotaEncode};
 
 // `AtomicBatch` and `BatchOperation` derive only rkyv (no
 // `NotaEncode` / `NotaDecode`) for M0 — see their per-type docs

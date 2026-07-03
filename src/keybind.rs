@@ -6,7 +6,7 @@
 //! ActionToken → native gesture; the user's KeybindMap
 //! overrides per-action when present.
 
-use nota_next::{NotaDecode, NotaEncode};
+use nota::{NotaDecode, NotaEncode};
 use rkyv::{Archive, Deserialize as RkyvDeserialize, Serialize as RkyvSerialize};
 use signal_derive::Schema;
 

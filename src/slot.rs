@@ -27,7 +27,7 @@
 
 use core::marker::PhantomData;
 
-use nota_next::{Block, NotaBlock, NotaDecode, NotaDecodeError, NotaEncode};
+use nota::{Block, NotaBlock, NotaDecode, NotaDecodeError, NotaEncode};
 use rkyv::{Archive, Deserialize as RkyvDeserialize, Serialize as RkyvSerialize};
 
 /// Marker for slots whose kind isn't statically known at the point

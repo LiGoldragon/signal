@@ -7,7 +7,7 @@
 //! MutateOperation, the three Query types, …) through the
 //! value-shaped NotaSource/to_nota API.
 
-use nota_next::{NotaDecode, NotaDecodeError, NotaEncode, NotaSource};
+use nota::{NotaDecode, NotaDecodeError, NotaEncode, NotaSource};
 use signal::{
     AssertOperation, Edge, EdgeQuery, Graph, GraphQuery, MutateOperation, Node, NodePlacement, NodeQuery, Ok,
     PatternField, QueryOperation, RelationKind, RetractOperation, Revision, Slot,

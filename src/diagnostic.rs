@@ -14,7 +14,7 @@
 //! diagnostics happens ad-hoc in the nexus daemon (per-level
 //! formatting, suggestion-application UX, source-span highlight)
 //! rather than through a uniform NOTA codec derive.
-use nota_next::{NotaDecode, NotaEncode};
+use nota::{NotaDecode, NotaEncode};
 use rkyv::{Archive, Deserialize as RkyvDeserialize, Serialize as RkyvSerialize};
 
 use crate::slot::{AnyKind, Slot};
