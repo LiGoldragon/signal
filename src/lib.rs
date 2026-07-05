@@ -14,7 +14,7 @@
 //!    plus `AssertOperation` / `MutateOperation` /
 //!    `RetractOperation` / `QueryOperation` / `BatchOperation`
 //!    closed enums. All derive both rkyv (for the wire) and the
-//!    appropriate `nota-next` derive (for Nexus records in NOTA
+//!    appropriate `nota` derive (for Nexus records in NOTA
 //!    syntax).
 //!
 //! Per the perfect-specificity invariant (criome's `ARCHITECTURE.md`
@@ -30,7 +30,7 @@
 //!
 //! Wire format: rkyv 0.8 portable feature set; the frame schema is
 //! the framing (both parties know it). Discipline lives in lore's
-//! `rust/rkyv.md`. Text syntax: NOTA via `nota-next`; Nexus is a
+//! `rust/rkyv.md`. Text syntax: NOTA via `nota`; Nexus is a
 //! NOTA-using request surface.
 
 // `extern crate self as signal` makes `::signal::...` paths

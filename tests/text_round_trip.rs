@@ -1,7 +1,7 @@
 //! Text round-trip tests for every signal type that derives a
-//! nota-next derive.
+//! nota derive.
 //!
-//! Closes the loop end-to-end: nota-next's own tests use toy
+//! Closes the loop end-to-end: nota's own tests use toy
 //! types defined inside the codec crate; this file exercises
 //! the *real* signal types (Node, Edge, Graph, AssertOperation,
 //! MutateOperation, the three Query types, …) through the
@@ -56,7 +56,7 @@ fn every_relation_kind_round_trips() {
     }
 }
 
-// ─── nota-next-derived flow data kinds ─────────────────────
+// ─── nota-derived flow data kinds ─────────────────────
 //
 // Derived structs encode without a type tag per the
 // three-case PascalCase rule (case 2: `(fields…)` with no leading
