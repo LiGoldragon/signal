@@ -10,6 +10,6 @@ description  = "signal — sema/criome record vocabulary with a local legacy wir
 [dependencies]
 rkyv          = { version = "0.8", default-features = false, features = ["std", "bytecheck", "little_endian", "pointer_width_32", "unaligned"] }
 nota     = { git = "https://github.com/LiGoldragon/nota.git", branch = "main" }
-signal-sema   = { git = "https://github.com/LiGoldragon/signal-sema.git", branch = "drop-next", features = ["nota-text"] }
+signal-sema   = { git = "https://github.com/LiGoldragon/signal-sema.git", branch = "main", features = ["nota-text"] }
 signal-derive = { git = "https://github.com/LiGoldragon/signal-derive.git", branch = "main" }
 thiserror     = "2"
