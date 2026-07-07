@@ -8,7 +8,9 @@ The **sema / criome record vocabulary** with a local legacy wire
 envelope. This repo owns its current `Frame`, handshake, auth, slot,
 revision, request/reply roots, sema-ecosystem per-verb payloads, and
 record kinds (`Node`, `Edge`, `Graph` plus paired `*Query` types).
-Reusable pattern markers are imported from `signal-sema`.
+Reusable pattern markers are imported from `signal-sema`. Read
+`NON_IDEAL_AGENTS.md` for legacy envelope debt that must not be copied
+into new component contracts.
 
 ---
 

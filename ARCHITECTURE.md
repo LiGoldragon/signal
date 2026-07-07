@@ -24,8 +24,10 @@ The wider workspace uses **signal** as the family name for typed
 inter-component communication. Current component contracts use
 `signal-frame` as their shared frame kernel. This older `signal` crate
 still owns a local `Frame` / `Request` / `Reply` envelope for the
-sema/criome vocabulary until it is cut over. Reusable pattern markers
-(`Bind`, `Wildcard`, `PatternField<T>`) are imported from `signal-sema`.
+sema/criome vocabulary until it is cut over; see `NON_IDEAL_AGENTS.md`
+for the debt guidance that keeps the local envelope from becoming a
+pattern for new component contracts. Reusable pattern markers (`Bind`,
+`Wildcard`, `PatternField<T>`) are imported from `signal-sema`.
 
 Signal owns the sema-ecosystem's per-verb typed payloads —
 `AssertOperation`, `MutateOperation`, `RetractOperation`,
@@ -33,9 +35,9 @@ Signal owns the sema-ecosystem's per-verb typed payloads —
 `Edge`, `Graph`, paired `*Query` types, `RelationKind`), the
 auxiliary diagnostic types, and the typed `Hash` alias.
 Multi-operation atomic commits still use this crate's local
-`AtomicBatch` / `BatchOperation` legacy shape. Replacing that with
-the current structural multi-operation Signal shape belongs to a future
-cutover.
+`AtomicBatch` / `BatchOperation` legacy shape; see `NON_IDEAL_AGENTS.md`
+for the debt guidance that keeps this from becoming the model for new
+multi-operation Signal work.
 
 Effect-bearing wires layered around this vocabulary — currently
 signal-forge for the criome-to-forge leg and signal-arca for the
@@ -191,9 +193,9 @@ because they compile against the same closed enums in this crate.
 
 This crate predates the current `signal-frame` + schema-derived contract
 shape. It hand-defines its local `Frame`, `Request`, and `Reply` roots and
-uses `signal-derive` for record metadata. Future work should move the
-criome vocabulary onto the same contract/runtime stack as the rest of the
-components instead of deepening this local envelope.
+uses `signal-derive` for record metadata. See `NON_IDEAL_AGENTS.md` for
+the non-ideal guidance that keeps compatibility work local instead of
+deepening this local envelope.
 
 ## Handshake
 
