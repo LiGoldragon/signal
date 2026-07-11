@@ -134,7 +134,9 @@ External/shared pieces:
 
 Does not own:
 
-- Nexus's NOTA record vocabulary or parser — see github.com/LiGoldragon/nexus.
+- Nexus's NOTA record vocabulary or parser — the text-side translation
+  concept, owned wherever a NOTA-text translator is eventually built,
+  not by this wire crate.
 - Criome's records database — owned by criome (criome.sema,
   managed through the sema library).
 - Validator pipeline — owned by criome.
@@ -435,8 +437,6 @@ across every verb shape, pattern, and typed `Records` reply.
 
 - Project-wide architecture:
   criome/ARCHITECTURE.md
-- The text-translator daemon at the boundary:
-  nexus/ARCHITECTURE.md
 - The current shared Signal frame kernel that future contract-shaped
   work targets when this local envelope is cut over:
   signal-frame/ARCHITECTURE.md
