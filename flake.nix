@@ -1,5 +1,5 @@
 {
-  description = "Signal — rkyv messaging schema between nexus and criome";
+  description = "Signal — rkyv messaging schema for the sema-ecosystem's criome records vocabulary";
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";

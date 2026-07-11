@@ -48,27 +48,35 @@ recompile front-end clients that depend only on `signal`.
 Nexus records in NOTA syntax are the human-facing translation. The
 mechanical-translation rule (every Nexus NOTA record has exactly one
 signal form, and vice versa) keeps the two surfaces in lockstep.
-Inside the nexus daemon, NOTA-in becomes signal-out; signal-replies
-become NOTA-out.
+Inside that translation boundary, NOTA-in becomes signal-out;
+signal-replies become NOTA-out.
+
+The left side of the diagram below is a **conceptual, unbuilt**
+text-translation boundary — the Nexus plane as it would appear if a
+standalone NOTA-text translator were built. No such daemon or CLI
+exists today; the box is a placeholder for future NOTA-text peers, not
+a live component.
 
 ```
 text-speaking peers                  signal-speaking peers
-(humans, LLM agents,                  (the nexus daemon talking
- nexus-cli, editor LSPs)              to criome — and any peer
-                                       holding typed records)
+(humans, LLM agents,                  (the conceptual text
+ future NOTA-text tools —             translator talking to
+ conceptual, unbuilt: no              criome — and any peer
+ such daemon or CLI exists)           holding typed records)
         │                                       │
         │ Nexus records                         │ length-prefixed
         │ in NOTA syntax                        │ rkyv frames
         ▼                                       ▼
 ┌──────────────────┐                    ┌─────────────────┐
-│ /tmp/nexus.sock  │                    │ /tmp/criome.sock│
-│  nexus daemon    │  ──── signal ────► │     criome      │
-│ (text translator)│  ◄─── signal ───── │ (validator+sema)│
-└──────────────────┘                    └─────────────────┘
+│  Nexus text      │                    │ /tmp/criome.sock│
+│  translation     │  ──── signal ────► │     criome      │
+│  (conceptual,    │  ◄─── signal ───── │ (validator+sema)│
+│   unbuilt)       │                    └─────────────────┘
+└──────────────────┘
 ```
 
 Nexus's NOTA surface is the only non-signal request surface in the
-sema-ecosystem. Once a request crosses the daemon, it is signal
+sema-ecosystem. Once a request crosses that boundary, it is signal
 end-to-end.
 
 ```mermaid
