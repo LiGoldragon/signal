@@ -23,3 +23,9 @@ insert it into the right zone's reserved room — do not append blindly or
 repartition the zones (a repartition is a major-version event, per `t312`).
 
 This repository is under fast development and constantly breaking.
+
+## Protos estate status
+
+Stack: correct-new destination
+Status: active component contract, current checkout legacy-wired
+This checkout is not proof of correct-new adoption.
