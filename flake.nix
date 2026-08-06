@@ -36,13 +36,13 @@
             "rust-src"
           ];
           craneLib = (crane.mkLib pkgs).overrideToolchain toolchain;
-          # Include `examples/` for canonical NOTA fixtures and `schema/`
-          # for the build-time generated-artifact freshness check.
+          # Include the canonical Ethos authority for the build-time
+          # transaction and generated-artifact freshness check.
           examplesFilter = path: _type: builtins.match ".*/examples(/.*)?$" path != null;
-          schemaFilter = path: _type: builtins.match ".*/schema(/.*)?$" path != null;
+          ethosFilter = path: _type: builtins.match ".*/ethos(/.*)?$" path != null;
           sourceFilter =
             path: type:
-            (craneLib.filterCargoSources path type) || (examplesFilter path type) || (schemaFilter path type);
+            (craneLib.filterCargoSources path type) || (examplesFilter path type) || (ethosFilter path type);
           src = pkgs.lib.cleanSourceWith {
             src = ./.;
             filter = sourceFilter;
@@ -94,14 +94,14 @@
             context.commonArgs
             // {
               inherit (context) cargoArtifacts;
-              cargoTestExtraArgs = "--features nota-text --test round_trip";
+              cargoTestExtraArgs = "--features dotos-text --test round_trip";
             }
           );
-          test-nota-text = context.craneLib.cargoTest (
+          test-dotos-text = context.craneLib.cargoTest (
             context.commonArgs
             // {
               inherit (context) cargoArtifacts;
-              cargoTestExtraArgs = "--features nota-text --all-targets";
+              cargoTestExtraArgs = "--features dotos-text --all-targets";
             }
           );
           test-doc = context.craneLib.cargoTest (
@@ -126,17 +126,23 @@
               cargoClippyExtraArgs = "--all-targets -- -D warnings";
             }
           );
-          clippy-nota-text = context.craneLib.cargoClippy (
+          clippy-dotos-text = context.craneLib.cargoClippy (
             context.commonArgs
             // {
               inherit (context) cargoArtifacts;
-              cargoClippyExtraArgs = "--features nota-text --all-targets -- -D warnings";
+              cargoClippyExtraArgs = "--features dotos-text --all-targets -- -D warnings";
             }
           );
           rkyv-feature-discipline = context.pkgs.runCommand "signal-standard-rkyv-feature-discipline" { } ''
             ${context.pkgs.gnugrep}/bin/grep -F \
-              'rkyv      = { version = "0.8", default-features = false, features = ["std", "bytecheck", "little_endian", "pointer_width_32", "unaligned"] }' \
+              'rkyv = { version = "0.8", default-features = false, features = ["std", "bytecheck", "little_endian", "pointer_width_32", "unaligned"] }' \
               ${./Cargo.toml} > /dev/null
+            touch $out
+          '';
+          strict-interface-is-sole-authority = context.pkgs.runCommand "signal-standard-strict-interface" { } ''
+            test -f ${./ethos/interface.ethos}
+            test ! -e ${./.}/schema
+            ${context.pkgs.gnugrep}/bin/grep -F 'Interface.{1 0 0}' ${./ethos/interface.ethos} > /dev/null
             touch $out
           '';
           contract-crate-carries-no-runtime = context.pkgs.runCommand "signal-standard-no-runtime" { } ''

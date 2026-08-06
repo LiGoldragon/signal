@@ -1,31 +1,22 @@
 # signal-standard
 
-Shared cross-component standards for the primary workspace: the vocabulary
-every component conforms to.
+The shared cross-component vocabulary: the closed, partitioned component
+roster; authorized-object classification and interest; component nameplates;
+and ordinary daemon connection points.
 
-`signal-standard` is the second shared `signal-` library, alongside
-`signal-frame`. Where `signal-frame` owns domain-free wire mechanics (headers,
-envelopes, stream tokens), `signal-standard` owns the domain-free
-cross-component classification:
+The crate is deliberately only vocabulary. It owns no operations, daemon,
+storage, frame codec, or runtime policy. Contracts import these identities into
+their own Interfaces.
 
-- `ComponentKind` — the reconciled, closed-but-partitioned roster of every
-  component (14 variants across five documented zones, each with reserved room
-  to grow).
-- `Differentiator` — which `ComponentKind` a component is and which
-  `AuthorizedObjectKind` it acts over.
-- `AuthorizedObjectKind` and the `AuthorizedObjectInterest` lattice — the
-  four-rung interest narrowing subscribers filter against.
-- `ComponentClassification` — the small embeddable nameplate a daemon stamps
-  onto its frames so peers classify it without a lookup.
+`ethos/interface.ethos` is the sole schema authority. It is a role-free strict
+`Interface.{1 0 0}` whose identities have explicit producer-owned seats.
+`build.rs` verifies the authorized transaction and checks the encoded-only Rust
+projection in `src/schema/lib/generated.rs`.
 
-It is a pure vocabulary library: no operation roots, no daemon, no storage, no
-wire codec. The types are emitted from `schema/lib.schema` through the schema
-declaration-module target. Component contracts import these types and reference
-them inside their own roots:
+The default feature set carries binary rkyv behavior without a text parser.
+`dotos-text` adds the Dotos surface used by humans, agents, harnesses, and GUIs.
+Regenerate the checked projection with:
 
-```text
-{ ComponentKind signal-standard:lib:ComponentKind }
+```sh
+SIGNAL_STANDARD_UPDATE_INTERFACE_ARTIFACTS=1 cargo build
 ```
-
-The default crate is binary rkyv only. The `nota-text` feature adds NOTA text
-projection for thin CLIs and human/agent edges.

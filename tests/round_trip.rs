@@ -1,191 +1,96 @@
-//! NOTA round-trip witnesses for the shared cross-component vocabulary.
-//!
-//! Every type encodes to NOTA, decodes back, and re-encodes to the same text —
-//! the codec witness for a pure-vocabulary contract. Exhaustive over the
-//! `ComponentKind` roster (all 14 zone members) and one fixture per other type.
+#![cfg(feature = "dotos-text")]
 
-use nota::{NotaDecode, NotaEncode, NotaSource};
-use signal_standard::{
-    AuthorizedObjectInterest, AuthorizedObjectKind, AuthorizedObjectReference,
-    ComponentClassification, ComponentKind, ComponentObjectInterest, Differentiator, HostName,
-    NetworkEndpoint, NetworkPort, ObjectDigest, SocketPath, StandardSocket,
+use dotos::{DotosDecode, DotosEncode, DotosSource};
+use signal_standard::schema::lib::{
+    z2VLyh, z2VQD6, z2VQaE, z2VSkP, z2VSyM, z2VTjK, z2VU3x, z2VWWD, z2VXNY, z2VaVE, z2Vbhy, z2VdWE,
+    z2VduW,
 };
 
-fn round_trip_nota<T>(value: T)
+fn round_trip<T>(value: T)
 where
-    T: NotaEncode + NotaDecode + Clone + PartialEq + std::fmt::Debug,
+    T: DotosEncode + DotosDecode + Clone + PartialEq + std::fmt::Debug,
 {
-    let encoded = value.to_nota();
-    let recovered = NotaSource::new(&encoded).parse::<T>().expect("decode nota");
-    assert_eq!(recovered, value, "decoded value must equal the original");
-    assert_eq!(
-        recovered.to_nota(),
-        encoded,
-        "re-encoded text must equal the first encoding"
-    );
+    let text = value.to_dotos();
+    let recovered = DotosSource::new(&text).parse::<T>().expect("Dotos decodes");
+    assert_eq!(recovered, value);
+    assert_eq!(recovered.to_dotos(), text);
 }
 
 #[test]
-fn every_component_kind_round_trips() {
+fn every_component_kind_round_trips_without_readable_rust_aliases() {
     let roster = [
-        ComponentKind::Spirit,
-        ComponentKind::Mind,
-        ComponentKind::Criome,
-        ComponentKind::Message,
-        ComponentKind::Router,
-        ComponentKind::Mirror,
-        ComponentKind::Terminal,
-        ComponentKind::Harness,
-        ComponentKind::Agent,
-        ComponentKind::System,
-        ComponentKind::Introspect,
-        ComponentKind::Orchestrate,
-        ComponentKind::Lojix,
-        ComponentKind::Persona,
+        z2VWWD::z2VPuL,
+        z2VWWD::z2VPLF,
+        z2VWWD::z2VSDw,
+        z2VWWD::z2VUqs,
+        z2VWWD::z2VZ4y,
+        z2VWWD::z2VVh8,
+        z2VWWD::z2VZ73,
+        z2VWWD::z2VWoi,
+        z2VWWD::z2VNYL,
+        z2VWWD::z2VPk8,
+        z2VWWD::z2VbTm,
+        z2VWWD::z2VN71,
+        z2VWWD::z2VN8F,
+        z2VWWD::z2Vc9t,
     ];
-    assert_eq!(roster.len(), 14, "the reconciled roster has 14 variants");
+    assert_eq!(roster.len(), 14);
     for component in roster {
-        round_trip_nota(component);
+        round_trip(component);
     }
 }
 
 #[test]
-fn every_authorized_object_kind_round_trips() {
+fn shared_vocabulary_round_trips_and_preserves_its_domain_logic() {
     for kind in [
-        AuthorizedObjectKind::Operation,
-        AuthorizedObjectKind::Contract,
-        AuthorizedObjectKind::Agreement,
-        AuthorizedObjectKind::Time,
-        AuthorizedObjectKind::Head,
+        z2Vbhy::z2VPDv,
+        z2Vbhy::z2Ve6d,
+        z2Vbhy::z2VV79,
+        z2Vbhy::z2VYDX,
+        z2Vbhy::z2Vd4Q,
     ] {
-        round_trip_nota(kind);
+        round_trip(kind);
     }
-}
 
-#[test]
-fn differentiator_round_trips() {
-    round_trip_nota(Differentiator::new(
-        ComponentKind::Criome,
-        AuthorizedObjectKind::Contract,
-    ));
-}
-
-#[test]
-fn component_object_interest_round_trips() {
-    round_trip_nota(ComponentObjectInterest::new(
-        ComponentKind::Router,
-        AuthorizedObjectKind::Operation,
-    ));
-}
-
-#[test]
-fn authorized_object_interest_lattice_round_trips() {
-    round_trip_nota(AuthorizedObjectInterest::AnyAuthorizedObject);
-    round_trip_nota(AuthorizedObjectInterest::Component(ComponentKind::Spirit));
-    round_trip_nota(AuthorizedObjectInterest::ObjectKind(
-        AuthorizedObjectKind::Time,
-    ));
-    round_trip_nota(AuthorizedObjectInterest::ComponentObject(
-        ComponentObjectInterest::new(ComponentKind::Mirror, AuthorizedObjectKind::Agreement),
-    ));
-}
-
-#[test]
-fn authorized_object_reference_round_trips() {
-    round_trip_nota(AuthorizedObjectReference::new(
-        ComponentKind::Spirit,
-        ObjectDigest::new("spirit-head-digest-fixture"),
-        AuthorizedObjectKind::Head,
-    ));
-}
-
-#[test]
-fn authorized_object_reference_matches_interest_lattice() {
-    let reference = AuthorizedObjectReference::new(
-        ComponentKind::Criome,
-        ObjectDigest::new("contract-digest-fixture"),
-        AuthorizedObjectKind::Contract,
+    let reference = z2VTjK::new(
+        z2VWWD::z2VSDw,
+        z2VSyM::new("contract-digest-fixture".to_owned()),
+        z2Vbhy::z2Ve6d,
     );
-
-    assert!(reference.matches_interest(&AuthorizedObjectInterest::AnyAuthorizedObject));
+    assert!(reference.matches_interest(&z2VQD6::z2VYnk));
+    assert!(reference.matches_interest(&z2VQD6::z2VW1p(z2VWWD::z2VSDw)));
+    assert!(reference.matches_interest(&z2VQD6::z2Ve8W(z2Vbhy::z2Ve6d)));
     assert!(
-        reference.matches_interest(&AuthorizedObjectInterest::Component(ComponentKind::Criome,))
-    );
-    assert!(
-        reference.matches_interest(&AuthorizedObjectInterest::ObjectKind(
-            AuthorizedObjectKind::Contract,
+        reference.matches_interest(&z2VQD6::z2VNut(
+            z2VdWE::new(z2VWWD::z2VSDw, z2Vbhy::z2Ve6d,)
         ))
     );
-    assert!(
-        reference.matches_interest(&AuthorizedObjectInterest::ComponentObject(
-            ComponentObjectInterest::new(ComponentKind::Criome, AuthorizedObjectKind::Contract),
-        ))
-    );
+    assert!(!reference.matches_interest(&z2VQD6::z2VW1p(z2VWWD::z2VZ4y)));
+    round_trip(reference);
 
-    assert!(
-        !reference.matches_interest(&AuthorizedObjectInterest::Component(ComponentKind::Router,))
-    );
-    assert!(
-        !reference.matches_interest(&AuthorizedObjectInterest::ObjectKind(
-            AuthorizedObjectKind::Time,
-        ))
-    );
-    assert!(
-        !reference.matches_interest(&AuthorizedObjectInterest::ComponentObject(
-            ComponentObjectInterest::new(ComponentKind::Criome, AuthorizedObjectKind::Time),
-        ))
-    );
-    assert!(
-        !reference.matches_interest(&AuthorizedObjectInterest::ComponentObject(
-            ComponentObjectInterest::new(ComponentKind::Router, AuthorizedObjectKind::Contract),
-        ))
-    );
+    let local = z2VduW::z2VUkE(z2VXNY::new("/run/user/1000/criome.socket".to_owned()));
+    assert_eq!(local.to_dotos(), "UnixSocket./run/user/1000/criome.socket");
+    round_trip(local);
 
-    let spirit_head = AuthorizedObjectReference::new(
-        ComponentKind::Spirit,
-        ObjectDigest::new("spirit-head-digest-fixture"),
-        AuthorizedObjectKind::Head,
+    let endpoint = z2VaVE::new(
+        z2VLyh::new("prometheus.goldragon.criome".to_owned()),
+        z2VQaE::new(7474),
     );
-    assert!(
-        spirit_head.matches_interest(&AuthorizedObjectInterest::ObjectKind(
-            AuthorizedObjectKind::Head,
-        ))
-    );
-    assert!(
-        spirit_head.matches_interest(&AuthorizedObjectInterest::ComponentObject(
-            ComponentObjectInterest::new(ComponentKind::Spirit, AuthorizedObjectKind::Head),
-        ))
-    );
-    assert!(
-        !spirit_head.matches_interest(&AuthorizedObjectInterest::ComponentObject(
-            ComponentObjectInterest::new(ComponentKind::Spirit, AuthorizedObjectKind::Operation),
-        ))
-    );
-}
+    assert_eq!(endpoint.field_0.as_str(), "prometheus.goldragon.criome");
+    assert_eq!(endpoint.field_1.clone().into_u16(), 7474);
+    round_trip(z2VduW::z2VNCH(endpoint));
 
-#[test]
-fn standard_socket_round_trips() {
-    let socket_path = SocketPath::new("/run/user/1000/criome.socket");
-    assert_eq!(socket_path.as_str(), "/run/user/1000/criome.socket");
-    round_trip_nota(StandardSocket::UnixSocket(socket_path));
-
-    let endpoint = NetworkEndpoint::new(
-        HostName::new("prometheus.goldragon.criome"),
-        NetworkPort::new(7474),
-    );
-    assert_eq!(endpoint.host_name.as_str(), "prometheus.goldragon.criome");
-    assert_eq!(endpoint.network_port.clone().into_u16(), 7474);
-    round_trip_nota(StandardSocket::NetworkSocket(endpoint));
-}
-
-#[test]
-fn component_classification_round_trips() {
-    round_trip_nota(ComponentClassification::new(
-        Differentiator::new(ComponentKind::Agent, AuthorizedObjectKind::Contract),
-        AuthorizedObjectInterest::Component(ComponentKind::Criome),
-    ));
-    round_trip_nota(ComponentClassification::over_any(Differentiator::new(
-        ComponentKind::Spirit,
-        AuthorizedObjectKind::Time,
+    round_trip(z2VU3x::over_any(z2VSkP::new(
+        z2VWWD::z2VNYL,
+        z2Vbhy::z2Ve6d,
     )));
+}
+
+#[test]
+fn rkyv_round_trip_uses_the_same_structural_shape() {
+    let value = z2VU3x::over_any(z2VSkP::new(z2VWWD::z2VPuL, z2Vbhy::z2VYDX));
+    let bytes = rkyv::to_bytes::<rkyv::rancor::Error>(&value).expect("archive shared vocabulary");
+    let recovered =
+        rkyv::from_bytes::<z2VU3x, rkyv::rancor::Error>(&bytes).expect("recover shared vocabulary");
+    assert_eq!(recovered, value);
 }

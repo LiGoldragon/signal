@@ -1,25 +1,22 @@
 # Agent Instructions
 
-Read this repo's `ARCHITECTURE.md` before editing.
-Read `NON_IDEAL_AGENTS.md` for temporary debt and workaround guidance before editing.
+Read `ARCHITECTURE.md` and `NON_IDEAL_AGENTS.md` before editing.
 
-This repository is a Signal standards library — the second shared `signal-`
-crate alongside `signal-frame`.
+This repository owns only genuine cross-component standards. Keep it pure
+vocabulary: no operation roots, daemon actors, storage, runtime policy, or frame
+codec.
 
-This crate owns only **genuine cross-component standards**: the reconciled
-`ComponentKind` roster, the `Differentiator`, the `AuthorizedObjectInterest`
-lattice, and the `ComponentClassification` nameplate. Per Spirit `eeeo`, keep
-the scope narrow — it is not a grab-bag of conveniences, not a component's own
-contract, and not frame mechanics.
+`ethos/interface.ethos` is the sole schema authority. It is a role-free strict
+Interface with explicit producer-owned identity seats in
+`src/bootstrap_manifest.rs`. Rust names in the generated projection must remain
+encoded; readable aliases create a competing authority and are forbidden.
 
-It is a pure vocabulary library. Do not add operation roots, daemon actors,
-sockets, redb tables, daemon clients, runtime policy, or a wire codec. The
-TrueSchema source lowers through the **declaration-module** emission target
-(`build.rs`), not the wire-contract target. Regenerate the checked-in
-`src/schema/lib.rs` with `SIGNAL_STANDARD_UPDATE_SCHEMA_ARTIFACTS=1 cargo build`.
+Regenerate `src/schema/lib/generated.rs` with
+`SIGNAL_STANDARD_UPDATE_INTERFACE_ARTIFACTS=1 cargo build`. Structural traits,
+Dotos, rkyv, and domain operations belong in producer-owned
+`src/schema/lib/behavior.rs` until the language expresses them directly.
 
-`ComponentKind` is closed-but-partitioned: when a real new component appears,
-insert it into the right zone's reserved room — do not append blindly or
-repartition the zones (a repartition is a major-version event, per `t312`).
+`ComponentKind` is closed and partitioned. Insert real components within their
+existing zones; do not append blindly or repartition without a major version.
 
 This repository is under fast development and constantly breaking.
