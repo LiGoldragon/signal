@@ -35,8 +35,8 @@ fn default_runtime_tree_excludes_bootstrap_and_retired_crates() {
 #[test]
 fn build_tree_has_one_exact_corrected_schema_rust() {
     let tree = cargo_tree("build", &[]);
-    assert_eq!(tree.matches("schema-rust v0.15.0").count(), 1, "{tree}");
-    assert!(tree.contains("schema-rust.git?rev=9e36587c85bd69357e9042729ba2df0052799756#9e36587c"));
+    assert_eq!(tree.matches("schema-rust v0.15.1").count(), 1, "{tree}");
+    assert!(tree.contains("schema-rust.git?rev=664335240a40728826cfaa09e3100cd867031912#66433524"));
     assert!(!tree.contains(concat!("schema", "-language")), "{tree}");
 }
 

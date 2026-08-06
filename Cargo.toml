@@ -1,6 +1,6 @@
 [package]
 name         = "signal-standard"
-version      = "0.3.0"
+version      = "0.3.1"
 edition      = "2024"
 rust-version = "1.89"
 license      = "MIT OR Apache-2.0"
@@ -24,12 +24,12 @@ rkyv = { version = "0.8", default-features = false, features = ["std", "bytechec
 thiserror = "2"
 
 [build-dependencies]
-core-ethos = { git = "https://github.com/LiGoldragon/core-ethos.git", rev = "427fd74a8217f557cfabdfe0ff23b784c855bf85" }
+core-ethos = { git = "https://github.com/LiGoldragon/core-ethos.git", rev = "43b48c779c54ee9f05cbcc111d5d88074b162461" }
 name-table = { git = "https://github.com/LiGoldragon/name-table.git", rev = "a22f48d8040ab9235f3552ad8654ff8e27b8157d" }
-rust-logos = { git = "https://github.com/LiGoldragon/rust-logos.git", rev = "55501fddc2d7e154d71fff1659386cbbba712267" }
-schema-rust = { package = "schema-rust", git = "https://github.com/LiGoldragon/schema-rust.git", rev = "9e36587c85bd69357e9042729ba2df0052799756", default-features = false }
-sema-translator = { git = "https://github.com/LiGoldragon/sema-translator.git", rev = "6b5499c0d25c801b56582fdcd8e021c3293a6d4d", default-features = false, features = ["bootstrap"] }
-signal-sema-translator = { git = "https://github.com/LiGoldragon/signal-sema-translator.git", rev = "3a26cb43f8ce7f9fe85da64d19aa55aa662943ce" }
+rust-logos = { git = "https://github.com/LiGoldragon/rust-logos.git", rev = "081e99596826b15e2ff7f1356ae8d797b18aeffc" }
+schema-rust = { package = "schema-rust", git = "https://github.com/LiGoldragon/schema-rust.git", rev = "664335240a40728826cfaa09e3100cd867031912", default-features = false }
+sema-translator = { git = "https://github.com/LiGoldragon/sema-translator.git", rev = "287fbd728a05b1a6be1dc8a28bcf3ca06d9916b3", default-features = false, features = ["bootstrap"] }
+signal-sema-translator = { git = "https://github.com/LiGoldragon/signal-sema-translator.git", rev = "3f41813dd63904c7e2b3da4382eff64ed1bf12fe" }
 structural-codec = { git = "https://github.com/LiGoldragon/structural-codec.git", rev = "879d76f91facedd6d5cbca79e282260e1beb9478" }
 
 [lints.rust]
