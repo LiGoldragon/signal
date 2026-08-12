@@ -20,3 +20,9 @@ Dotos, rkyv, and domain operations belong in producer-owned
 existing zones; do not append blindly or repartition without a major version.
 
 This repository is under fast development and constantly breaking.
+
+## Protos estate status
+
+Stack: correct-new destination
+Status: active component contract, current checkout legacy-wired
+This checkout is not proof of correct-new adoption.
