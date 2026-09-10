@@ -6,11 +6,11 @@ pub const STANDARD_SIGNAL_SOURCE: &str = include_str!("../ethos/signal.ethos");
 pub const STANDARD_SIGNAL_RUST: &str = include_str!("generated/signal.rs");
 
 /// Tests whether an authorized object is selected by a shared interest.
-pub trait InterestMatching {
+pub trait InterestMatchable {
     fn matches_interest(&self, interest: &AuthorizedObjectInterest) -> bool;
 }
 
-impl InterestMatching for AuthorizedObjectReference {
+impl InterestMatchable for AuthorizedObjectReference {
     fn matches_interest(&self, interest: &AuthorizedObjectInterest) -> bool {
         match interest {
             AuthorizedObjectInterest::AnyAuthorizedObject => true,

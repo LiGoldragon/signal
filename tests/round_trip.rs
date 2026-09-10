@@ -1,6 +1,6 @@
 use signal_standard::{
     AuthorizedObjectInterest, AuthorizedObjectKind, AuthorizedObjectReference, ComponentKind,
-    ComponentObjectInterest, InterestMatching, NetworkEndpoint, StandardSocket,
+    ComponentObjectInterest, InterestMatchable, NetworkEndpoint, StandardSocket,
 };
 
 #[test]
