@@ -90,18 +90,18 @@
         {
           build = context.craneLib.cargoBuild (context.commonArgs // { inherit (context) cargoArtifacts; });
           test = context.craneLib.cargoTest (context.commonArgs // { inherit (context) cargoArtifacts; });
-          test-round-trip = context.craneLib.cargoTest (
+          test-datom-round-trip = context.craneLib.cargoTest (
             context.commonArgs
             // {
               inherit (context) cargoArtifacts;
-              cargoTestExtraArgs = "--features dotos-text --test round_trip";
+              cargoTestExtraArgs = "--features datom --test round_trip";
             }
           );
-          test-dotos-text = context.craneLib.cargoTest (
+          test-datom = context.craneLib.cargoTest (
             context.commonArgs
             // {
               inherit (context) cargoArtifacts;
-              cargoTestExtraArgs = "--features dotos-text --all-targets";
+              cargoTestExtraArgs = "--features datom --all-targets";
             }
           );
           test-doc = context.craneLib.cargoTest (
@@ -126,11 +126,11 @@
               cargoClippyExtraArgs = "--all-targets -- -D warnings";
             }
           );
-          clippy-dotos-text = context.craneLib.cargoClippy (
+          clippy-datom = context.craneLib.cargoClippy (
             context.commonArgs
             // {
               inherit (context) cargoArtifacts;
-              cargoClippyExtraArgs = "--features dotos-text --all-targets -- -D warnings";
+              cargoClippyExtraArgs = "--features datom --all-targets -- -D warnings";
             }
           );
           rkyv-feature-discipline = context.pkgs.runCommand "signal-standard-rkyv-feature-discipline" { } ''
@@ -139,10 +139,10 @@
               ${./Cargo.toml} > /dev/null
             touch $out
           '';
-          strict-interface-is-sole-authority = context.pkgs.runCommand "signal-standard-strict-interface" { } ''
-            test -f ${./ethos/interface.ethos}
-            test ! -e ${./.}/schema
-            ${context.pkgs.gnugrep}/bin/grep -F 'Interface.{1 0 0}' ${./ethos/interface.ethos} > /dev/null
+          strict-signal-is-sole-authority = context.pkgs.runCommand "signal-standard-strict-signal" { } ''
+            test -f ${./ethos/signal.ethos}
+            ${context.pkgs.gnugrep}/bin/grep -F 'Signal' ${./ethos/signal.ethos} > /dev/null
+            ! ${context.pkgs.gnugrep}/bin/grep -R -E 'schema-rust|dotos' ${./Cargo.toml} ${./build.rs}
             touch $out
           '';
           contract-crate-carries-no-runtime = context.pkgs.runCommand "signal-standard-no-runtime" { } ''
