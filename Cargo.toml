@@ -26,6 +26,10 @@ rkyv = { version = "0.8", default-features = false, features = ["std", "bytechec
 [build-dependencies]
 ethos-zero = { git = "https://github.com/LiGoldragon/ethos-zero", rev = "4695ee0c1f5d00dcf5cceba08f5fa00412b92184" }
 
+[[test]]
+name = "current_contract"
+path = "tests/current_contract.rs"
+
 [lints.rust]
 unsafe_code = "forbid"
 unused = { level = "warn", priority = -1 }
