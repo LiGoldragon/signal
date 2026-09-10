@@ -1,0 +1,17 @@
+Signal
+[]
+[]
+[]
+[ ComponentKind.[ Message Router Criome Mind Spirit Persona Agent Mirror Introspect Harness Terminal System Lojix Orchestrate ]
+  ObjectDigest.String
+  SocketPath.String
+  HostName.String
+  NetworkPort.Integer
+  NetworkEndpoint.{ HostName NetworkPort }
+  StandardSocket.[ NetworkSocket.NetworkEndpoint UnixSocket.SocketPath ]
+  AuthorizedObjectKind.[ Time Operation Contract Agreement Head ]
+  AuthorizedObjectReference.{ ComponentKind ObjectDigest AuthorizedObjectKind }
+  ComponentObjectInterest.{ ComponentKind AuthorizedObjectKind }
+  AuthorizedObjectInterest.[ Component.ComponentKind ComponentObject.ComponentObjectInterest AnyAuthorizedObject ObjectKind.AuthorizedObjectKind ]
+  Differentiator.{ ComponentKind AuthorizedObjectKind }
+  ComponentClassification.{ Differentiator AuthorizedObjectInterest } ]
