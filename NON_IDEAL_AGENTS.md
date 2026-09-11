@@ -1,3 +1,3 @@
-# Non-ideal agent guidance — signal-standard
+# Non-ideal agent guidance — signal
 
-There is no accepted temporary debt in the strict Interface producer.
+There is no accepted temporary debt in this repository.

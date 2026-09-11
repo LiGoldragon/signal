@@ -1,22 +1,36 @@
-# signal-standard
+# signal
 
-The shared cross-component vocabulary: the closed, partitioned component
-roster; authorized-object classification and interest; component nameplates;
-and ordinary daemon connection points.
+The shared Signal layer. Every component depends on this repository.
 
-The crate is deliberately only vocabulary. It owns no operations, daemon,
-storage, frame codec, or runtime policy. Contracts import these identities into
-their own Interfaces.
+Signal is the messaging layer: a message is an rkyv binary archive —
+typed, portable, validated on receive — and frames are length-prefixed on
+the socket. Nothing else rides the wire.
 
-`ethos/interface.ethos` is the sole schema authority. It is a role-free strict
-`Interface.{1 0 0}` whose identities have explicit producer-owned seats.
-`build.rs` verifies the authorized transaction and checks the encoded-only Rust
-projection in `src/schema/lib/generated.rs`.
+This crate owns three things and nothing else:
 
-The default feature set carries binary rkyv behavior without a text parser.
-`dotos-text` adds the Dotos surface used by humans, agents, harnesses, and GUIs.
-Regenerate the checked projection with:
+- **The portable frame.** `Signal<T>` carries a contract value's rkyv
+  bytes with the target contract in its type, and the three kinds every
+  contract speaks: `Signalizable`, `ByteViewable`, `Restorable`. The six
+  generated contract crates each carried a byte-identical copy of this
+  before it moved here.
+- **The wire framing.** One implementation of the four-byte big-endian
+  length prefix and the 8 MiB body capacity, blocking and — behind the
+  `transport` feature — asynchronous.
+- **The shared taxonomy.** The closed component roster, authorized-object
+  classification and interest, and typed reachability, generated from
+  `ethos/signal.ethos`.
 
-```sh
-SIGNAL_STANDARD_UPDATE_INTERFACE_ARTIFACTS=1 cargo build
-```
+It owns no operations, no Nexus, no storage, and no runtime policy.
+Contracts import these identities into their own Interfaces.
+
+`ethos/signal.ethos` is the schema authority; `build.rs` checks the
+checked-in Rust projection in `src/generated/signal.rs` against it.
+
+The protocol layered on top of the rkyv archive is not decided. Nothing
+here anticipates it. `DESIGN.md` carries the reasoning inherited from the
+archived legacy `signal` repository; it is inheritance, not specification.
+
+## Features
+
+- `datom` — the Datom text projection of the taxonomy.
+- `transport` — `tokio` asynchronous frame reading and writing.

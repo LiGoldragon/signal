@@ -24,8 +24,8 @@ fn current_signal_is_the_sole_schema_authority() {
 #[test]
 fn public_source_constants_match_authored_and_generated_contract() {
     assert_eq!(
-        signal_standard::STANDARD_SIGNAL_SOURCE,
+        signal::STANDARD_SIGNAL_SOURCE,
         include_str!("../ethos/signal.ethos")
     );
-    assert!(signal_standard::STANDARD_SIGNAL_RUST.contains("pub enum ComponentKind"));
+    assert!(signal::STANDARD_SIGNAL_RUST.contains("pub enum ComponentKind"));
 }

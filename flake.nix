@@ -1,5 +1,5 @@
 {
-  description = "signal-standard - shared cross-component standards: the reconciled ComponentKind roster, the differentiator, and the authorized-object interest lattice";
+  description = "signal - the shared Signal layer: the portable rkyv Signal frame, its wire framing, and the cross-component taxonomy every Nexus depends on";
 
   inputs = {
     nixpkgs.url = "github:LiGoldragon/nixpkgs?ref=main";
@@ -38,11 +38,10 @@
           craneLib = (crane.mkLib pkgs).overrideToolchain toolchain;
           # Include the canonical Ethos authority for the build-time
           # transaction and generated-artifact freshness check.
-          examplesFilter = path: _type: builtins.match ".*/examples(/.*)?$" path != null;
           ethosFilter = path: _type: builtins.match ".*/ethos(/.*)?$" path != null;
           sourceFilter =
             path: type:
-            (craneLib.filterCargoSources path type) || (examplesFilter path type) || (ethosFilter path type);
+            (craneLib.filterCargoSources path type) || (ethosFilter path type);
           src = pkgs.lib.cleanSourceWith {
             src = ./.;
             filter = sourceFilter;
@@ -126,6 +125,20 @@
               cargoClippyExtraArgs = "--all-targets -- -D warnings";
             }
           );
+          test-transport = context.craneLib.cargoTest (
+            context.commonArgs
+            // {
+              inherit (context) cargoArtifacts;
+              cargoTestExtraArgs = "--features transport --all-targets";
+            }
+          );
+          clippy-transport = context.craneLib.cargoClippy (
+            context.commonArgs
+            // {
+              inherit (context) cargoArtifacts;
+              cargoClippyExtraArgs = "--features transport --all-targets -- -D warnings";
+            }
+          );
           clippy-datom = context.craneLib.cargoClippy (
             context.commonArgs
             // {
@@ -133,22 +146,29 @@
               cargoClippyExtraArgs = "--features datom --all-targets -- -D warnings";
             }
           );
-          rkyv-feature-discipline = context.pkgs.runCommand "signal-standard-rkyv-feature-discipline" { } ''
+          rkyv-feature-discipline = context.pkgs.runCommand "signal-rkyv-feature-discipline" { } ''
             ${context.pkgs.gnugrep}/bin/grep -F \
               'rkyv = { version = "0.8", default-features = false, features = ["std", "bytecheck", "little_endian", "pointer_width_32", "unaligned"] }' \
               ${./Cargo.toml} > /dev/null
             touch $out
           '';
-          strict-signal-is-sole-authority = context.pkgs.runCommand "signal-standard-strict-signal" { } ''
+          strict-signal-is-sole-authority = context.pkgs.runCommand "signal-strict-signal" { } ''
             test -f ${./ethos/signal.ethos}
             ${context.pkgs.gnugrep}/bin/grep -F 'Signal' ${./ethos/signal.ethos} > /dev/null
             ! ${context.pkgs.gnugrep}/bin/grep -R -E 'schema-rust|dotos' ${./Cargo.toml} ${./build.rs}
             touch $out
           '';
-          contract-crate-carries-no-runtime = context.pkgs.runCommand "signal-standard-no-runtime" { } ''
-            ! ${context.pkgs.gnugrep}/bin/grep -R -E '(^|[^[:alnum:]_])(kameo|tokio|redb|sema|ractor)([^[:alnum:]_]|$)' ${./Cargo.toml} ${./src}
+          carries-no-engine = context.pkgs.runCommand "signal-no-engine" { } ''
+            ! ${context.pkgs.gnugrep}/bin/grep -R -E '(^|[^[:alnum:]_])(kameo|redb|sema|ractor)([^[:alnum:]_]|$)' ${./Cargo.toml} ${./src}
             touch $out
           '';
+          default-features-carry-no-runtime = context.craneLib.cargoBuild (
+            context.commonArgs
+            // {
+              inherit (context) cargoArtifacts;
+              cargoExtraArgs = "--no-default-features";
+            }
+          );
         }
       );
 
@@ -159,7 +179,7 @@
         in
         {
           default = context.pkgs.mkShell {
-            name = "signal-standard";
+            name = "signal";
             packages = [
               context.pkgs.jujutsu
               context.pkgs.pkg-config

@@ -1,4 +1,4 @@
-use signal_standard::{ComponentKind, NetworkEndpoint, StandardSocket};
+use signal::{ComponentKind, NetworkEndpoint, StandardSocket};
 
 #[test]
 fn shared_socket_taxonomy_archives_without_text_dependencies() {

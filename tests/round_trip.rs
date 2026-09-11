@@ -1,4 +1,4 @@
-use signal_standard::{
+use signal::{
     AuthorizedObjectInterest, AuthorizedObjectKind, AuthorizedObjectReference, ComponentKind,
     ComponentObjectInterest, InterestMatchable, NetworkEndpoint, StandardSocket,
 };
