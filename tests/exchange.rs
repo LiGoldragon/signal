@@ -328,3 +328,70 @@ fn a_completed_exchange_and_a_faulted_one_are_distinct_on_the_wire() {
         Delivery::End(Ending::faulted(5, ExchangeFault::UnknownExchange));
     assert_ne!(across_the_wire(&completed), across_the_wire(&faulted));
 }
+
+/// A contract root shaped like the one the exchange layer must actually
+/// carry: `signal-orchestrate`'s `Observed(Locks(Vec<Lock>))`, a variant
+/// holding a vector of structs that hold owned strings and a vector of their
+/// own. `signal`'s own taxonomy has no vector type, so the shape is declared
+/// here rather than left unproven until a consumer port discovers it.
+#[derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, Clone, Debug, PartialEq, Eq)]
+struct Held {
+    identifier: ExchangeId,
+    name: String,
+    paths: Vec<String>,
+}
+
+#[derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, Clone, Debug, PartialEq, Eq)]
+enum Observed {
+    Holdings(Vec<Held>),
+    Nothing,
+}
+
+fn holdings() -> Observed {
+    Observed::Holdings(vec![
+        Held {
+            identifier: 1341,
+            name: String::from("F6db8dSignalExchangeProtocol"),
+            paths: vec![String::from("/git/github.com/LiGoldragon/signal")],
+        },
+        Held {
+            identifier: 1339,
+            name: String::from("F6db8dExchangeProtocolDesign"),
+            paths: Vec::new(),
+        },
+    ])
+}
+
+#[test]
+fn the_envelope_carries_a_root_holding_a_vector_of_string_bearing_structs() {
+    let sent: Delivery<Observed> = Delivery::Answer(Answer {
+        exchange: 9,
+        response: holdings(),
+    });
+    let received = across_the_wire(&sent);
+    match received {
+        Delivery::Answer(answer) => {
+            assert_eq!(answer.exchange(), 9);
+            assert_eq!(answer.response, holdings());
+        }
+        other => panic!("an observation arrived as {other:?}"),
+    }
+}
+
+/// The state on open of a subscription whose state is empty must still be
+/// answered, or a peer cannot tell an empty state from a state not yet sent.
+/// The layer relies on position to mark the state on open, so this is the
+/// obligation that reliance places on every streaming contract.
+#[test]
+fn an_empty_state_on_open_is_still_an_answer_and_not_an_absence() {
+    let sent: Delivery<Observed> = Delivery::Answer(Answer {
+        exchange: 1,
+        response: Observed::Nothing,
+    });
+    let received = across_the_wire(&sent);
+    assert_eq!(received, sent);
+    match received {
+        Delivery::Answer(answer) => assert_eq!(answer.response, Observed::Nothing),
+        other => panic!("an empty state arrived as {other:?}"),
+    }
+}
