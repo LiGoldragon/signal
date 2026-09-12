@@ -88,3 +88,45 @@ pub struct ComponentClassification {
     pub differentiator: Differentiator,
     pub authorized_object_interest: AuthorizedObjectInterest,
 }
+#[rustfmt::skip]
+pub type ExchangeId = i64;
+#[rustfmt::skip]
+pub type ContractDigest = i64;
+#[rustfmt::skip]
+#[derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, Clone, Debug, PartialEq, Eq, Hash)]
+#[cfg_attr(feature = "datom", derive(datom_codec::Datomizable, datom_codec::Composing))]
+pub struct Handshake {
+    pub contract_digest: ContractDigest,
+}
+#[rustfmt::skip]
+#[derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, Clone, Debug, PartialEq, Eq, Hash)]
+#[cfg_attr(feature = "datom", derive(datom_codec::Datomizable, datom_codec::Composing))]
+pub enum HandshakeRejection {
+    ContractMismatch(ContractDigest),
+}
+#[rustfmt::skip]
+#[derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, Clone, Debug, PartialEq, Eq, Hash)]
+#[cfg_attr(feature = "datom", derive(datom_codec::Datomizable, datom_codec::Composing))]
+pub enum HandshakeReceipt {
+    Greeted(ContractDigest),
+    GreetingRefused(HandshakeRejection),
+}
+#[rustfmt::skip]
+#[derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, Clone, Debug, PartialEq, Eq, Hash)]
+#[cfg_attr(feature = "datom", derive(datom_codec::Datomizable, datom_codec::Composing))]
+pub enum ExchangeFault {
+    GreetingExpected,
+    GreetingRepeated,
+    ExchangeInUse,
+    UnknownExchange,
+    ExchangeLimit,
+    UnreadableQuery,
+    Lagged,
+}
+#[rustfmt::skip]
+#[derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, Clone, Debug, PartialEq, Eq, Hash)]
+#[cfg_attr(feature = "datom", derive(datom_codec::Datomizable, datom_codec::Composing))]
+pub enum Conclusion {
+    Completed,
+    Faulted(ExchangeFault),
+}

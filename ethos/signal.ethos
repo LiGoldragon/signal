@@ -14,4 +14,11 @@ Signal
   ComponentObjectInterest.{ ComponentKind AuthorizedObjectKind }
   AuthorizedObjectInterest.[ Component.ComponentKind ComponentObject.ComponentObjectInterest AnyAuthorizedObject ObjectKind.AuthorizedObjectKind ]
   Differentiator.{ ComponentKind AuthorizedObjectKind }
-  ComponentClassification.{ Differentiator AuthorizedObjectInterest } ]
+  ComponentClassification.{ Differentiator AuthorizedObjectInterest }
+  ExchangeId.Integer
+  ContractDigest.Integer
+  Handshake.{ ContractDigest }
+  HandshakeRejection.[ ContractMismatch.ContractDigest ]
+  HandshakeReceipt.[ Greeted.ContractDigest  GreetingRefused.HandshakeRejection ]
+  ExchangeFault.[ GreetingExpected  GreetingRepeated  ExchangeInUse  UnknownExchange  ExchangeLimit  UnreadableQuery  Lagged ]
+  Conclusion.[ Completed  Faulted.ExchangeFault ] ]

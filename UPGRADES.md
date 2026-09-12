@@ -1,5 +1,30 @@
 # Upgrades
 
+## 7.0.0 — the exchange layer
+
+`signal` now owns the protocol above the archive. The contract gains
+`ExchangeId`, `ContractDigest`, `Handshake`, `HandshakeReceipt`,
+`HandshakeRejection`, `ExchangeFault` and `Conclusion`; the crate gains
+`Dispatch<Q>`, `Delivery<R>`, `Opening<Q>`, `Answer<R>`, `Ending`,
+`ExchangeLedger` and the kinds `Contracted`, `Greeted`,
+`ExchangeTracking`, `ExchangeMinting` and `Exchanged`.
+
+What this replaces, and what goes away with it: `signal-frame`'s
+`ExchangeIdentifier`, `ExchangeLane`, `LaneSequence`, `SessionEpoch`,
+`StreamEventIdentifier`, `SubscriptionTokenInner`, `ExchangeMode`,
+`ExchangeHandshake`, `ContractId`, `WireRevision`, `ContractBinding`,
+`ShortHeader`, `WireRoute`, `NonEmpty`, `Request`, `Reply`, `SubReply`
+and the whole batch taxonomy. One integer and six variants stand where
+ten types stood.
+
+Every consumer adopts it at once; there is no compatibility path. A
+contract crate implements `Contracted` for its `Query` root in one line,
+naming the `ETHOS` constant it already exports. A client greets, opens an
+exchange per query, and reads `Delivery` frames until its exchange ends.
+A Nexus greets back, admits the identifiers the peer names, and answers
+on them.
+
+
 ## 4.0.0 — the Composing derive
 
 datom-codec 0.27.0 gives arity back to `Compositional`, which now states a

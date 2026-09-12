@@ -6,9 +6,15 @@
 //! [`Signal`] frame and its kinds, the wire framing that carries it, and
 //! the cross-component taxonomy generated from `ethos/signal.ethos`.
 //!
-//! The protocol layered on top of the rkyv archive is not decided; nothing
-//! here anticipates it.
+//! Above the archive sits the exchange layer: a connection is greeted once,
+//! settling the contract by the digest of its Ethos source, and then carries
+//! any number of concurrent exchanges, each named by an identifier the
+//! querying side mints. One query and one response is an exchange that ends
+//! after one answer; a subscription is an exchange that goes on answering.
+//! See [`exchange`] for what the layer deliberately does not carry.
 
+pub mod accord;
+pub mod exchange;
 pub mod frame;
 pub mod generated;
 pub mod portable;
@@ -17,6 +23,8 @@ pub mod taxonomy;
 #[cfg(feature = "transport")]
 pub mod transport;
 
+pub use accord::*;
+pub use exchange::*;
 pub use frame::*;
 pub use generated::*;
 pub use portable::*;
