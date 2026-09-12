@@ -1,5 +1,19 @@
 # Upgrades
 
+## 4.0.0 — the Composing derive
+
+datom-codec 0.27.0 gives arity back to `Compositional`, which now states a
+positional type's `ARITY` and builds it `from_positions`, and names the kind a
+datom composes into `Composing`. Every generated type derives
+`datom_codec::Composing` in place of `datom_codec::Compositional`, so
+`src/generated/signal.rs` changes and every consumer regenerates.
+
+Deploy in one step, with no compatibility path:
+
+1. Repin `protos`, `datom-codec`, `ethos-zero` and `signal` to the heads this
+   release names.
+2. Rebuild: the generated module is regenerated and asserted by `build.rs`.
+
 ## 2.0.0 — the signal repository
 
 `signal-standard` 1.0.0 became `signal` 2.0.0. The repository was renamed
