@@ -17,6 +17,7 @@ pub mod accord;
 pub mod exchange;
 pub mod frame;
 pub mod generated;
+pub mod identifiers;
 pub mod portable;
 pub mod taxonomy;
 
@@ -27,6 +28,7 @@ pub use accord::*;
 pub use exchange::*;
 pub use frame::*;
 pub use generated::*;
+pub use identifiers::*;
 pub use portable::*;
 pub use taxonomy::*;
 

@@ -1,0 +1,9 @@
+Identifier
+[]
+[]
+[]
+[ FullNameDigest.{ Integer Integer Integer Integer }
+  LocalNameReference.{ Integer Integer Integer }
+  ClusterNameReference.{ Integer Integer Integer Integer Integer Integer }
+  PublicNameReference.{ Integer Integer Integer Integer Integer Integer Integer Integer Integer Integer Integer Integer } ]
+[]
