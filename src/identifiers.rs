@@ -25,15 +25,15 @@ pub struct NameDigest(pub [u8; 32]);
 #[derive(
     rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, Clone, Copy, Debug, PartialEq, Eq, Hash,
 )]
-pub struct LocalNameReference(pub [u16; LOCAL_WORDS]);
+pub struct LocalNameReference([u16; LOCAL_WORDS]);
 #[derive(
     rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, Clone, Copy, Debug, PartialEq, Eq, Hash,
 )]
-pub struct ClusterNameReference(pub [u16; CLUSTER_WORDS]);
+pub struct ClusterNameReference([u16; CLUSTER_WORDS]);
 #[derive(
     rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, Clone, Copy, Debug, PartialEq, Eq, Hash,
 )]
-pub struct PublicNameReference(pub [u16; PUBLIC_WORDS]);
+pub struct PublicNameReference([u16; PUBLIC_WORDS]);
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub enum NameParseError {
@@ -41,6 +41,7 @@ pub enum NameParseError {
     NonCanonical,
     UnknownWord(String),
     WrongLength { expected: usize, actual: usize },
+    InvalidIndex(u16),
 }
 
 impl NameDigest {
@@ -67,16 +68,25 @@ impl NameDigest {
 }
 
 impl LocalNameReference {
+    pub fn try_from_indices(indices: [u16; LOCAL_WORDS]) -> Result<Self, NameParseError> {
+        validate(&indices).map(|_| Self(indices))
+    }
     pub fn parse(text: &str) -> Result<Self, NameParseError> {
         parse_words(text, LOCAL_WORDS).map(|words| Self(words.try_into().expect("fixed width")))
     }
 }
 impl ClusterNameReference {
+    pub fn try_from_indices(indices: [u16; CLUSTER_WORDS]) -> Result<Self, NameParseError> {
+        validate(&indices).map(|_| Self(indices))
+    }
     pub fn parse(text: &str) -> Result<Self, NameParseError> {
         parse_words(text, CLUSTER_WORDS).map(|words| Self(words.try_into().expect("fixed width")))
     }
 }
 impl PublicNameReference {
+    pub fn try_from_indices(indices: [u16; PUBLIC_WORDS]) -> Result<Self, NameParseError> {
+        validate(&indices).map(|_| Self(indices))
+    }
     pub fn parse(text: &str) -> Result<Self, NameParseError> {
         parse_words(text, PUBLIC_WORDS).map(|words| Self(words.try_into().expect("fixed width")))
     }
@@ -113,11 +123,23 @@ fn words(bytes: &[u8; 32], count: usize) -> Vec<u16> {
 }
 
 fn display(indices: &[u16], f: &mut fmt::Formatter<'_>) -> fmt::Result {
-    for index in indices {
-        let word = Language::English.word_list()[usize::from(*index)];
+    for (position, index) in indices.iter().enumerate() {
+        let word = Language::English
+            .word_list()
+            .get(usize::from(*index))
+            .ok_or(fmt::Error)?;
         let mut chars = word.chars();
         let first = chars.next().expect("BIP39 word");
-        write!(f, "{}{}", first.to_ascii_uppercase(), chars.as_str())?;
+        write!(
+            f,
+            "{}{}",
+            if position == 0 {
+                first
+            } else {
+                first.to_ascii_uppercase()
+            },
+            chars.as_str()
+        )?;
     }
     Ok(())
 }
@@ -128,13 +150,13 @@ fn parse_words(text: &str, expected: usize) -> Result<Vec<u16>, NameParseError> 
     }
     if !text.is_ascii()
         || text.contains(|c: char| !c.is_ascii_alphabetic())
-        || !text.as_bytes()[0].is_ascii_uppercase()
+        || !text.as_bytes()[0].is_ascii_lowercase()
     {
         return Err(NameParseError::NonCanonical);
     }
     let starts = text
         .char_indices()
-        .filter_map(|(at, character)| character.is_ascii_uppercase().then_some(at))
+        .filter_map(|(at, character)| (at == 0 || character.is_ascii_uppercase()).then_some(at))
         .collect::<Vec<_>>();
     let pieces = starts
         .iter()
@@ -160,6 +182,14 @@ fn parse_words(text: &str, expected: usize) -> Result<Vec<u16>, NameParseError> 
                 .ok_or(NameParseError::UnknownWord(word))
         })
         .collect()
+}
+
+fn validate(indices: &[u16]) -> Result<(), NameParseError> {
+    indices
+        .iter()
+        .find(|index| usize::from(**index) >= BIP39_WORDS)
+        .copied()
+        .map_or(Ok(()), |index| Err(NameParseError::InvalidIndex(index)))
 }
 
 #[cfg(test)]
@@ -188,11 +218,11 @@ mod tests {
     #[test]
     fn rejects_noncanonical_and_unknown_words() {
         assert_eq!(
-            LocalNameReference::parse("abandonAbilityAble"),
+            LocalNameReference::parse("AbandonAbilityAble"),
             Err(NameParseError::NonCanonical)
         );
         assert_eq!(
-            LocalNameReference::parse("WibbleAbilityAble"),
+            LocalNameReference::parse("wibbleAbilityAble"),
             Err(NameParseError::UnknownWord("wibble".into()))
         );
     }
@@ -203,6 +233,13 @@ mod tests {
         assert_eq!(
             rkyv::from_bytes::<ClusterNameReference, rkyv::rancor::Error>(&bytes).unwrap(),
             value
+        );
+    }
+    #[test]
+    fn rejects_bad_indices_without_display_panic() {
+        assert_eq!(
+            LocalNameReference::try_from_indices([BIP39_WORDS as u16, 1, 2]),
+            Err(NameParseError::InvalidIndex(BIP39_WORDS as u16))
         );
     }
 }
