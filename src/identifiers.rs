@@ -22,6 +22,31 @@ pub const PUBLIC_BITS: usize = PUBLIC_WORDS * BITS_PER_WORD;
 )]
 pub struct NameDigest(pub [u8; 32]);
 
+/// Gives a data-bearing value an opaque identity derived from its complete
+/// archived representation.
+///
+/// The digest is an identity token only. Presentation chooses a rendering in
+/// its own context; this trait deliberately supplies neither text nor a word
+/// codec.
+pub trait Identifiable {
+    fn identity(&self) -> Result<NameDigest, rkyv::rancor::Error>;
+}
+
+impl<T> Identifiable for T
+where
+    T: for<'a> rkyv::Serialize<
+        rkyv::api::high::HighSerializer<
+            rkyv::util::AlignedVec,
+            rkyv::ser::allocator::ArenaHandle<'a>,
+            rkyv::rancor::Error,
+        >,
+    >,
+{
+    fn identity(&self) -> Result<NameDigest, rkyv::rancor::Error> {
+        rkyv::to_bytes::<rkyv::rancor::Error>(self).map(NameDigest::of_bytes)
+    }
+}
+
 #[derive(
     rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, Clone, Copy, Debug, PartialEq, Eq, Hash,
 )]
@@ -198,6 +223,30 @@ mod tests {
     #[test]
     fn widths_are_explicit() {
         assert_eq!((LOCAL_BITS, CLUSTER_BITS, PUBLIC_BITS), (33, 66, 132));
+    }
+
+    #[test]
+    fn identity_fingerprints_the_complete_archived_value() {
+        #[derive(Clone, rkyv::Archive, rkyv::Serialize)]
+        struct RequestOccurrence {
+            caller: String,
+            sequence: u64,
+            content: String,
+        }
+
+        let first = RequestOccurrence {
+            caller: "flow-a".into(),
+            sequence: 7,
+            content: "inspect the receipt".into(),
+        };
+        let same = first.clone();
+        let conflict = RequestOccurrence {
+            content: "change the receipt".into(),
+            ..first.clone()
+        };
+
+        assert_eq!(first.identity().unwrap(), same.identity().unwrap());
+        assert_ne!(first.identity().unwrap(), conflict.identity().unwrap());
     }
     #[test]
     fn display_round_trips_each_context() {
