@@ -1,5 +1,47 @@
 # Upgrades
 
+## 8.0.0 — protos and datom-codec 0.32.2, ethos-zero 16.0.0
+
+The `datom` feature now binds datom-codec 0.32.2 (4dff16b4) and protos
+0.32.2 (15b41da8), and the build reads `ethos/signal.ethos` with ethos-zero
+16.0.0 (c2653dd8). The generated module is byte-identical, so the archived
+layout of every type is unchanged.
+What breaks is the trait identity under `datom`: every signal type now
+implements datom-codec 0.32.2's `Datomizable` and `Composing`, and no
+longer 0.31's. A crate that holds a signal type in a datomized position
+and is itself on datom-codec 0.31 no longer compiles against 8.0.0, and a
+crate on 0.32.2 no longer compiles against 7.0.0, since Cargo then holds
+two datom-codecs whose traits do not meet.
+
+Deploy in one step per consumer, with no compatibility path:
+
+1. Repin `signal` to the 8.0.0 head, and in the same change `protos` and
+   `datom-codec` to 0.32.2 (datom-codec with its `rkyv` feature where a
+   position holds a `Decimal`, a `Meaning` or a datom-codec `Error`) and
+   `ethos-zero` to 16.0.0.
+2. Regenerate the consumer's ethos Rust and rebuild; its freshness test
+   asserts the result. `cargo tree -d` shows one datom-codec.
+
+Consumers, by the signal pin their main checkouts held when 8.0.0 landed:
+
+- on 7.0.0 (66e7b153): signal-orchestrate, meta-signal-orchestrate,
+  signal-ethos-zero, meta-signal-ethos-zero, signal-system,
+  meta-signal-system, signal-persona, signal-mirror, and orchestrate
+  through the two orchestrate contracts;
+- on 5.0.0 (7bcb0949): signal-flow, meta-signal-flow, signal-message,
+  meta-signal-message, signal-router, meta-signal-router, signal-mind,
+  signal-criome, meta-signal-criome, signal-harness, signal-introspect,
+  signal-mentci, meta-signal-mentci, meta-signal-mirror, meta-signal-persona,
+  signal-repository-ledger, meta-signal-repository-ledger, and flow and
+  message through them;
+- on 8f9a0deb: signal-lojix, meta-signal-lojix, lojix, and horizon-lib
+  through lojix's lock;
+- on 48ae17b4: signal-spirit, meta-signal-spirit, signal-aggregator,
+  meta-signal-aggregator, aggregator.
+
+A consumer still on an older signal is not affected until it repins; when
+it repins to 8.0.0 it takes the whole step above at once.
+
 ## 7.0.0 — the exchange layer
 
 `signal` now owns the protocol above the archive. The contract gains
