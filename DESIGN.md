@@ -49,7 +49,7 @@ lane.
 Every message carries an **origin route** as automatic metadata that is
 *not* declared in the schema: a short, statistically-unique identifier
 acting as a return address that travels the whole way through Signal,
-then Nexus, then SEMA, and back, so a reply is associated with its
+then Nexus, then MEMORY, and back, so a reply is associated with its
 originating query when it returns. It is internal to each component and
 need not be a long hash — just an echoed return address. This is the
 concrete form of request-reply correlation; the wire protocol's message
@@ -76,7 +76,7 @@ message is authenticated by the socket it arrived on, and
 permission-in-variant is deferred until needed.
 
 A **universal `Magnitude`** type in the shared typed-record crate
-(`signal-core` / `signal-sema`) replaces small ordinal enums. Its eight
+(`signal-core` / `signal-memory`) replaces small ordinal enums. Its eight
 variants — `Zero`, `Minimum`, `VeryLow`, `Low`, `Medium`, `High`,
 `VeryHigh`, `Maximum` — declare `Zero` first so derived `Ord` places
 the neutral absent rung lowest (chosen over `Option`/`None`). The

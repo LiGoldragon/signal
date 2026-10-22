@@ -159,7 +159,7 @@
             touch $out
           '';
           carries-no-engine = context.pkgs.runCommand "signal-no-engine" { } ''
-            ! ${context.pkgs.gnugrep}/bin/grep -R -E '(^|[^[:alnum:]_])(kameo|redb|sema|ractor)([^[:alnum:]_]|$)' ${./Cargo.toml} ${./src}
+            ! ${context.pkgs.gnugrep}/bin/grep -R -E '(^|[^[:alnum:]_])(kameo|redb|memory|ractor)([^[:alnum:]_]|$)' ${./Cargo.toml} ${./src}
             touch $out
           '';
           default-features-carry-no-runtime = context.craneLib.cargoBuild (

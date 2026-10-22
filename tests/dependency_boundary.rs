@@ -47,9 +47,9 @@ fn default_runtime_tree_excludes_bootstrap_and_retired_crates() {
         "rust-logos",
         concat!("schema", "-language"),
         "schema-rust",
-        "sema-translator",
+        "memory-translator",
         "signal-core",
-        "signal-sema-translator",
+        "signal-memory-translator",
         "structural-codec",
     ] {
         assert!(
