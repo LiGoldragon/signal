@@ -58,10 +58,10 @@ use crate::generated::{Conclusion, ExchangeFault, ExchangeId, Handshake, Handsha
 /// it. A minted exchange is never this, so a fault the answering side cannot
 /// attribute to an exchange — an unreadable frame, a missing greeting — is
 /// reported against the connection.
-pub const CONNECTION_EXCHANGE: ExchangeId = 0;
+pub const CONNECTION_EXCHANGE: ExchangeId = ExchangeId(0);
 
 /// The first exchange a connection mints.
-pub const FIRST_EXCHANGE: ExchangeId = 1;
+pub const FIRST_EXCHANGE: ExchangeId = ExchangeId(1);
 
 /// The greatest number of exchanges one connection holds open at once.
 ///
@@ -130,19 +130,19 @@ pub trait Exchanged {
 
 impl<Q> Exchanged for Opening<Q> {
     fn exchange(&self) -> ExchangeId {
-        self.exchange
+        self.exchange.clone()
     }
 }
 
 impl<R> Exchanged for Answer<R> {
     fn exchange(&self) -> ExchangeId {
-        self.exchange
+        self.exchange.clone()
     }
 }
 
 impl Exchanged for Ending {
     fn exchange(&self) -> ExchangeId {
-        self.exchange
+        self.exchange.clone()
     }
 }
 

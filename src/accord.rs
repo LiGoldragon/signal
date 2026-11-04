@@ -82,7 +82,7 @@ impl Handshake {
             at += 1;
         }
         Self {
-            contract_digest: digest as ContractDigest,
+            contract_digest: ContractDigest(digest as i64),
         }
     }
 }
@@ -156,7 +156,7 @@ pub trait ExchangeTracking {
 
     /// Refuse a frame naming an exchange this connection does not hold open.
     fn require_open(&self, exchange: ExchangeId) -> Result<ExchangeId, ExchangeFault> {
-        if self.bears(exchange) {
+        if self.bears(exchange.clone()) {
             Ok(exchange)
         } else {
             Err(ExchangeFault::UnknownExchange)
@@ -201,13 +201,13 @@ impl ExchangeTracking for ExchangeLedger {
 
     fn admit(&mut self, exchange: ExchangeId) -> Result<ExchangeId, ExchangeFault> {
         self.require_greeting()?;
-        if self.bears(exchange) {
+        if self.bears(exchange.clone()) {
             return Err(ExchangeFault::ExchangeInUse);
         }
         if self.open.len() >= self.capacity {
             return Err(ExchangeFault::ExchangeLimit);
         }
-        self.open.push(exchange);
+        self.open.push(exchange.clone());
         Ok(exchange)
     }
 
@@ -215,7 +215,7 @@ impl ExchangeTracking for ExchangeLedger {
         let at = self
             .open
             .iter()
-            .position(|held| *held == exchange)
+            .position(|held| held == &exchange)
             .ok_or(ExchangeFault::UnknownExchange)?;
         self.open.remove(at);
         Ok(exchange)
@@ -224,11 +224,13 @@ impl ExchangeTracking for ExchangeLedger {
 
 impl ExchangeMinting for ExchangeLedger {
     fn mint(&mut self) -> Result<ExchangeId, ExchangeFault> {
-        let exchange = self.next;
-        self.next = self
-            .next
-            .checked_add(1)
-            .ok_or(ExchangeFault::ExchangeLimit)?;
+        let exchange = self.next.clone();
+        self.next = ExchangeId(
+            self.next
+                .0
+                .checked_add(1)
+                .ok_or(ExchangeFault::ExchangeLimit)?,
+        );
         Ok(exchange)
     }
 }
