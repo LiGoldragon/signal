@@ -201,6 +201,9 @@ impl ExchangeTracking for ExchangeLedger {
 
     fn admit(&mut self, exchange: ExchangeId) -> Result<ExchangeId, ExchangeFault> {
         self.require_greeting()?;
+        if exchange < FIRST_EXCHANGE {
+            return Err(ExchangeFault::Unanswerable(exchange));
+        }
         if self.bears(exchange) {
             return Err(ExchangeFault::ExchangeInUse);
         }

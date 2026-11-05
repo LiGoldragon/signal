@@ -8,9 +8,9 @@ use signal::{
     Answer, AuthorizedObjectInterest, AuthorizedObjectKind, ByteViewable, CONNECTION_EXCHANGE,
     ComponentClassification, ComponentKind, ComponentObjectInterest, Conclusion, ContractDigest,
     Contracted, Delivery, Differentiator, Dispatch, Ending, ExchangeFault, ExchangeId,
-    ExchangeLedger, ExchangeMinting, ExchangeTracking, Exchanged, FrameCapacity, FrameReading,
-    FrameWriting, Greeted, Handshake, HandshakeReceipt, HandshakeRejection, Opening, Restorable,
-    Signal, Signalizable,
+    ExchangeLedger, ExchangeMinting, ExchangeTracking, Exchanged, FIRST_EXCHANGE, FrameCapacity,
+    FrameReading, FrameWriting, Greeted, Handshake, HandshakeReceipt, HandshakeRejection, Opening,
+    Restorable, Signal, Signalizable,
 };
 
 /// A stand-in contract. Its query and response roots are real generated
@@ -125,6 +125,21 @@ fn no_minted_exchange_is_ever_the_connection_itself() {
     for _ in 0..8 {
         assert_ne!(ledger.open().expect("exchange"), CONNECTION_EXCHANGE);
     }
+}
+
+#[test]
+fn only_positive_identifiers_can_be_admitted_as_exchanges() {
+    let mut ledger = greeted_ledger();
+    for exchange in [CONNECTION_EXCHANGE, -1, ExchangeId::MIN] {
+        assert_eq!(
+            ledger.admit(exchange),
+            Err(ExchangeFault::Unanswerable(exchange))
+        );
+        assert!(!ledger.bears(exchange));
+    }
+
+    assert_eq!(ledger.admit(FIRST_EXCHANGE), Ok(FIRST_EXCHANGE));
+    assert!(ledger.bears(FIRST_EXCHANGE));
 }
 
 #[test]

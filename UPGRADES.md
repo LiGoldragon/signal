@@ -1,5 +1,15 @@
 # Upgrades
 
+## 9.0.0 — answerable exchange identifiers
+
+`ExchangeLedger::admit` now refuses zero and every negative identifier as
+`ExchangeFault::Unanswerable(ExchangeId)`. Zero remains the connection-wide
+identifier used for faults that cannot be attributed to an exchange; minted
+exchange identifiers begin at one.
+
+Every consumer must repin and rebuild in one step. The added `ExchangeFault`
+variant changes the archived wire contract and exhaustive Rust matches.
+
 ## 8.0.0 — protos and datom-codec 0.32.2, ethos-zero 16.0.0
 
 The `datom` feature now binds datom-codec 0.32.2 (4dff16b4) and protos

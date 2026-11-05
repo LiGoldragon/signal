@@ -1,11 +1,11 @@
 [package]
 name         = "signal"
-version      = "8.0.0"
+version      = "9.0.0"
 edition      = "2024"
 rust-version = "1.89"
 license      = "MIT OR Apache-2.0"
 repository   = "https://github.com/LiGoldragon/signal"
-description  = "The shared Signal layer: the portable rkyv Signal frame, its wire framing, and the cross-component taxonomy every Nexus depends on."
+description  = "The shared Signal layer: portable rkyv frames, wire framing, exchange attribution, and the cross-component taxonomy every Nexus depends on."
 publish      = false
 links        = "signal"
 build        = "build.rs"

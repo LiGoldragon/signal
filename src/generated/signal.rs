@@ -119,6 +119,7 @@ pub enum ExchangeFault {
     GreetingRepeated,
     ExchangeInUse,
     UnknownExchange,
+    Unanswerable(ExchangeId),
     ExchangeLimit,
     UnreadableQuery,
     Lagged,

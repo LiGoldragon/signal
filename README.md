@@ -6,7 +6,7 @@ Signal is the messaging layer: a message is an rkyv binary archive —
 typed, portable, validated on receive — and frames are length-prefixed on
 the socket. Nothing else rides the wire.
 
-This crate owns three things and nothing else:
+This crate owns four things and nothing else:
 
 - **The portable frame.** `Signal<T>` carries a contract value's rkyv
   bytes with the target contract in its type, and the three kinds every
@@ -19,6 +19,8 @@ This crate owns three things and nothing else:
 - **The shared taxonomy.** The closed component roster, authorized-object
   classification and interest, and typed reachability, generated from
   `ethos/signal.ethos`.
+- **The exchange layer.** A contract greeting and concurrent positive-numbered
+  exchanges attribute every query, answer and ending on one connection.
 
 It owns no operations, no Nexus, no storage, and no runtime policy.
 Contracts import these identities into their own Interfaces.
@@ -26,9 +28,9 @@ Contracts import these identities into their own Interfaces.
 `ethos/signal.ethos` is the schema authority; `build.rs` checks the
 checked-in Rust projection in `src/generated/signal.rs` against it.
 
-The protocol layered on top of the rkyv archive is not decided. Nothing
-here anticipates it. `DESIGN.md` carries the reasoning inherited from the
-archived legacy `signal` repository; it is inheritance, not specification.
+The v7 exchange layer is the implemented protocol above the archive.
+`DESIGN.md` carries the reasoning inherited from the archived legacy `signal`
+repository; it is inheritance, not specification.
 
 ## One signal per build graph
 

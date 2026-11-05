@@ -20,5 +20,5 @@ Signal
   Handshake.{ ContractDigest }
   HandshakeRejection.[ ContractMismatch.ContractDigest ]
   HandshakeReceipt.[ Greeted.ContractDigest  GreetingRefused.HandshakeRejection ]
-  ExchangeFault.[ GreetingExpected  GreetingRepeated  ExchangeInUse  UnknownExchange  ExchangeLimit  UnreadableQuery  Lagged ]
+  ExchangeFault.[ GreetingExpected  GreetingRepeated  ExchangeInUse  UnknownExchange  Unanswerable.ExchangeId  ExchangeLimit  UnreadableQuery  Lagged ]
   Conclusion.[ Completed  Faulted.ExchangeFault ] ]

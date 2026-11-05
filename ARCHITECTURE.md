@@ -98,7 +98,7 @@ not append blindly or repartition zones; repartitioning is a major-version
 event. Schema decisions must remain independent of Rust, LLVM, and the
 current OS.
 
-The protocol on top of the rkyv archive is to be decided. `DESIGN.md`
-carries, verbatim, the four sections of the archived legacy `signal`
-repository's architecture document that are worth inheriting. They are
-inherited reasoning, not specification.
+The v7 exchange layer is the implemented protocol above the rkyv archive.
+`DESIGN.md` carries, verbatim, the four sections of the archived legacy
+`signal` repository's architecture document that are worth inheriting. They
+are inherited reasoning, not specification.

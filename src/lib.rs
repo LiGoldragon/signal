@@ -2,9 +2,10 @@
 //!
 //! Signal is the messaging layer: a message is an rkyv binary archive,
 //! typed, portable, validated on receive, length-prefixed on the socket.
-//! This crate owns the three pieces every component shares — the portable
+//! This crate owns the four pieces every component shares — the portable
 //! [`Signal`] frame and its kinds, the wire framing that carries it, and
-//! the cross-component taxonomy generated from `ethos/signal.ethos`.
+//! the cross-component taxonomy generated from `ethos/signal.ethos`, plus the
+//! exchange layer that attributes concurrent work on a connection.
 //!
 //! Above the archive sits the exchange layer: a connection is greeted once,
 //! settling the contract by the digest of its Ethos source, and then carries

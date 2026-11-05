@@ -17,8 +17,9 @@ readable aliases create a competing authority and are forbidden.
 their existing zones; do not append blindly or repartition without a major
 version.
 
-The protocol layered on top of the rkyv archive is not decided. Do not
-design it here. `DESIGN.md` is inherited reasoning from the archived legacy
+The v7 exchange layer in `src/exchange.rs` and `src/accord.rs` is the
+implemented protocol above the archive. Its greeting and exchange vocabulary
+are wire contract. `DESIGN.md` is inherited reasoning from the archived legacy
 `signal` repository, not specification.
 
 The framing's byte order is big-endian and is a wire commitment: changing

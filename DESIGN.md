@@ -9,9 +9,9 @@ the source, so that heading is this repository's name for it.
 Source: `LiGoldragon/signal-legacy` (archived 2026-09-12; the repository
 was named `signal` when these were written), `ARCHITECTURE.md` at commit
 e64aef5986d2. The code they describe is superseded; the reasoning is not.
-Nothing here is ruled for the current Signal layer — the protocol on top
-of portable rkyv is still to be decided. Read it as inherited reasoning,
-not as specification.
+Nothing here is ruled for the current Signal layer. The v7 exchange protocol
+supersedes the legacy protocol described below. Read this as inherited
+reasoning, not as specification.
 
 ---
 
