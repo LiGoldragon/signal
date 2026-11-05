@@ -187,6 +187,29 @@ fn an_exchange_opened_before_the_greeting_is_refused() {
 }
 
 #[test]
+fn every_exchange_operation_before_the_greeting_is_refused_without_state_change() {
+    let mut ledger = ExchangeLedger::default();
+
+    assert_eq!(
+        ledger.admit(FIRST_EXCHANGE),
+        Err(ExchangeFault::GreetingExpected)
+    );
+    assert_eq!(
+        ledger.require_open(FIRST_EXCHANGE),
+        Err(ExchangeFault::GreetingExpected)
+    );
+    assert_eq!(
+        ledger.release(FIRST_EXCHANGE),
+        Err(ExchangeFault::GreetingExpected)
+    );
+    assert_eq!(ledger.open(), Err(ExchangeFault::GreetingExpected));
+    assert!(ledger.open_exchanges().is_empty());
+
+    ledger.greet().expect("greeting after refused operations");
+    assert_eq!(ledger.open(), Ok(FIRST_EXCHANGE));
+}
+
+#[test]
 fn a_second_greeting_on_one_connection_is_refused() {
     let mut ledger = greeted_ledger();
     assert_eq!(ledger.greet(), Err(ExchangeFault::GreetingRepeated));

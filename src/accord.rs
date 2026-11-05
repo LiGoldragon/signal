@@ -148,8 +148,12 @@ pub trait Greeted {
     }
 }
 
-/// A connection's exchange state admits, bears and releases exchanges.
-pub trait ExchangeTracking {
+/// A greeted connection's exchange state admits, bears and releases exchanges.
+///
+/// Implementations must call [`Greeted::require_greeting`] before changing or
+/// inspecting exchange-specific state. The provided [`Self::require_open`]
+/// does so before looking in the open set.
+pub trait ExchangeTracking: Greeted {
     fn capacity(&self) -> usize;
 
     fn open_exchanges(&self) -> &[ExchangeId];
@@ -166,6 +170,7 @@ pub trait ExchangeTracking {
 
     /// Refuse a frame naming an exchange this connection does not hold open.
     fn require_open(&self, exchange: ExchangeId) -> Result<ExchangeId, ExchangeFault> {
+        self.require_greeting()?;
         if self.bears(exchange) {
             Ok(exchange)
         } else {
@@ -222,6 +227,7 @@ impl ExchangeTracking for ExchangeLedger {
     }
 
     fn release(&mut self, exchange: ExchangeId) -> Result<ExchangeId, ExchangeFault> {
+        self.require_greeting()?;
         let at = self
             .open
             .iter()

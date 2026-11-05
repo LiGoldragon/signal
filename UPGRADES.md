@@ -1,5 +1,13 @@
 # Upgrades
 
+## 10.1.0 — greeting precedes every exchange operation
+
+`ExchangeTracking` now extends `Greeted`. Its provided `require_open` check,
+and `ExchangeLedger`'s admit, open and release operations, refuse a call before
+the greeting with `ExchangeFault::GreetingExpected` and leave the ledger
+unchanged. Custom `ExchangeTracking` implementations must make the same
+greeting check before their required admit and release operations.
+
 ## 10.0.1 — minted identifiers are never live
 
 `ExchangeLedger::mint` now skips identifiers already borne by the ledger.
