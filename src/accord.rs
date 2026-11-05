@@ -26,6 +26,11 @@ use crate::generated::{
 
 use crate::exchange::{FIRST_EXCHANGE, MAXIMUM_OPEN_EXCHANGES};
 
+/// A requested exchange capacity exceeds the connection-wide ceiling.
+#[derive(Clone, Copy, Debug, Eq, PartialEq, thiserror::Error)]
+#[error("exchange capacity {0} exceeds the maximum of {MAXIMUM_OPEN_EXCHANGES} open exchanges")]
+pub struct ExchangeCapacityError(pub usize);
+
 /// A contract root names the authored Ethos source it was generated from.
 ///
 /// The exception noted here, per the no-namespace rule: the capabilities take
@@ -111,12 +116,17 @@ impl Default for ExchangeLedger {
     }
 }
 
-impl From<usize> for ExchangeLedger {
-    fn from(capacity: usize) -> Self {
-        Self {
+impl TryFrom<usize> for ExchangeLedger {
+    type Error = ExchangeCapacityError;
+
+    fn try_from(capacity: usize) -> Result<Self, Self::Error> {
+        if capacity > MAXIMUM_OPEN_EXCHANGES {
+            return Err(ExchangeCapacityError(capacity));
+        }
+        Ok(Self {
             capacity,
             ..Self::default()
-        }
+        })
     }
 }
 
@@ -170,10 +180,7 @@ pub trait ExchangeMinting: ExchangeTracking {
     fn mint(&mut self) -> Result<ExchangeId, ExchangeFault>;
 
     /// Mint and admit in one act: how the querying end starts an exchange.
-    fn open(&mut self) -> Result<ExchangeId, ExchangeFault> {
-        let exchange = self.mint()?;
-        self.admit(exchange)
-    }
+    fn open(&mut self) -> Result<ExchangeId, ExchangeFault>;
 }
 
 impl Greeted for ExchangeLedger {
@@ -233,5 +240,14 @@ impl ExchangeMinting for ExchangeLedger {
             .checked_add(1)
             .ok_or(ExchangeFault::ExchangeLimit)?;
         Ok(exchange)
+    }
+
+    fn open(&mut self) -> Result<ExchangeId, ExchangeFault> {
+        self.require_greeting()?;
+        if self.open.len() >= self.capacity {
+            return Err(ExchangeFault::ExchangeLimit);
+        }
+        let exchange = self.mint()?;
+        self.admit(exchange)
     }
 }

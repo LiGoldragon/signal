@@ -7,10 +7,10 @@ use std::io::Cursor;
 use signal::{
     Answer, AuthorizedObjectInterest, AuthorizedObjectKind, ByteViewable, CONNECTION_EXCHANGE,
     ComponentClassification, ComponentKind, ComponentObjectInterest, Conclusion, ContractDigest,
-    Contracted, Delivery, Differentiator, Dispatch, Ending, ExchangeFault, ExchangeId,
-    ExchangeLedger, ExchangeMinting, ExchangeTracking, Exchanged, FIRST_EXCHANGE, FrameCapacity,
-    FrameReading, FrameWriting, Greeted, Handshake, HandshakeReceipt, HandshakeRejection, Opening,
-    Restorable, Signal, Signalizable,
+    Contracted, Delivery, Differentiator, Dispatch, Ending, ExchangeCapacityError, ExchangeFault,
+    ExchangeId, ExchangeLedger, ExchangeMinting, ExchangeTracking, Exchanged, FIRST_EXCHANGE,
+    FrameCapacity, FrameReading, FrameWriting, Greeted, Handshake, HandshakeReceipt,
+    HandshakeRejection, MAXIMUM_OPEN_EXCHANGES, Opening, Restorable, Signal, Signalizable,
 };
 
 /// A stand-in contract. Its query and response roots are real generated
@@ -167,7 +167,9 @@ fn reopening_a_live_exchange_is_refused_as_in_use() {
 fn an_exchange_opened_before_the_greeting_is_refused() {
     let mut ledger = ExchangeLedger::default();
     assert!(!ledger.is_greeted());
-    assert_eq!(ledger.admit(1), Err(ExchangeFault::GreetingExpected));
+    assert_eq!(ledger.open(), Err(ExchangeFault::GreetingExpected));
+    ledger.greet().expect("greeting after refused open");
+    assert_eq!(ledger.open(), Ok(FIRST_EXCHANGE));
 }
 
 #[test]
@@ -178,7 +180,7 @@ fn a_second_greeting_on_one_connection_is_refused() {
 
 #[test]
 fn the_open_set_is_bounded_and_refuses_past_its_capacity() {
-    let mut ledger = ExchangeLedger::from(2);
+    let mut ledger = ExchangeLedger::try_from(2).expect("capacity within the maximum");
     ledger.greet().expect("greeting");
     assert_eq!(ledger.capacity(), 2);
     ledger.open().expect("first");
@@ -188,14 +190,29 @@ fn the_open_set_is_bounded_and_refuses_past_its_capacity() {
 
 #[test]
 fn an_abandoned_exchange_is_released_and_its_slot_returns() {
-    let mut ledger = ExchangeLedger::from(1);
+    let mut ledger = ExchangeLedger::try_from(1).expect("capacity within the maximum");
     ledger.greet().expect("greeting");
     let first = ledger.open().expect("first");
     assert_eq!(ledger.open(), Err(ExchangeFault::ExchangeLimit));
     assert_eq!(ledger.release(first), Ok(first));
     assert!(!ledger.bears(first));
     let second = ledger.open().expect("second after release");
-    assert_ne!(second, first);
+    assert_eq!(second, first + 1, "the refused open consumed no identifier");
+}
+
+#[test]
+fn a_capacity_above_the_connection_ceiling_is_refused() {
+    let capacity = MAXIMUM_OPEN_EXCHANGES + 1;
+    assert_eq!(
+        ExchangeLedger::try_from(capacity),
+        Err(ExchangeCapacityError(capacity))
+    );
+    assert_eq!(
+        ExchangeLedger::try_from(MAXIMUM_OPEN_EXCHANGES)
+            .expect("the maximum capacity")
+            .capacity(),
+        MAXIMUM_OPEN_EXCHANGES
+    );
 }
 
 #[test]

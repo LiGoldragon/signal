@@ -1,5 +1,17 @@
 # Upgrades
 
+## 10.0.0 — bounded ledger construction and non-consuming refusal
+
+`ExchangeLedger::try_from(usize)` replaces `From<usize>` and refuses a
+capacity above `MAXIMUM_OPEN_EXCHANGES` as `ExchangeCapacityError`, carrying
+the refused value. `ExchangeMinting::open` is now a required capability; the
+`ExchangeLedger` implementation checks the greeting before minting, so a
+refused pre-greeting open consumes no identifier.
+
+Consumers that construct a custom ledger capacity must handle the typed
+construction result. Custom `ExchangeMinting` implementations must implement
+`open` with their own admission ordering.
+
 ## 9.0.0 — answerable exchange identifiers
 
 `ExchangeLedger::admit` now refuses zero and every negative identifier as
