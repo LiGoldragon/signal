@@ -234,9 +234,15 @@ impl ExchangeTracking for ExchangeLedger {
 
 impl ExchangeMinting for ExchangeLedger {
     fn mint(&mut self) -> Result<ExchangeId, ExchangeFault> {
-        let exchange = self.next;
+        let mut exchange = self.next;
+        while self.bears(exchange) {
+            exchange = exchange
+                .checked_add(1)
+                .ok_or(ExchangeFault::ExchangeLimit)?;
+        }
         self.next = self
             .next
+            .max(exchange)
             .checked_add(1)
             .ok_or(ExchangeFault::ExchangeLimit)?;
         Ok(exchange)

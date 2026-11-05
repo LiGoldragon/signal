@@ -164,6 +164,20 @@ fn reopening_a_live_exchange_is_refused_as_in_use() {
 }
 
 #[test]
+fn minting_skips_borne_identifiers_and_keeps_release_order_monotonic() {
+    let mut ledger = greeted_ledger();
+    assert_eq!(ledger.admit(FIRST_EXCHANGE), Ok(FIRST_EXCHANGE));
+
+    let after_borne = ledger.open().expect("open after a peer-admitted ID");
+    assert_eq!(after_borne, FIRST_EXCHANGE + 1);
+    assert_eq!(ledger.release(FIRST_EXCHANGE), Ok(FIRST_EXCHANGE));
+
+    let after_release = ledger.open().expect("open after releasing skipped ID");
+    assert_eq!(after_release, after_borne + 1);
+    assert_ne!(after_release, FIRST_EXCHANGE);
+}
+
+#[test]
 fn an_exchange_opened_before_the_greeting_is_refused() {
     let mut ledger = ExchangeLedger::default();
     assert!(!ledger.is_greeted());

@@ -1,5 +1,12 @@
 # Upgrades
 
+## 10.0.1 — minted identifiers are never live
+
+`ExchangeLedger::mint` now skips identifiers already borne by the ledger.
+An answering-side admission and querying-side mint on the same ledger can no
+longer hand out the same live identifier; released identifiers stay behind the
+monotonic mint cursor rather than being reused.
+
 ## 10.0.0 — bounded ledger construction and non-consuming refusal
 
 `ExchangeLedger::try_from(usize)` replaces `From<usize>` and refuses a
