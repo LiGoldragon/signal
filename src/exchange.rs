@@ -58,10 +58,10 @@ use crate::generated::{Conclusion, ExchangeFault, ExchangeId, Handshake, Handsha
 /// it. A minted exchange is never this, so a fault the answering side cannot
 /// attribute to an exchange — an unreadable frame, a missing greeting — is
 /// reported against the connection.
-pub const CONNECTION_EXCHANGE: ExchangeId = 0;
+pub const CONNECTION_EXCHANGE: ExchangeId = ExchangeId(0);
 
 /// The first exchange a connection mints.
-pub const FIRST_EXCHANGE: ExchangeId = 1;
+pub const FIRST_EXCHANGE: ExchangeId = ExchangeId(1);
 
 /// The greatest number of exchanges one connection holds open at once.
 ///
@@ -146,10 +146,8 @@ impl Exchanged for Ending {
     }
 }
 
-// The exception taken here: these are constructors, not behaviour, and the
-// trait they would otherwise live in would have to be implemented on
-// `ExchangeId` — which is an alias for `i64`, so every integer in every
-// consumer would gain the verbs. A constructor stays inherent.
+// The exception taken here: these are constructors, not behaviour, and a
+// constructor stays inherent.
 impl Ending {
     /// The end of an exchange that ran to completion.
     pub fn completed(exchange: ExchangeId) -> Self {

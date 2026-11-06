@@ -11,6 +11,7 @@ use signal::{
     ExchangeId, ExchangeLedger, ExchangeMinting, ExchangeTracking, Exchanged, FIRST_EXCHANGE,
     FrameCapacity, FrameReading, FrameWriting, Greeted, Handshake, HandshakeReceipt,
     HandshakeRejection, MAXIMUM_OPEN_EXCHANGES, Opening, Restorable, Signal, Signalizable,
+    Successive,
 };
 
 /// A stand-in contract. Its query and response roots are real generated
@@ -28,7 +29,7 @@ const PONG_SOURCE: &str = "Signal\n[]\n[]\n[]\n[ Pong.Integer ]\n";
 /// FNV-1a over exactly [`PING_SOURCE`]'s bytes, taken as a signed 64-bit
 /// integer, computed in Python from the published algorithm — an oracle
 /// outside the crate under test.
-const PING_DIGEST: ContractDigest = -501_540_396_992_439_027;
+const PING_DIGEST: ContractDigest = ContractDigest(-501_540_396_992_439_027);
 
 struct Ping;
 struct Pong;
@@ -130,7 +131,7 @@ fn no_minted_exchange_is_ever_the_connection_itself() {
 #[test]
 fn only_positive_identifiers_can_be_admitted_as_exchanges() {
     let mut ledger = greeted_ledger();
-    for exchange in [CONNECTION_EXCHANGE, -1, ExchangeId::MIN] {
+    for exchange in [CONNECTION_EXCHANGE, ExchangeId(-1), ExchangeId(i64::MIN)] {
         assert_eq!(
             ledger.admit(exchange),
             Err(ExchangeFault::Unanswerable(exchange))
@@ -146,7 +147,7 @@ fn only_positive_identifiers_can_be_admitted_as_exchanges() {
 fn an_exchange_the_connection_does_not_hold_is_refused_as_unknown() {
     let ledger = greeted_ledger();
     assert_eq!(
-        ledger.require_open(7),
+        ledger.require_open(ExchangeId(7)),
         Err(ExchangeFault::UnknownExchange),
         "an unopened exchange is not borne"
     );
@@ -169,11 +170,17 @@ fn minting_skips_borne_identifiers_and_keeps_release_order_monotonic() {
     assert_eq!(ledger.admit(FIRST_EXCHANGE), Ok(FIRST_EXCHANGE));
 
     let after_borne = ledger.open().expect("open after a peer-admitted ID");
-    assert_eq!(after_borne, FIRST_EXCHANGE + 1);
+    assert_eq!(
+        after_borne,
+        FIRST_EXCHANGE.successor().expect("room to count")
+    );
     assert_eq!(ledger.release(FIRST_EXCHANGE), Ok(FIRST_EXCHANGE));
 
     let after_release = ledger.open().expect("open after releasing skipped ID");
-    assert_eq!(after_release, after_borne + 1);
+    assert_eq!(
+        after_release,
+        after_borne.successor().expect("room to count")
+    );
     assert_ne!(after_release, FIRST_EXCHANGE);
 }
 
@@ -234,7 +241,11 @@ fn an_abandoned_exchange_is_released_and_its_slot_returns() {
     assert_eq!(ledger.release(first), Ok(first));
     assert!(!ledger.bears(first));
     let second = ledger.open().expect("second after release");
-    assert_eq!(second, first + 1, "the refused open consumed no identifier");
+    assert_eq!(
+        second,
+        first.successor().expect("room to count"),
+        "the refused open consumed no identifier"
+    );
 }
 
 #[test]
@@ -272,14 +283,14 @@ fn a_greeting_crosses_the_wire_as_a_dispatch() {
 #[test]
 fn a_query_crosses_the_wire_on_the_exchange_that_opened_it() {
     let sent: Dispatch<Query> = Dispatch::Open(Opening {
-        exchange: 12,
+        exchange: ExchangeId(12),
         query: query(),
     });
     let received = across_the_wire(&sent);
     assert_eq!(received, sent);
     match received {
         Dispatch::Open(opening) => {
-            assert_eq!(opening.exchange(), 12);
+            assert_eq!(opening.exchange(), ExchangeId(12));
             assert_eq!(opening.query, query());
         }
         other => panic!("a query arrived as {other:?}"),
@@ -288,7 +299,7 @@ fn a_query_crosses_the_wire_on_the_exchange_that_opened_it() {
 
 #[test]
 fn abandoning_an_exchange_crosses_the_wire_naming_only_it() {
-    let sent: Dispatch<Query> = Dispatch::Abandon(4);
+    let sent: Dispatch<Query> = Dispatch::Abandon(ExchangeId(4));
     assert_eq!(across_the_wire(&sent), sent);
 }
 
@@ -299,8 +310,8 @@ fn abandoning_an_exchange_crosses_the_wire_naming_only_it() {
 #[test]
 fn a_subscription_and_a_one_answer_exchange_interleave_on_one_connection() {
     let capacity = FrameCapacity::default();
-    let subscription: ExchangeId = 1;
-    let one_answer: ExchangeId = 2;
+    let subscription = ExchangeId(1);
+    let one_answer = ExchangeId(2);
 
     let sent: Vec<Delivery<Response>> = vec![
         Delivery::Greeted(HandshakeReceipt::Greeted(Ping::contract_digest())),
@@ -349,7 +360,7 @@ fn a_subscription_and_a_one_answer_exchange_interleave_on_one_connection() {
                 subscription_answers += 1
             }
             Delivery::Answer(answer) if answer.exchange() == one_answer => one_answer_answers += 1,
-            Delivery::Answer(answer) => panic!("an answer on exchange {}", answer.exchange()),
+            Delivery::Answer(answer) => panic!("an answer on exchange {:?}", answer.exchange()),
             Delivery::End(ending) => endings.push(ending),
         }
     }
@@ -366,11 +377,12 @@ fn a_subscription_and_a_one_answer_exchange_interleave_on_one_connection() {
 
 #[test]
 fn a_subscriber_the_answering_side_could_not_keep_current_is_told_so() {
-    let sent: Delivery<Response> = Delivery::End(Ending::faulted(3, ExchangeFault::Lagged));
+    let sent: Delivery<Response> =
+        Delivery::End(Ending::faulted(ExchangeId(3), ExchangeFault::Lagged));
     let received = across_the_wire(&sent);
     match received {
         Delivery::End(ending) => {
-            assert_eq!(ending.exchange(), 3);
+            assert_eq!(ending.exchange(), ExchangeId(3));
             assert!(!ending.is_connection_wide());
             assert_eq!(
                 ending.conclusion,
@@ -392,9 +404,11 @@ fn a_fault_with_no_exchange_to_blame_is_reported_against_the_connection() {
 
 #[test]
 fn a_completed_exchange_and_a_faulted_one_are_distinct_on_the_wire() {
-    let completed: Delivery<Response> = Delivery::End(Ending::completed(5));
-    let faulted: Delivery<Response> =
-        Delivery::End(Ending::faulted(5, ExchangeFault::UnknownExchange));
+    let completed: Delivery<Response> = Delivery::End(Ending::completed(ExchangeId(5)));
+    let faulted: Delivery<Response> = Delivery::End(Ending::faulted(
+        ExchangeId(5),
+        ExchangeFault::UnknownExchange,
+    ));
     assert_ne!(across_the_wire(&completed), across_the_wire(&faulted));
 }
 
@@ -419,12 +433,12 @@ enum Observed {
 fn holdings() -> Observed {
     Observed::Holdings(vec![
         Held {
-            identifier: 1341,
+            identifier: ExchangeId(1341),
             name: String::from("F6db8dSignalExchangeProtocol"),
             paths: vec![String::from("/git/github.com/LiGoldragon/signal")],
         },
         Held {
-            identifier: 1339,
+            identifier: ExchangeId(1339),
             name: String::from("F6db8dExchangeProtocolDesign"),
             paths: Vec::new(),
         },
@@ -434,13 +448,13 @@ fn holdings() -> Observed {
 #[test]
 fn the_envelope_carries_a_root_holding_a_vector_of_string_bearing_structs() {
     let sent: Delivery<Observed> = Delivery::Answer(Answer {
-        exchange: 9,
+        exchange: ExchangeId(9),
         response: holdings(),
     });
     let received = across_the_wire(&sent);
     match received {
         Delivery::Answer(answer) => {
-            assert_eq!(answer.exchange(), 9);
+            assert_eq!(answer.exchange(), ExchangeId(9));
             assert_eq!(answer.response, holdings());
         }
         other => panic!("an observation arrived as {other:?}"),
@@ -454,7 +468,7 @@ fn the_envelope_carries_a_root_holding_a_vector_of_string_bearing_structs() {
 #[test]
 fn an_empty_state_on_open_is_still_an_answer_and_not_an_absence() {
     let sent: Delivery<Observed> = Delivery::Answer(Answer {
-        exchange: 1,
+        exchange: ExchangeId(1),
         response: Observed::Nothing,
     });
     let received = across_the_wire(&sent);
@@ -463,4 +477,15 @@ fn an_empty_state_on_open_is_still_an_answer_and_not_an_absence() {
         Delivery::Answer(answer) => assert_eq!(answer.response, Observed::Nothing),
         other => panic!("an empty state arrived as {other:?}"),
     }
+}
+
+/// Minting the next identifier is a capability declared on `ExchangeId`; the
+/// integer inside gains no arithmetic, and exhaustion is a refusal.
+#[test]
+fn an_exchange_identifier_names_its_successor_and_refuses_at_exhaustion() {
+    assert_eq!(ExchangeId(1).successor(), Some(ExchangeId(2)));
+    assert_eq!(ExchangeId(i64::MAX).successor(), None);
+    let held = ExchangeId(7);
+    let copy = held;
+    assert!(copy == held && held < ExchangeId(8));
 }

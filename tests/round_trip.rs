@@ -1,13 +1,14 @@
 use signal::{
     AuthorizedObjectInterest, AuthorizedObjectKind, AuthorizedObjectReference, ComponentKind,
-    ComponentObjectInterest, InterestMatchable, NetworkEndpoint, StandardSocket,
+    ComponentObjectInterest, HostName, InterestMatchable, NetworkEndpoint, NetworkPort,
+    ObjectDigest, StandardSocket,
 };
 
 #[test]
 fn authorized_object_interest_preserves_matching_semantics() {
     let reference = AuthorizedObjectReference {
         component_kind: ComponentKind::Criome,
-        object_digest: "contract-digest-fixture".into(),
+        object_digest: ObjectDigest("contract-digest-fixture".into()),
         authorized_object_kind: AuthorizedObjectKind::Contract,
     };
     assert!(reference.matches_interest(&AuthorizedObjectInterest::AnyAuthorizedObject));
@@ -33,8 +34,8 @@ fn authorized_object_interest_preserves_matching_semantics() {
 #[test]
 fn shared_socket_archives_with_current_shape() {
     let socket = StandardSocket::NetworkSocket(NetworkEndpoint {
-        host_name: "prometheus.goldragon.criome".into(),
-        network_port: 7474,
+        host_name: HostName("prometheus.goldragon.criome".into()),
+        network_port: NetworkPort(7474),
     });
     let bytes = rkyv::to_bytes::<rkyv::rancor::Error>(&socket).expect("archive");
     assert_eq!(

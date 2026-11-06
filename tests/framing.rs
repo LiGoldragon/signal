@@ -3,7 +3,7 @@ use std::io::Cursor;
 use signal::{
     ByteViewable, Capacious, Framable, FrameBody, FrameCapacity, FrameError, FrameReading,
     FrameWriting, LengthDeclaring, MAXIMUM_SIGNAL_BYTES, Restorable, Signal, Signalizable,
-    StandardSocket,
+    SocketPath, StandardSocket,
 };
 
 #[test]
@@ -72,7 +72,7 @@ fn a_prefix_declares_the_length_its_bytes_spell() {
 
 #[test]
 fn a_signalized_value_frames_and_restores_across_the_wire() {
-    let socket = StandardSocket::UnixSocket("/run/orchestrate/ordinary.sock".into());
+    let socket = StandardSocket::UnixSocket(SocketPath("/run/orchestrate/ordinary.sock".into()));
     let signalized = socket.signalize().expect("signalize");
     let mut wire = Vec::new();
     wire.write_frame(&signalized, FrameCapacity::default())

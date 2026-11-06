@@ -87,7 +87,7 @@ impl Handshake {
             at += 1;
         }
         Self {
-            contract_digest: digest as ContractDigest,
+            contract_digest: ContractDigest(digest as i64),
         }
     }
 }
@@ -179,6 +179,20 @@ pub trait ExchangeTracking: Greeted {
     }
 }
 
+/// An identifier that has a next one: the capability that mints the following
+/// exchange identifier. Arithmetic on the inner integer is not derived; this
+/// is the one place it is declared, on the type, with a handwritten body.
+pub trait Successive: Sized {
+    /// The next identifier, or none when the integer is exhausted.
+    fn successor(&self) -> Option<Self>;
+}
+
+impl Successive for ExchangeId {
+    fn successor(&self) -> Option<Self> {
+        self.0.checked_add(1).map(ExchangeId)
+    }
+}
+
 /// The querying end of a connection mints the identifiers it opens under.
 pub trait ExchangeMinting: ExchangeTracking {
     /// The next unused identifier, without opening it.
@@ -242,14 +256,12 @@ impl ExchangeMinting for ExchangeLedger {
     fn mint(&mut self) -> Result<ExchangeId, ExchangeFault> {
         let mut exchange = self.next;
         while self.bears(exchange) {
-            exchange = exchange
-                .checked_add(1)
-                .ok_or(ExchangeFault::ExchangeLimit)?;
+            exchange = exchange.successor().ok_or(ExchangeFault::ExchangeLimit)?;
         }
         self.next = self
             .next
             .max(exchange)
-            .checked_add(1)
+            .successor()
             .ok_or(ExchangeFault::ExchangeLimit)?;
         Ok(exchange)
     }
