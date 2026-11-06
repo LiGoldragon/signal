@@ -48,15 +48,34 @@ name = "datom-codec"
 version = "0.32.2"
 source = "git+https://github.com/LiGoldragon/datom-codec?rev=4dff16b4f7412febc3b71aac8b49680cd20988cb#4dff16b4f7412febc3b71aac8b49680cd20988cb"
 dependencies = [
- "datom-codec-derive",
- "protos",
+ "datom-codec-derive 0.32.0",
+ "protos 0.32.2",
  "rkyv",
+]
+
+[[package]]
+name = "datom-codec"
+version = "0.33.0"
+source = "git+https://github.com/LiGoldragon/datom-codec?rev=eabead4#eabead48b31e8d4f429d7fb156dd18548bbd79c1"
+dependencies = [
+ "datom-codec-derive 0.32.3",
+ "protos 0.33.0",
 ]
 
 [[package]]
 name = "datom-codec-derive"
 version = "0.32.0"
 source = "git+https://github.com/LiGoldragon/datom-codec?rev=4dff16b4f7412febc3b71aac8b49680cd20988cb#4dff16b4f7412febc3b71aac8b49680cd20988cb"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "syn 2.0.118",
+]
+
+[[package]]
+name = "datom-codec-derive"
+version = "0.32.3"
+source = "git+https://github.com/LiGoldragon/datom-codec?rev=eabead4#eabead48b31e8d4f429d7fb156dd18548bbd79c1"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -74,10 +93,10 @@ name = "ethos-zero"
 version = "16.0.0"
 source = "git+https://github.com/LiGoldragon/ethos-zero?rev=c2653dd82adbdb1f1f2f654405c6620e0d06fd58#c2653dd82adbdb1f1f2f654405c6620e0d06fd58"
 dependencies = [
- "datom-codec",
+ "datom-codec 0.32.2",
  "prettyplease",
  "proc-macro2",
- "protos",
+ "protos 0.32.2",
  "quote",
  "rkyv",
  "syn 3.0.5",
@@ -194,6 +213,11 @@ dependencies = [
 ]
 
 [[package]]
+name = "protos"
+version = "0.33.0"
+source = "git+https://github.com/LiGoldragon/protos?rev=3c7ade3#3c7ade34010cec6cec153ae694ee335f7fea0193"
+
+[[package]]
 name = "ptr_meta"
 version = "0.3.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -278,11 +302,11 @@ checksum = "b39cdef0fa800fc44525c84ccb54a029961a8215f9619753635a9c0d2538d46d"
 
 [[package]]
 name = "signal"
-version = "10.1.0"
+version = "10.2.0"
 dependencies = [
- "datom-codec",
+ "datom-codec 0.33.0",
  "ethos-zero",
- "protos",
+ "protos 0.33.0",
  "rkyv",
  "thiserror",
  "tokio",

@@ -23,7 +23,7 @@ fn shared_socket_taxonomy_round_trips_as_datom() {
     let restored = Potential::<StandardSocket>::from(text)
         .actualize(&mut Budget {
             remaining: 1024,
-            reader: ReaderBudget { remaining: 1024 },
+            reader: ReaderBudget::try_from(1024).unwrap(),
             depth: 0,
             maximum_depth: 1024,
         })

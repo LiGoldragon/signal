@@ -1,5 +1,20 @@
 # Upgrades
 
+## 10.2.0 — datom-codec 0.33.0 and protos 0.33.0
+
+The optional `datom` feature repins datom-codec 0.33.0 (eabead4) and protos
+0.33.0 (3c7ade3), up from datom-codec 4dff16b and protos 15b41da (0.32.2). A
+consumer enabling `datom` repins both to those revisions and runs its tests.
+
+- protos 0.33.0 reads a bare unbalanced guillemet inside a guillemet string, or
+  a literal backslash before a guillemet, differently, and prints a balanced
+  guillemet pair inside a string without an escape. A consumer holding datom
+  text with either form re-reads it and updates the expectation.
+- A consumer building a `ReaderBudget` by its field replaces it with
+  `ReaderBudget::try_from(n).unwrap()`; the field is private.
+- The generated contract is unchanged; the build script still checks it against
+  the Ethos source with ethos-zero c2653dd.
+
 ## 10.1.0 — greeting precedes every exchange operation
 
 `ExchangeTracking` now extends `Greeted`. Its provided `require_open` check,
