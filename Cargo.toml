@@ -1,6 +1,6 @@
 [package]
 name         = "signal"
-version      = "10.2.0"
+version      = "10.3.0"
 edition      = "2024"
 rust-version = "1.89"
 license      = "MIT OR Apache-2.0"
@@ -30,7 +30,7 @@ tokio = { version = "1", default-features = false, features = ["io-util"], optio
 tokio = { version = "1", features = ["io-util", "macros", "rt"] }
 
 [build-dependencies]
-ethos-zero = { git = "https://github.com/LiGoldragon/ethos-zero", rev = "c2653dd82adbdb1f1f2f654405c6620e0d06fd58" }
+ethos-zero = { git = "https://github.com/LiGoldragon/ethos-zero", rev = "c0d9f6b" }
 
 [[test]]
 name = "current_contract"
