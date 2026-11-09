@@ -1,5 +1,14 @@
 # Upgrades
 
+## 10.4.0 — datom-codec 0bbeb11, protos 4024614, ethos-zero daa22ee
+
+The optional `datom` feature repins datom-codec 0.33.1 (0bbeb11) and protos
+0.33.0 (4024614), up from datom-codec eabead4 and protos 3c7ade3. A consumer
+enabling `datom` repins both to those revisions, so one datom-codec and one
+protos sit in its graph, and runs its tests. The build script checks the
+generated contract against the Ethos source with ethos-zero daa22ee, up from
+5a5daca; the generated contract is unchanged.
+
 ## 10.2.0 — datom-codec 0.33.0 and protos 0.33.0
 
 The optional `datom` feature repins datom-codec 0.33.0 (eabead4) and protos
