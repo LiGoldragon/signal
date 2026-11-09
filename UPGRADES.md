@@ -1,5 +1,13 @@
 # Upgrades
 
+## 10.4.1 — datom-codec 09a0526, protos c93b598, on build-base d8e0c9e
+
+The optional `datom` feature repins datom-codec 0.33.1 (09a0526) and protos
+0.33.0 (c93b598), up from 0bbeb11 and 4024614. A consumer enabling `datom`
+repins both to those revisions, so one datom-codec and one protos sit in its
+graph, and runs its tests. The wire contract and the generated contract are
+unchanged.
+
 ## 10.4.0 — datom-codec 0bbeb11, protos 4024614, ethos-zero daa22ee
 
 The optional `datom` feature repins datom-codec 0.33.1 (0bbeb11) and protos
