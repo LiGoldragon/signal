@@ -14,8 +14,9 @@ This crate owns four things and nothing else:
   generated contract crates each carried a byte-identical copy of this
   before it moved here.
 - **The wire framing.** One implementation of the four-byte big-endian
-  length prefix and the 8 MiB body capacity, blocking and — behind the
-  `transport` feature — asynchronous.
+  length prefix and the 8 MiB body capacity, over blocking byte streams.
+  Asynchronous framing over `tokio` streams is the `signal-transport`
+  crate, so a contract crate builds signal without `tokio`.
 - **The shared taxonomy.** The closed component roster, authorized-object
   classification and interest, and typed reachability, generated from
   `ethos/signal.ethos`.
@@ -45,4 +46,3 @@ graph, so a cross-release test lives in a `<repo>-test` repository.
 ## Features
 
 - `datom` — the Datom text projection of the taxonomy.
-- `transport` — `tokio` asynchronous frame reading and writing.

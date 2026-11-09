@@ -189,7 +189,7 @@ rec {
           "extra-platforms" = [ "dep:extra-platforms" ];
           "serde" = [ "dep:serde" ];
         };
-        resolvedDefaultFeatures = [ "default" "std" ];
+        resolvedDefaultFeatures = [ "std" ];
       };
       "cfg-if" = rec {
         crateName = "cfg-if";
@@ -908,7 +908,7 @@ rec {
       };
       "signal" = rec {
         crateName = "signal";
-        version = "10.4.1";
+        version = "11.0.0";
         edition = "2024";
         links = "signal";
         src = lib.cleanSourceWith { filter = sourceFilter;  src = ./.; };
@@ -933,13 +933,6 @@ rec {
             name = "thiserror";
             packageId = "thiserror";
           }
-          {
-            name = "tokio";
-            packageId = "tokio";
-            optional = true;
-            usesDefaultFeatures = false;
-            features = [ "io-util" ];
-          }
         ];
         buildDependencies = [
           {
@@ -947,18 +940,10 @@ rec {
             packageId = "ethos-zero";
           }
         ];
-        devDependencies = [
-          {
-            name = "tokio";
-            packageId = "tokio";
-            features = [ "io-util" "macros" "rt" ];
-          }
-        ];
         features = {
           "datom" = [ "dep:datom-codec" "dep:protos" ];
-          "transport" = [ "dep:tokio" ];
         };
-        resolvedDefaultFeatures = [ "datom" "default" "transport" ];
+        resolvedDefaultFeatures = [ "datom" "default" ];
       };
       "simdutf8" = rec {
         crateName = "simdutf8";
@@ -1136,80 +1121,6 @@ rec {
         sha256 = "081gag86208sc3y6sdkshgw3vysm5d34p431dzw0bshz66ncng0z";
         authors = [
           "Soveu <marx.tomasz@gmail.com>"
-        ];
-
-      };
-      "tokio" = rec {
-        crateName = "tokio";
-        version = "1.53.1";
-        edition = "2021";
-        sha256 = "1v8b3b45pkpbibls75yniqbvx5dlks2708141ljni5mnf6lawb10";
-        authors = [
-          "Tokio Contributors <team@tokio.rs>"
-        ];
-        dependencies = [
-          {
-            name = "bytes";
-            packageId = "bytes";
-            optional = true;
-          }
-          {
-            name = "pin-project-lite";
-            packageId = "pin-project-lite";
-          }
-          {
-            name = "tokio-macros";
-            packageId = "tokio-macros";
-            optional = true;
-          }
-        ];
-        features = {
-          "bytes" = [ "dep:bytes" ];
-          "full" = [ "fs" "io-util" "io-std" "macros" "net" "parking_lot" "process" "rt" "rt-multi-thread" "signal" "sync" "time" ];
-          "io-uring" = [ "dep:io-uring" "libc" "mio/os-poll" "mio/os-ext" "dep:slab" ];
-          "io-util" = [ "bytes" ];
-          "libc" = [ "dep:libc" ];
-          "macros" = [ "tokio-macros" ];
-          "mio" = [ "dep:mio" ];
-          "net" = [ "libc" "mio/os-poll" "mio/os-ext" "mio/net" "socket2" "windows-sys/Win32_Foundation" "windows-sys/Win32_Security" "windows-sys/Win32_Storage_FileSystem" "windows-sys/Win32_System_Pipes" "windows-sys/Win32_System_SystemServices" ];
-          "parking_lot" = [ "dep:parking_lot" ];
-          "process" = [ "bytes" "libc" "mio/os-poll" "mio/os-ext" "mio/net" "signal-hook-registry" "windows-sys/Win32_Foundation" "windows-sys/Win32_System_Threading" "windows-sys/Win32_System_WindowsProgramming" ];
-          "rt-multi-thread" = [ "rt" ];
-          "signal" = [ "libc" "mio/os-poll" "mio/net" "mio/os-ext" "signal-hook-registry" "windows-sys/Win32_Foundation" "windows-sys/Win32_System_Console" ];
-          "signal-hook-registry" = [ "dep:signal-hook-registry" ];
-          "socket2" = [ "dep:socket2" ];
-          "taskdump" = [ "dep:backtrace" ];
-          "test-util" = [ "rt" "sync" "time" ];
-          "tokio-macros" = [ "dep:tokio-macros" ];
-          "tracing" = [ "dep:tracing" ];
-          "windows-sys" = [ "dep:windows-sys" ];
-        };
-        resolvedDefaultFeatures = [ "bytes" "default" "io-util" "macros" "rt" "tokio-macros" ];
-      };
-      "tokio-macros" = rec {
-        crateName = "tokio-macros";
-        version = "2.7.2";
-        edition = "2021";
-        sha256 = "03kvy2r5gr4zccm4vdx8vvv3q69kbjc1b006rs11aibz74m3lxvq";
-        procMacro = true;
-        libName = "tokio_macros";
-        authors = [
-          "Tokio Contributors <team@tokio.rs>"
-        ];
-        dependencies = [
-          {
-            name = "proc-macro2";
-            packageId = "proc-macro2";
-          }
-          {
-            name = "quote";
-            packageId = "quote";
-          }
-          {
-            name = "syn";
-            packageId = "syn 3.0.5";
-            features = [ "full" ];
-          }
         ];
 
       };

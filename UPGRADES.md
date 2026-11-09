@@ -1,5 +1,18 @@
 # Upgrades
 
+## 11.0.0 — transport leaves signal as signal-transport
+
+The `transport` feature, the `transport` module and the `tokio` dependency
+are removed. `AsyncFrameReading` and `AsyncFrameWriting` move, unchanged, to
+github.com/LiGoldragon/signal-transport, which depends on this release. A
+feature is a build input, so signal built with and without `transport` was
+two builds; as its own crate, signal is one build for every consumer.
+
+A consumer that turned on `transport` drops the feature. One that uses the
+asynchronous traits adds `signal-transport` at the revision pinning this
+signal and imports them from `signal_transport` in place of `signal`. The
+wire contract, the blocking framing and the `datom` feature are unchanged.
+
 ## 10.4.1 — datom-codec 09a0526, protos c93b598, on build-base d8e0c9e
 
 The optional `datom` feature repins datom-codec 0.33.1 (09a0526) and protos

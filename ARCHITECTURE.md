@@ -22,14 +22,15 @@ Each kind is implemented once, generically: any rkyv-serializable type is
 `Restorable<T>`. A contract crate declares its types and inherits all
 three.
 
-## The framing — `src/frame.rs`, `src/transport.rs`
+## The framing — `src/frame.rs`
 
 A Signal frame is a four-byte big-endian length prefix followed by that
 many body bytes, with a `FrameCapacity` — 8 MiB by default — refusing
 anything larger before a body is allocated. `Framable` prefixes peer-wire
 bytes; `FrameReading` and `FrameWriting` carry whole frames over blocking
-byte streams; `AsyncFrameReading` and `AsyncFrameWriting`, behind the
-`transport` feature, carry them over `tokio` streams.
+byte streams. `AsyncFrameReading` and `AsyncFrameWriting`, which carry them
+over `tokio` streams, live in the `signal-transport` crate, so a contract
+crate builds this one without `tokio`.
 
 Byte order is big-endian. Before this crate held the framing, Orchestrate
 hand-rolled a little-endian prefix in its transport while Lojix took a

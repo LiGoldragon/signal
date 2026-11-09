@@ -11,12 +11,12 @@
     base.lib.workspaceOutputs {
       cargoNix = ./Cargo.nix;
 
-      # Every test runs under both optional features, the datom and transport
-      # tests with them; the default features are tested apart.
+      # Every test runs under the optional datom feature, the datom tests with
+      # it; the default features are tested apart.
       memberChecks =
         { check, ... }:
         {
-          signal = check "signal" [ "default" "datom" "transport" ];
+          signal = check "signal" [ "default" "datom" ];
         };
 
       extraChecks =
@@ -107,7 +107,7 @@
             root = ./.;
             fileset = pkgs.lib.fileset.unions [ ./src ./tests ];
           };
-          featured = check "signal" [ "default" "datom" "transport" ];
+          featured = check "signal" [ "default" "datom" ];
         in
         {
           test-default-features = check "signal" [ "default" ];

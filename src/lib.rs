@@ -21,18 +21,12 @@ pub mod generated;
 pub mod portable;
 pub mod taxonomy;
 
-#[cfg(feature = "transport")]
-pub mod transport;
-
 pub use accord::*;
 pub use exchange::*;
 pub use frame::*;
 pub use generated::*;
 pub use portable::*;
 pub use taxonomy::*;
-
-#[cfg(feature = "transport")]
-pub use transport::*;
 
 /// The authored Ethos source of the shared taxonomy.
 pub const STANDARD_SIGNAL_SOURCE: &str = include_str!("../ethos/signal.ethos");
