@@ -1,6 +1,6 @@
 {
-  "git+https://github.com/LiGoldragon/datom-codec?rev=c3a6faf#0.33.1": "1p2qa5jkrmq9nlc9cl89vc8s4zp29rvabfq2jyb1x4mh9biphvjg",
-  "git+https://github.com/LiGoldragon/datom-codec?rev=c3a6faf#datom-codec-derive@0.32.3": "1p2qa5jkrmq9nlc9cl89vc8s4zp29rvabfq2jyb1x4mh9biphvjg",
+  "git+https://github.com/LiGoldragon/datom-codec?rev=c3a6faf#0.33.1": "1716v0q611aq8n2i4g2rj9lrd3pp55qp8pm6g5b1dn0ayphg02jd",
+  "git+https://github.com/LiGoldragon/datom-codec?rev=c3a6faf#datom-codec-derive@0.32.3": "1716v0q611aq8n2i4g2rj9lrd3pp55qp8pm6g5b1dn0ayphg02jd",
   "git+https://github.com/LiGoldragon/datom-codec?rev=eabead4#0.33.0": "1p2qa5jkrmq9nlc9cl89vc8s4zp29rvabfq2jyb1x4mh9biphvjg",
   "git+https://github.com/LiGoldragon/datom-codec?rev=eabead4#datom-codec-derive@0.32.3": "1p2qa5jkrmq9nlc9cl89vc8s4zp29rvabfq2jyb1x4mh9biphvjg",
   "git+https://github.com/LiGoldragon/ethos-zero?rev=5a5daca#19.2.0": "0n9wvmghq0zaqa86xib2bc6q4nis6f0rmcbgb6xdas5dhlm3nnak",
