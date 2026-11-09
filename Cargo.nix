@@ -110,9 +110,9 @@ rec {
       };
       "bytecheck" = rec {
         crateName = "bytecheck";
-        version = "0.8.2";
+        version = "0.8.3";
         edition = "2021";
-        sha256 = "12yasgcsxapxnpiv2ac3jzvmc69zy3gj7isss4ch9jpdq2i37ahc";
+        sha256 = "0a9cy6jax6g35svm5f0n9qp30mi106nb03nddf5avw2lqzm3wcr6";
         authors = [
           "David Koloski <djkoloski@gmail.com>"
         ];
@@ -148,9 +148,9 @@ rec {
       };
       "bytecheck_derive" = rec {
         crateName = "bytecheck_derive";
-        version = "0.8.2";
+        version = "0.8.3";
         edition = "2021";
-        sha256 = "1ncjsg08a6kawhxhy24rpxn287yclbprbc7034i1v0ninn15wf49";
+        sha256 = "0saf9vj4a1q92mvlz6skfg0sl7d6adf94wvqdgqamvm9r8c7kl26";
         procMacro = true;
         authors = [
           "David Koloski <djkoloski@gmail.com>"
@@ -168,7 +168,7 @@ rec {
           }
           {
             name = "syn";
-            packageId = "syn 2.0.118";
+            packageId = "syn 3.0.5";
             usesDefaultFeatures = false;
             features = [ "clone-impls" "derive" "full" "parsing" "printing" "proc-macro" ];
           }
@@ -262,7 +262,7 @@ rec {
           }
           {
             name = "syn";
-            packageId = "syn 2.0.118";
+            packageId = "syn 2.0.119";
             features = [ "full" ];
           }
         ];
@@ -525,7 +525,7 @@ rec {
           }
           {
             name = "syn";
-            packageId = "syn 2.0.118";
+            packageId = "syn 2.0.119";
             usesDefaultFeatures = false;
             features = [ "clone-impls" "full" "parsing" "printing" "proc-macro" ];
           }
@@ -599,9 +599,9 @@ rec {
       };
       "proc-macro2" = rec {
         crateName = "proc-macro2";
-        version = "1.0.106";
+        version = "1.0.107";
         edition = "2021";
-        sha256 = "0d09nczyaj67x4ihqr5p7gxbkz38gxhk4asc0k8q23g9n85hzl4g";
+        sha256 = "1nb6ly8kp65f724kj73ippc7lvydss24sm2vagk6qpklpg4pwplq";
         libName = "proc_macro2";
         authors = [
           "David Tolnay <dtolnay@gmail.com>"
@@ -644,9 +644,9 @@ rec {
       };
       "ptr_meta" = rec {
         crateName = "ptr_meta";
-        version = "0.3.1";
+        version = "0.3.2";
         edition = "2021";
-        sha256 = "0yaa4bvghj0rygqjlcd4lkcid58pcywxmjzisihsz5hibbwhr6hb";
+        sha256 = "1h0cyxzaw3m9mj0gr6d59p7mxwkn3cwgg3k2x3dir4lcp4bahgbl";
         authors = [
           "David Koloski <djkoloski@gmail.com>"
         ];
@@ -667,9 +667,9 @@ rec {
       };
       "ptr_meta_derive" = rec {
         crateName = "ptr_meta_derive";
-        version = "0.3.1";
+        version = "0.3.2";
         edition = "2021";
-        sha256 = "1qbg3malg24dmiszfddd7n69g3rb7vl7nxj67gchh4ky19yqcivk";
+        sha256 = "1l6b3zzdc6r8acwr2aqwx9l22i8b898rsz3svgadb1gi6ajrr38w";
         procMacro = true;
         authors = [
           "David Koloski <djkoloski@gmail.com>"
@@ -689,7 +689,7 @@ rec {
           }
           {
             name = "syn";
-            packageId = "syn 2.0.118";
+            packageId = "syn 3.0.5";
             usesDefaultFeatures = false;
             features = [ "clone-impls" "derive" "full" "parsing" "printing" "proc-macro" ];
           }
@@ -698,9 +698,9 @@ rec {
       };
       "quote" = rec {
         crateName = "quote";
-        version = "1.0.46";
+        version = "1.0.47";
         edition = "2021";
-        sha256 = "0s034glrlav8nzqy2yskqzv52ncy82k126sm2jk5j1vs1iylbg6z";
+        sha256 = "00ch0yyzvv6s671ik0kcsbw8nigdaj2g3fr61kcahwx48aqlvgqz";
         authors = [
           "David Tolnay <dtolnay@gmail.com>"
         ];
@@ -719,9 +719,9 @@ rec {
       };
       "rancor" = rec {
         crateName = "rancor";
-        version = "0.1.1";
+        version = "0.1.3";
         edition = "2021";
-        sha256 = "1vl1y0yhw40j3g6b2h9jgkfjp0pg000cia8xashc49qm71rflqx0";
+        sha256 = "0wi5gplf0v6hvcv23g1m4cx2kdikdnn9qg9pdzb5bnzws1148lwv";
         authors = [
           "David Koloski <djkoloski@gmail.com>"
         ];
@@ -740,9 +740,9 @@ rec {
       };
       "rend" = rec {
         crateName = "rend";
-        version = "0.5.3";
+        version = "0.5.4";
         edition = "2021";
-        sha256 = "1rknl9l1s3x67zizrxz1n3k8w5z7z54dqzsdlrahgwn22zrxxnna";
+        sha256 = "0h322w0nak1s3jwprm6i0sdn2bj1520xc47y0qa8fvpr0w3sffv6";
         authors = [
           "David Koloski <djkoloski@gmail.com>"
         ];
@@ -763,9 +763,9 @@ rec {
       };
       "rkyv" = rec {
         crateName = "rkyv";
-        version = "0.8.16";
+        version = "0.8.18";
         edition = "2021";
-        sha256 = "1qqn1ylmdbqykgzis7p6indgx48k8yqbbdas4wczjr76k469wf3k";
+        sha256 = "16fkq8jyzckzjm10cv6wa5yab5vxgd7ra1hlmda085yany9n0xyr";
         authors = [
           "David Koloski <djkoloski@gmail.com>"
         ];
@@ -861,9 +861,9 @@ rec {
       };
       "rkyv_derive" = rec {
         crateName = "rkyv_derive";
-        version = "0.8.16";
+        version = "0.8.18";
         edition = "2021";
-        sha256 = "1ina2cfv6iiz915n6wgq91ji472d64nyh8fhdfrmyc9586sx0bjx";
+        sha256 = "0vmhkfnz6b7dn1qzckqjdy39fg525salhinn8jfq7pf799hfy98w";
         procMacro = true;
         authors = [
           "David Koloski <djkoloski@gmail.com>"
@@ -883,7 +883,7 @@ rec {
           }
           {
             name = "syn";
-            packageId = "syn 2.0.118";
+            packageId = "syn 3.0.5";
             usesDefaultFeatures = false;
             features = [ "clone-impls" "derive" "parsing" "printing" "proc-macro" ];
           }
@@ -984,11 +984,11 @@ rec {
         };
         resolvedDefaultFeatures = [ "std" ];
       };
-      "syn 2.0.118" = rec {
+      "syn 2.0.119" = rec {
         crateName = "syn";
-        version = "2.0.118";
+        version = "2.0.119";
         edition = "2021";
-        sha256 = "08hlbc32lqd5d67p26ck7chg0rkclsw9as6f96vfn4s2j1zyb6hv";
+        sha256 = "15vjy620l91a3q4n4f4gzhnflmdr6pnm38v2m6cpk86i8av32a47";
         authors = [
           "David Tolnay <dtolnay@gmail.com>"
         ];
@@ -1379,7 +1379,7 @@ rec {
           }
           {
             name = "syn";
-            packageId = "syn 2.0.118";
+            packageId = "syn 2.0.119";
             features = [ "visit" "visit-mut" "full" "extra-traits" ];
           }
           {
