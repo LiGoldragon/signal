@@ -224,7 +224,7 @@ rec {
           }
           {
             name = "protos";
-            packageId = "git+https://github.com/LiGoldragon/protos?rev=3c7ade3#0.33.0";
+            packageId = "protos";
           }
           {
             name = "rkyv";
@@ -246,19 +246,19 @@ rec {
         workspace_member = null;
         src = pkgs.fetchgit {
           url = "https://github.com/LiGoldragon/datom-codec";
-          rev = "50387e50e9fdb5047240d21ccdb6af210915916d";
-          sha256 = "1yx2kfcniwmbcbchqbmak9drz79ih45qbn7s4aanbpk5jhjh7bwi";
+          rev = "c3a6faff8960b6a643c4940d0afa9d0c078185a2";
+          sha256 = "1p2qa5jkrmq9nlc9cl89vc8s4zp29rvabfq2jyb1x4mh9biphvjg";
         };
         libName = "datom_codec";
         dependencies = [
           {
             name = "datom-codec-derive";
-            packageId = "git+https://github.com/LiGoldragon/datom-codec?rev=50387e5#datom-codec-derive@0.32.3";
+            packageId = "git+https://github.com/LiGoldragon/datom-codec?rev=c3a6faf#datom-codec-derive@0.32.3";
             rename = "derive";
           }
           {
             name = "protos";
-            packageId = "git+https://github.com/LiGoldragon/protos?rev=217999e#0.33.0";
+            packageId = "protos";
           }
         ];
         features = {
@@ -291,17 +291,17 @@ rec {
             features = [ "rkyv" ];
           }
           {
-            name = "protos";
-            packageId = "git+https://github.com/LiGoldragon/protos?rev=3c7ade3#0.33.0";
-            features = [ "rkyv" ];
-          }
-          {
             name = "prettyplease";
             packageId = "prettyplease";
           }
           {
             name = "proc-macro2";
             packageId = "proc-macro2";
+          }
+          {
+            name = "protos";
+            packageId = "protos";
+            features = [ "rkyv" ];
           }
           {
             name = "quote";
@@ -403,15 +403,15 @@ rec {
         };
         resolvedDefaultFeatures = [ "alloc" "slab" "std" ];
       };
-      "git+https://github.com/LiGoldragon/datom-codec?rev=50387e5#datom-codec-derive@0.32.3" = rec {
+      "git+https://github.com/LiGoldragon/datom-codec?rev=c3a6faf#datom-codec-derive@0.32.3" = rec {
         crateName = "datom-codec-derive";
         version = "0.32.3";
         edition = "2024";
         workspace_member = null;
         src = pkgs.fetchgit {
           url = "https://github.com/LiGoldragon/datom-codec";
-          rev = "50387e50e9fdb5047240d21ccdb6af210915916d";
-          sha256 = "1yx2kfcniwmbcbchqbmak9drz79ih45qbn7s4aanbpk5jhjh7bwi";
+          rev = "c3a6faff8960b6a643c4940d0afa9d0c078185a2";
+          sha256 = "1p2qa5jkrmq9nlc9cl89vc8s4zp29rvabfq2jyb1x4mh9biphvjg";
         };
         procMacro = true;
         libName = "datom_codec_derive";
@@ -460,44 +460,6 @@ rec {
           }
         ];
 
-      };
-      "git+https://github.com/LiGoldragon/protos?rev=217999e#0.33.0" = rec {
-        crateName = "protos";
-        version = "0.33.0";
-        edition = "2024";
-        workspace_member = null;
-        src = pkgs.fetchgit {
-          url = "https://github.com/LiGoldragon/protos";
-          rev = "217999e6a31e304252ffb04210a5e0ddf7036b4a";
-          sha256 = "0fpxlq51ipa65a8qhb0183v7l3sxp1jv66vkwj4078lm6jh84nlh";
-        };
-        features = {
-          "rkyv" = [ "dep:rkyv" ];
-        };
-      };
-      "git+https://github.com/LiGoldragon/protos?rev=3c7ade3#0.33.0" = rec {
-        crateName = "protos";
-        version = "0.33.0";
-        edition = "2024";
-        workspace_member = null;
-        src = pkgs.fetchgit {
-          url = "https://github.com/LiGoldragon/protos";
-          rev = "3c7ade34010cec6cec153ae694ee335f7fea0193";
-          sha256 = "1crw7gc7b870xxk9pavzfpyav44163izylndfr8affbsm6hd863s";
-        };
-        dependencies = [
-          {
-            name = "rkyv";
-            packageId = "rkyv";
-            optional = true;
-            usesDefaultFeatures = false;
-            features = [ "std" "bytecheck" "little_endian" "pointer_width_32" "unaligned" ];
-          }
-        ];
-        features = {
-          "rkyv" = [ "dep:rkyv" ];
-        };
-        resolvedDefaultFeatures = [ "rkyv" ];
       };
       "hashbrown" = rec {
         crateName = "hashbrown";
@@ -710,6 +672,30 @@ rec {
           "default" = [ "proc-macro" ];
         };
         resolvedDefaultFeatures = [ "default" "proc-macro" ];
+      };
+      "protos" = rec {
+        crateName = "protos";
+        version = "0.33.0";
+        edition = "2024";
+        workspace_member = null;
+        src = pkgs.fetchgit {
+          url = "https://github.com/LiGoldragon/protos";
+          rev = "3c7ade34010cec6cec153ae694ee335f7fea0193";
+          sha256 = "1crw7gc7b870xxk9pavzfpyav44163izylndfr8affbsm6hd863s";
+        };
+        dependencies = [
+          {
+            name = "rkyv";
+            packageId = "rkyv";
+            optional = true;
+            usesDefaultFeatures = false;
+            features = [ "std" "bytecheck" "little_endian" "pointer_width_32" "unaligned" ];
+          }
+        ];
+        features = {
+          "rkyv" = [ "dep:rkyv" ];
+        };
+        resolvedDefaultFeatures = [ "rkyv" ];
       };
       "ptr_meta" = rec {
         crateName = "ptr_meta";
@@ -987,7 +973,7 @@ rec {
           }
           {
             name = "protos";
-            packageId = "git+https://github.com/LiGoldragon/protos?rev=217999e#0.33.0";
+            packageId = "protos";
             optional = true;
           }
           {
