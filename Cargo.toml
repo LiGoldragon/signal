@@ -30,7 +30,7 @@ tokio = { version = "1", default-features = false, features = ["io-util"], optio
 tokio = { version = "1", features = ["io-util", "macros", "rt"] }
 
 [build-dependencies]
-ethos-zero = { git = "https://github.com/LiGoldragon/ethos-zero", rev = "daa22ee" }
+ethos-zero = { git = "https://github.com/LiGoldragon/ethos-zero", rev = "1976e45" }
 
 [[test]]
 name = "current_contract"
