@@ -205,7 +205,7 @@ rec {
           "rustc-dep-of-std" = [ "core" ];
         };
       };
-      "datom-codec 0.33.0" = rec {
+      "datom-codec" = rec {
         crateName = "datom-codec";
         version = "0.33.0";
         edition = "2024";
@@ -219,7 +219,7 @@ rec {
         dependencies = [
           {
             name = "datom-codec-derive";
-            packageId = "git+https://github.com/LiGoldragon/datom-codec?rev=eabead4#datom-codec-derive@0.32.3";
+            packageId = "datom-codec-derive";
             rename = "derive";
           }
           {
@@ -239,31 +239,34 @@ rec {
         };
         resolvedDefaultFeatures = [ "rkyv" ];
       };
-      "datom-codec 0.33.1" = rec {
-        crateName = "datom-codec";
-        version = "0.33.1";
+      "datom-codec-derive" = rec {
+        crateName = "datom-codec-derive";
+        version = "0.32.3";
         edition = "2024";
         workspace_member = null;
         src = pkgs.fetchgit {
           url = "https://github.com/LiGoldragon/datom-codec";
-          rev = "c3a6faff8960b6a643c4940d0afa9d0c078185a2";
-          sha256 = "1716v0q611aq8n2i4g2rj9lrd3pp55qp8pm6g5b1dn0ayphg02jd";
+          rev = "eabead48b31e8d4f429d7fb156dd18548bbd79c1";
+          sha256 = "1p2qa5jkrmq9nlc9cl89vc8s4zp29rvabfq2jyb1x4mh9biphvjg";
         };
-        libName = "datom_codec";
+        procMacro = true;
+        libName = "datom_codec_derive";
         dependencies = [
           {
-            name = "datom-codec-derive";
-            packageId = "git+https://github.com/LiGoldragon/datom-codec?rev=c3a6faf#datom-codec-derive@0.32.3";
-            rename = "derive";
+            name = "proc-macro2";
+            packageId = "proc-macro2";
           }
           {
-            name = "protos";
-            packageId = "protos";
+            name = "quote";
+            packageId = "quote";
+          }
+          {
+            name = "syn";
+            packageId = "syn 2.0.118";
+            features = [ "full" ];
           }
         ];
-        features = {
-          "rkyv" = [ "dep:rkyv" "protos/rkyv" ];
-        };
+
       };
       "equivalent" = rec {
         crateName = "equivalent";
@@ -287,7 +290,7 @@ rec {
         dependencies = [
           {
             name = "datom-codec";
-            packageId = "datom-codec 0.33.0";
+            packageId = "datom-codec";
             features = [ "rkyv" ];
           }
           {
@@ -402,64 +405,6 @@ rec {
           "write-all-vectored" = [ "io" ];
         };
         resolvedDefaultFeatures = [ "alloc" "slab" "std" ];
-      };
-      "git+https://github.com/LiGoldragon/datom-codec?rev=c3a6faf#datom-codec-derive@0.32.3" = rec {
-        crateName = "datom-codec-derive";
-        version = "0.32.3";
-        edition = "2024";
-        workspace_member = null;
-        src = pkgs.fetchgit {
-          url = "https://github.com/LiGoldragon/datom-codec";
-          rev = "c3a6faff8960b6a643c4940d0afa9d0c078185a2";
-          sha256 = "1716v0q611aq8n2i4g2rj9lrd3pp55qp8pm6g5b1dn0ayphg02jd";
-        };
-        procMacro = true;
-        libName = "datom_codec_derive";
-        dependencies = [
-          {
-            name = "proc-macro2";
-            packageId = "proc-macro2";
-          }
-          {
-            name = "quote";
-            packageId = "quote";
-          }
-          {
-            name = "syn";
-            packageId = "syn 2.0.118";
-            features = [ "full" ];
-          }
-        ];
-
-      };
-      "git+https://github.com/LiGoldragon/datom-codec?rev=eabead4#datom-codec-derive@0.32.3" = rec {
-        crateName = "datom-codec-derive";
-        version = "0.32.3";
-        edition = "2024";
-        workspace_member = null;
-        src = pkgs.fetchgit {
-          url = "https://github.com/LiGoldragon/datom-codec";
-          rev = "eabead48b31e8d4f429d7fb156dd18548bbd79c1";
-          sha256 = "1p2qa5jkrmq9nlc9cl89vc8s4zp29rvabfq2jyb1x4mh9biphvjg";
-        };
-        procMacro = true;
-        libName = "datom_codec_derive";
-        dependencies = [
-          {
-            name = "proc-macro2";
-            packageId = "proc-macro2";
-          }
-          {
-            name = "quote";
-            packageId = "quote";
-          }
-          {
-            name = "syn";
-            packageId = "syn 2.0.118";
-            features = [ "full" ];
-          }
-        ];
-
       };
       "hashbrown" = rec {
         crateName = "hashbrown";
@@ -968,7 +913,7 @@ rec {
         dependencies = [
           {
             name = "datom-codec";
-            packageId = "datom-codec 0.33.1";
+            packageId = "datom-codec";
             optional = true;
           }
           {

@@ -48,28 +48,9 @@ name = "datom-codec"
 version = "0.33.0"
 source = "git+https://github.com/LiGoldragon/datom-codec?rev=eabead4#eabead48b31e8d4f429d7fb156dd18548bbd79c1"
 dependencies = [
- "datom-codec-derive 0.32.3 (git+https://github.com/LiGoldragon/datom-codec?rev=eabead4)",
+ "datom-codec-derive",
  "protos",
  "rkyv",
-]
-
-[[package]]
-name = "datom-codec"
-version = "0.33.1"
-source = "git+https://github.com/LiGoldragon/datom-codec?rev=c3a6faf#c3a6faff8960b6a643c4940d0afa9d0c078185a2"
-dependencies = [
- "datom-codec-derive 0.32.3 (git+https://github.com/LiGoldragon/datom-codec?rev=c3a6faf)",
- "protos",
-]
-
-[[package]]
-name = "datom-codec-derive"
-version = "0.32.3"
-source = "git+https://github.com/LiGoldragon/datom-codec?rev=c3a6faf#c3a6faff8960b6a643c4940d0afa9d0c078185a2"
-dependencies = [
- "proc-macro2",
- "quote",
- "syn 2.0.118",
 ]
 
 [[package]]
@@ -93,7 +74,7 @@ name = "ethos-zero"
 version = "19.2.0"
 source = "git+https://github.com/LiGoldragon/ethos-zero?rev=5a5daca#5a5daca315ab24460ccbcd5038130c453e853e6e"
 dependencies = [
- "datom-codec 0.33.0",
+ "datom-codec",
  "prettyplease",
  "proc-macro2",
  "protos",
@@ -299,7 +280,7 @@ checksum = "b39cdef0fa800fc44525c84ccb54a029961a8215f9619753635a9c0d2538d46d"
 name = "signal"
 version = "10.3.0"
 dependencies = [
- "datom-codec 0.33.1",
+ "datom-codec",
  "ethos-zero",
  "protos",
  "rkyv",
