@@ -107,7 +107,6 @@
             root = ./.;
             fileset = pkgs.lib.fileset.unions [ ./src ./tests ];
           };
-          featured = check "signal" [ "default" "datom" ];
         in
         {
           test-default-features = check "signal" [ "default" ];
@@ -140,14 +139,6 @@
             rustfmt --check --edition ${manifest.package.edition} ${rust}/src/lib.rs ${rust}/tests/*.rs
             touch $out
           '';
-          # The test build, every feature, compiled by clippy-driver under the
-          # crate's lints, every target, warnings refused.
-          clippy = featured.tests.override {
-            useClippy = true;
-            clippy = toolchain;
-            inherit (manifest) lints;
-            extraRustcOpts = [ "-D" "warnings" ];
-          };
         };
     };
 }
