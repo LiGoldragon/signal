@@ -277,14 +277,14 @@ rec {
       };
       "ethos-zero" = rec {
         crateName = "ethos-zero";
-        version = "22.0.0";
+        version = "30.0.0";
         edition = "2024";
         crateBin = [];
         workspace_member = null;
         src = pkgs.fetchgit {
           url = "https://github.com/LiGoldragon/ethos-zero";
-          rev = "1976e45fe1edfd5676cb33919dba1ec20c785a02";
-          sha256 = "12b6np5n8knlpv2rb98g0m04n6xxaprd8n5hy4wgw658h5vg216j";
+          rev = "b97d9526909a1ecebf61339f5723eaca53de5dca";
+          sha256 = "0ixkiwrwiyahwnljc9cd2464l2i5a7jknac6hfdig78chjmpcpmc";
         };
         libName = "ethos_zero";
         dependencies = [
@@ -327,6 +327,96 @@ rec {
         };
         resolvedDefaultFeatures = [ "datom" "default" ];
       };
+      "futures" = rec {
+        crateName = "futures";
+        version = "0.3.34";
+        edition = "2018";
+        sha256 = "18yhwmbdalhz2z9i1vm10hy2v0cfm82dkgcb6vr2msxazfix4ccs";
+        dependencies = [
+          {
+            name = "futures-channel";
+            packageId = "futures-channel";
+            usesDefaultFeatures = false;
+            features = [ "sink" ];
+          }
+          {
+            name = "futures-core";
+            packageId = "futures-core";
+            usesDefaultFeatures = false;
+          }
+          {
+            name = "futures-executor";
+            packageId = "futures-executor";
+            optional = true;
+            usesDefaultFeatures = false;
+          }
+          {
+            name = "futures-io";
+            packageId = "futures-io";
+            usesDefaultFeatures = false;
+          }
+          {
+            name = "futures-sink";
+            packageId = "futures-sink";
+            usesDefaultFeatures = false;
+          }
+          {
+            name = "futures-task";
+            packageId = "futures-task";
+            usesDefaultFeatures = false;
+          }
+          {
+            name = "futures-util";
+            packageId = "futures-util";
+            usesDefaultFeatures = false;
+            features = [ "sink" ];
+          }
+        ];
+        features = {
+          "alloc" = [ "futures-core/alloc" "futures-task/alloc" "futures-sink/alloc" "futures-channel/alloc" "futures-util/alloc" ];
+          "async-await" = [ "futures-util/async-await" "futures-util/async-await-macro" ];
+          "bilock" = [ "futures-util/bilock" ];
+          "compat" = [ "std" "futures-util/compat" ];
+          "default" = [ "std" "async-await" "executor" ];
+          "executor" = [ "std" "futures-executor/std" ];
+          "futures-executor" = [ "dep:futures-executor" ];
+          "io-compat" = [ "compat" "futures-util/io-compat" ];
+          "spin" = [ "futures-util/spin" ];
+          "std" = [ "alloc" "futures-core/std" "futures-task/std" "futures-io/std" "futures-sink/std" "futures-util/std" "futures-util/io" "futures-util/channel" ];
+          "thread-pool" = [ "executor" "futures-executor/thread-pool" ];
+          "unstable" = [ "futures-core/unstable" "futures-task/unstable" "futures-channel/unstable" "futures-io/unstable" "futures-util/unstable" ];
+          "write-all-vectored" = [ "futures-util/write-all-vectored" ];
+        };
+        resolvedDefaultFeatures = [ "alloc" "async-await" "default" "executor" "futures-executor" "std" ];
+      };
+      "futures-channel" = rec {
+        crateName = "futures-channel";
+        version = "0.3.34";
+        edition = "2018";
+        sha256 = "1i4kwcanpaphn1ax62ci3nx176kglxqx0gnhzqpqdr1rkpbf7ydi";
+        libName = "futures_channel";
+        dependencies = [
+          {
+            name = "futures-core";
+            packageId = "futures-core";
+            usesDefaultFeatures = false;
+          }
+          {
+            name = "futures-sink";
+            packageId = "futures-sink";
+            optional = true;
+            usesDefaultFeatures = false;
+          }
+        ];
+        features = {
+          "alloc" = [ "futures-core/alloc" ];
+          "default" = [ "std" ];
+          "futures-sink" = [ "dep:futures-sink" ];
+          "sink" = [ "futures-sink" ];
+          "std" = [ "alloc" "futures-core/std" ];
+        };
+        resolvedDefaultFeatures = [ "alloc" "futures-sink" "sink" "std" ];
+      };
       "futures-core" = rec {
         crateName = "futures-core";
         version = "0.3.34";
@@ -336,6 +426,83 @@ rec {
         features = {
           "default" = [ "std" ];
           "portable-atomic" = [ "dep:portable-atomic" ];
+          "std" = [ "alloc" ];
+        };
+        resolvedDefaultFeatures = [ "alloc" "std" ];
+      };
+      "futures-executor" = rec {
+        crateName = "futures-executor";
+        version = "0.3.34";
+        edition = "2018";
+        sha256 = "0cjl3y7jgg60wwb96ikxj23r6q91ylvx8v675yychv1w3b7lf6q3";
+        libName = "futures_executor";
+        dependencies = [
+          {
+            name = "futures-core";
+            packageId = "futures-core";
+            usesDefaultFeatures = false;
+          }
+          {
+            name = "futures-task";
+            packageId = "futures-task";
+            usesDefaultFeatures = false;
+          }
+          {
+            name = "futures-util";
+            packageId = "futures-util";
+            usesDefaultFeatures = false;
+          }
+        ];
+        features = {
+          "default" = [ "std" ];
+          "std" = [ "futures-core/std" "futures-task/std" "futures-util/std" ];
+          "thread-pool" = [ "std" ];
+        };
+        resolvedDefaultFeatures = [ "std" ];
+      };
+      "futures-io" = rec {
+        crateName = "futures-io";
+        version = "0.3.34";
+        edition = "2018";
+        sha256 = "1v9z6wj92ra18kpv0xig21hgpzrvcwmcr8fszyzh64yyay0zmh2k";
+        libName = "futures_io";
+        features = {
+          "default" = [ "std" ];
+        };
+        resolvedDefaultFeatures = [ "std" ];
+      };
+      "futures-macro" = rec {
+        crateName = "futures-macro";
+        version = "0.3.34";
+        edition = "2018";
+        sha256 = "0i0czvcvsqq4hrccibq2f23004si5z34zjwdxfmqhlrmm15nbfcz";
+        procMacro = true;
+        libName = "futures_macro";
+        dependencies = [
+          {
+            name = "proc-macro2";
+            packageId = "proc-macro2";
+          }
+          {
+            name = "quote";
+            packageId = "quote";
+          }
+          {
+            name = "syn";
+            packageId = "syn 3.0.5";
+            features = [ "full" ];
+          }
+        ];
+
+      };
+      "futures-sink" = rec {
+        crateName = "futures-sink";
+        version = "0.3.34";
+        edition = "2018";
+        sha256 = "07cfvrgc3vxk6sw5g8a8dnrm1mzg6d5mwy08ywa1sgyhyxml4i0r";
+        libName = "futures_sink";
+        features = {
+          "default" = [ "std" ];
           "std" = [ "alloc" ];
         };
         resolvedDefaultFeatures = [ "alloc" "std" ];
@@ -360,14 +527,45 @@ rec {
         libName = "futures_util";
         dependencies = [
           {
+            name = "futures-channel";
+            packageId = "futures-channel";
+            optional = true;
+            usesDefaultFeatures = false;
+            features = [ "std" ];
+          }
+          {
             name = "futures-core";
             packageId = "futures-core";
+            usesDefaultFeatures = false;
+          }
+          {
+            name = "futures-io";
+            packageId = "futures-io";
+            optional = true;
+            usesDefaultFeatures = false;
+            features = [ "std" ];
+          }
+          {
+            name = "futures-macro";
+            packageId = "futures-macro";
+            optional = true;
+            usesDefaultFeatures = false;
+          }
+          {
+            name = "futures-sink";
+            packageId = "futures-sink";
+            optional = true;
             usesDefaultFeatures = false;
           }
           {
             name = "futures-task";
             packageId = "futures-task";
             usesDefaultFeatures = false;
+          }
+          {
+            name = "memchr";
+            packageId = "memchr";
+            optional = true;
           }
           {
             name = "pin-project-lite";
@@ -407,7 +605,7 @@ rec {
           "unstable" = [ "futures-core/unstable" "futures-task/unstable" ];
           "write-all-vectored" = [ "io" ];
         };
-        resolvedDefaultFeatures = [ "alloc" "slab" "std" ];
+        resolvedDefaultFeatures = [ "alloc" "async-await" "async-await-macro" "channel" "futures-channel" "futures-io" "futures-macro" "futures-sink" "io" "memchr" "sink" "slab" "std" ];
       };
       "hashbrown" = rec {
         crateName = "hashbrown";
@@ -487,6 +685,25 @@ rec {
           "std" = [ "wasm-bindgen/std" "futures-util/std" ];
         };
         resolvedDefaultFeatures = [ "std" ];
+      };
+      "memchr" = rec {
+        crateName = "memchr";
+        version = "2.8.3";
+        edition = "2021";
+        sha256 = "161xa63ipfanf8v3nb82xd5hqgydv55nzw59wyngqbz6alfaz2yg";
+        authors = [
+          "Andrew Gallant <jamslam@gmail.com>"
+          "bluss"
+        ];
+        features = {
+          "core" = [ "dep:core" ];
+          "default" = [ "std" ];
+          "logging" = [ "dep:log" ];
+          "rustc-dep-of-std" = [ "core" ];
+          "std" = [ "alloc" ];
+          "use_std" = [ "std" ];
+        };
+        resolvedDefaultFeatures = [ "alloc" "default" "std" ];
       };
       "munge" = rec {
         crateName = "munge";
@@ -908,7 +1125,7 @@ rec {
       };
       "signal" = rec {
         crateName = "signal";
-        version = "11.0.0";
+        version = "12.0.0";
         edition = "2024";
         links = "signal";
         src = lib.cleanSourceWith { filter = sourceFilter;  src = ./.; };
@@ -917,6 +1134,11 @@ rec {
             name = "datom-codec";
             packageId = "datom-codec";
             optional = true;
+          }
+          {
+            name = "futures-core";
+            packageId = "futures-core";
+            usesDefaultFeatures = false;
           }
           {
             name = "protos";
@@ -938,6 +1160,12 @@ rec {
           {
             name = "ethos-zero";
             packageId = "ethos-zero";
+          }
+        ];
+        devDependencies = [
+          {
+            name = "futures";
+            packageId = "futures";
           }
         ];
         features = {

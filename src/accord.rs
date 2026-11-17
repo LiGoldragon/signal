@@ -20,9 +20,7 @@
 //! negotiation. There is no accepted-range, no minor-version tolerance and no
 //! compatibility path: two peers built from different sources do not talk.
 
-use crate::generated::{
-    ContractDigest, ExchangeFault, ExchangeId, Handshake, HandshakeReceipt, HandshakeRejection,
-};
+use crate::generated::{ContractDigest, ExchangeFault, ExchangeId, Handshake, HandshakeReceipt};
 
 use crate::exchange::{FIRST_EXCHANGE, MAXIMUM_OPEN_EXCHANGES};
 
@@ -61,7 +59,7 @@ pub trait Contracted {
         if greeting.contract_digest == own {
             HandshakeReceipt::Greeted(own)
         } else {
-            HandshakeReceipt::GreetingRefused(HandshakeRejection::ContractMismatch(own))
+            HandshakeReceipt::GreetingRefused(own)
         }
     }
 }

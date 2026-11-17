@@ -10,8 +10,7 @@ use signal::{
     Contracted, Delivery, Differentiator, Dispatch, Ending, ExchangeCapacityError, ExchangeFault,
     ExchangeId, ExchangeLedger, ExchangeMinting, ExchangeTracking, Exchanged, FIRST_EXCHANGE,
     FrameCapacity, FrameReading, FrameWriting, Greeted, Handshake, HandshakeReceipt,
-    HandshakeRejection, MAXIMUM_OPEN_EXCHANGES, Opening, Restorable, Signal, Signalizable,
-    Successive,
+    MAXIMUM_OPEN_EXCHANGES, Opening, Restorable, Signal, Signalizable, Successive,
 };
 
 /// A stand-in contract. Its query and response roots are real generated
@@ -104,7 +103,7 @@ fn two_peers_built_from_the_same_source_settle_the_connection() {
 fn two_peers_built_from_different_sources_refuse_each_other() {
     assert_eq!(
         Ping::receipt(&Pong::greeting()),
-        HandshakeReceipt::GreetingRefused(HandshakeRejection::ContractMismatch(PING_DIGEST))
+        HandshakeReceipt::GreetingRefused(PING_DIGEST)
     );
     assert_ne!(Pong::contract_digest(), Ping::contract_digest());
 }

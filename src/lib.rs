@@ -13,12 +13,17 @@
 //! querying side mints. One query and one response is an exchange that ends
 //! after one answer; a subscription is an exchange that goes on answering.
 //! See [`exchange`] for what the layer deliberately does not carry.
+//!
+//! A subscription's answers are the frames of a [`Stream`]: the state on
+//! open, each change, the state anew after a lag, and how it ended. See
+//! [`stream`] for their order.
 
 pub mod accord;
 pub mod exchange;
 pub mod frame;
 pub mod generated;
 pub mod portable;
+pub mod stream;
 pub mod taxonomy;
 
 pub use accord::*;
@@ -26,7 +31,13 @@ pub use exchange::*;
 pub use frame::*;
 pub use generated::*;
 pub use portable::*;
+pub use stream::*;
 pub use taxonomy::*;
+
+// The exchange layer's `Ending` and the stream's generated `Ending` share a
+// name, with their archived forms and resolvers; at the root each stays the
+// exchange layer's, and the stream's is `generated::Ending`.
+pub use exchange::{ArchivedEnding, Ending, EndingResolver};
 
 /// The authored Ethos source of the shared taxonomy.
 pub const STANDARD_SIGNAL_SOURCE: &str = include_str!("../ethos/signal.ethos");

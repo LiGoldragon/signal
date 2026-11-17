@@ -1,11 +1,11 @@
 [package]
 name         = "signal"
-version      = "11.0.0"
+version      = "12.0.0"
 edition      = "2024"
 rust-version = "1.89"
 license      = "MIT OR Apache-2.0"
 repository   = "https://github.com/LiGoldragon/signal"
-description  = "The shared Signal layer: portable rkyv frames, wire framing, exchange attribution, and the cross-component taxonomy every Nexus depends on."
+description  = "The shared Signal layer: portable rkyv frames, wire framing, exchange attribution, subscription frames and streams, and the cross-component taxonomy every Nexus depends on."
 publish      = false
 links        = "signal"
 build        = "build.rs"
@@ -20,16 +20,24 @@ datom = ["dep:datom-codec", "dep:protos"]
 
 [dependencies]
 datom-codec = { git = "https://github.com/LiGoldragon/datom-codec", rev = "09a0526", optional = true }
+futures-core = { version = "0.3", default-features = false }
 protos = { git = "https://github.com/LiGoldragon/protos", rev = "c93b598", optional = true }
 rkyv = { version = "0.8", default-features = false, features = ["std", "bytecheck", "little_endian", "pointer_width_32", "unaligned"] }
 thiserror = "2"
 
 [build-dependencies]
-ethos-zero = { git = "https://github.com/LiGoldragon/ethos-zero", rev = "1976e45" }
+ethos-zero = { git = "https://github.com/LiGoldragon/ethos-zero", rev = "b97d952" }
+
+[dev-dependencies]
+futures = "0.3"
 
 [[test]]
 name = "current_contract"
 path = "tests/current_contract.rs"
+
+[[test]]
+name = "stream"
+path = "tests/stream.rs"
 
 [lints.rust]
 unsafe_code = "forbid"

@@ -1,5 +1,30 @@
 # Upgrades
 
+## 12.0.0 — the subscription frame and stream; ethos-zero 30.0.0
+
+Added: `signal::Frame<State, Change>`, one frame of a subscription stream
+(`Opened`, `Changed`, `Lagged`, `Ended`), and `signal::Stream<State, Change>`,
+the live stream of them, built `From` a
+`Pin<Box<dyn futures_core::Stream<Item = Frame<State, Change>> + Send>>`. The
+stream's ending, `Ending.[ Closed Failed ]`, is declared in `ethos/signal.ethos`
+and generated as `signal::generated::Ending`; `signal::Ending` stays the
+exchange layer's. ethos-zero 30.0.0 writes `signal::Frame` and
+`signal::Stream` in a Signal that answers with a stream, so such a crate
+depends on this release. signal now depends on `futures-core` 0.3.
+
+What breaks: the build script reads `ethos/signal.ethos` with ethos-zero 30.0.0
+(b97d952), up from 22.0.0 (1976e45), which refuses an enum of one variant. The
+one-variant `HandshakeRejection` is gone, and a refused greeting carries the
+answering side's digest directly: `HandshakeReceipt::GreetingRefused(ContractDigest)`
+where 11.0.0 had `GreetingRefused(HandshakeRejection::ContractMismatch(ContractDigest))`.
+The archive of a refused receipt changes, so both ends of a connection repin
+together. Every other generated type is unchanged.
+
+To deploy, in one step per consumer: repin `signal` to this release, replace
+`HandshakeRejection::ContractMismatch(digest)` with `digest` and drop the
+`HandshakeRejection` import, rebuild, and restart both ends of each
+connection together.
+
 ## 11.0.0 — transport leaves signal as signal-transport
 
 The `transport` feature, the `transport` module and the `tokio` dependency
