@@ -1,11 +1,13 @@
 //! The subscription stream: the frames one subscription yields, and the live
 //! stream that yields them.
 //!
-//! A Signal whose output answers with a stream (`Stream<State Change>` in its
-//! Ethos) generates an `Output` variant holding one [`Frame`] and a capability
-//! yielding a [`Stream`]. The answering side reads the stream and writes each
-//! frame on the socket as one `Output`, archived and framed as every other
-//! Output is: a length, then the archive.
+//! A subscription is one exchange. A Signal whose output answers with a
+//! stream (`Stream<State Change>` in its Ethos) generates an `Output` variant
+//! holding one [`Frame`] and a capability yielding a [`Stream`]. The answering
+//! side reads the stream and sends each frame as one `Delivery::Answer` of the
+//! subscription's exchange; when the stream finishes, it sends
+//! `Delivery::End` with the exchange's `Ending` and its `Conclusion`. Several
+//! streams share a connection as exchanges do.
 //!
 //! The frames of one stream come in this order:
 //!
@@ -14,9 +16,12 @@
 //!   tell an empty state from a state not yet sent.
 //! - [`Frame::Changed`] carries one change to that state, in the order the
 //!   changes happened.
-//! - [`Frame::Lagged`] carries the whole state anew, sent when the answering
-//!   side fell behind and dropped changes; the peer replaces what it held.
-//! - [`Frame::Ended`] is last, and says how the stream ended.
+//! - [`Frame::Lagged`] carries the whole state anew, sent when the subscriber
+//!   fell behind and changes were dropped; the peer replaces what it held and
+//!   goes on from it. It is a recovery, not an end.
+//!
+//! A frame says only what an exchange does not already say: the end of a
+//! stream is the end of its exchange, and is no frame.
 //!
 //! [`Frame`] and [`Stream`] are generic over the subscription's state and
 //! change, so they are written here once, as `Vector` is in Rust; every
@@ -26,8 +31,6 @@
 
 use std::pin::Pin;
 use std::task::{Context, Poll};
-
-use crate::generated::Ending;
 
 /// One frame of a subscription stream, carried on the wire inside an Output.
 #[derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, Clone, Debug, PartialEq, Eq, Hash)]
@@ -40,10 +43,8 @@ pub enum Frame<State, Change> {
     Opened(State),
     /// One change to the state.
     Changed(Change),
-    /// The whole state anew, after the answering side fell behind.
+    /// The whole state anew, after the subscriber fell behind.
     Lagged(State),
-    /// How the stream ended; last.
-    Ended(Ending),
 }
 
 /// The live stream of one subscription's frames, held by the answering side.

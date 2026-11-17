@@ -4,7 +4,7 @@ use std::pin::Pin;
 use futures::StreamExt;
 use signal::{
     ByteViewable, ComponentKind, Frame, FrameCapacity, FrameReading, FrameWriting, HostName,
-    NetworkEndpoint, NetworkPort, Restorable, Signal, Signalizable, Stream, generated::Ending,
+    NetworkEndpoint, NetworkPort, Restorable, Signal, Signalizable, Stream,
 };
 
 /// A subscription to the components a peer reaches: its state is the roster
@@ -19,8 +19,6 @@ fn frames() -> Vec<ReachFrame> {
             network_port: NetworkPort(443),
         }),
         Frame::Lagged(vec![ComponentKind::Orchestrate]),
-        Frame::Ended(Ending::Closed),
-        Frame::Ended(Ending::Failed),
     ]
 }
 
@@ -68,13 +66,7 @@ fn a_stream_yields_its_frames_in_order() {
 fn every_frame_round_trips_through_datom() {
     use datom_codec::{Actualizing, Budget, Datomizable, Potential};
     use protos::{Protosizable, ReaderBudget, Textualizable};
-    let heads = [
-        "Opened.[",
-        "Changed.{",
-        "Lagged.[",
-        "Ended.Closed",
-        "Ended.Failed",
-    ];
+    let heads = ["Opened.[", "Changed.{", "Lagged.["];
     for (frame, head) in frames().into_iter().zip(heads) {
         let text = frame.datomize(vec![]).protosize().textualize();
         assert!(text.starts_with(head), "{text} opens with {head}");

@@ -88,9 +88,11 @@ attribute to an exchange is reported against `CONNECTION_EXCHANGE`.
 A Signal whose output answers with a stream generates an `Output` variant
 holding one `Frame<State, Change>` and a capability yielding a
 `Stream<State, Change>`. `Opened` carries the whole state and comes first and
-once; `Changed` carries one change; `Lagged` carries the whole state anew;
-`Ended` comes last and carries the generated `Ending` (`Closed` or `Failed`).
-Each frame is written on the socket as one Output with the ordinary framing.
+once; `Changed` carries one change; `Lagged` carries the whole state anew,
+a recovery the subscriber goes on from. A subscription is one exchange: each
+frame is sent as one `Delivery::Answer`, and the stream's end is the
+exchange's `Delivery::End` with its `Ending` and `Conclusion`, so the frame
+has no end of its own.
 `Frame` bears the derives of every generated Output; `Stream` is never a wire
 value. The two are generic and so written once in Rust, as `Vector` is; every
 other type here is declared in `ethos/signal.ethos`.

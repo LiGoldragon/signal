@@ -3,12 +3,11 @@
 ## 11.1.0 — the subscription frame and stream
 
 Added: `signal::Frame<State, Change>`, one frame of a subscription stream
-(`Opened`, `Changed`, `Lagged`, `Ended`), and `signal::Stream<State, Change>`,
+(`Opened`, `Changed`, `Lagged`), and `signal::Stream<State, Change>`,
 the live stream of them, built `From` a
-`Pin<Box<dyn futures_core::Stream<Item = Frame<State, Change>> + Send>>`. The
-stream's ending, `Ending.[ Closed Failed ]`, is declared in `ethos/signal.ethos`
-and generated as `signal::generated::Ending`; `signal::Ending` stays the
-exchange layer's. ethos-zero 30.0.0 writes `signal::Frame` and
+`Pin<Box<dyn futures_core::Stream<Item = Frame<State, Change>> + Send>>`. A
+subscription is one exchange: each frame is one `Delivery::Answer`, and the
+stream's end is the exchange's `Delivery::End`. ethos-zero 30.0.0 writes `signal::Frame` and
 `signal::Stream` in a Signal that answers with a stream, so such a crate
 depends on this release. signal now depends on `futures-core` 0.3.
 

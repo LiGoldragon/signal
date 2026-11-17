@@ -34,10 +34,6 @@ pub use portable::*;
 pub use stream::*;
 pub use taxonomy::*;
 
-// The exchange layer's `Ending` and the stream's generated `Ending` share a
-// name, with their archived forms and resolvers; at the root each stays the
-// exchange layer's, and the stream's is `generated::Ending`.
-pub use exchange::{ArchivedEnding, Ending, EndingResolver};
 
 /// The authored Ethos source of the shared taxonomy.
 pub const STANDARD_SIGNAL_SOURCE: &str = include_str!("../ethos/signal.ethos");
