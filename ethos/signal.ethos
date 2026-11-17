@@ -18,7 +18,8 @@ Signal
   ExchangeId.Integer
   ContractDigest.Integer
   Handshake.{ ContractDigest }
-  HandshakeReceipt.[ Greeted.ContractDigest  GreetingRefused.ContractDigest ]
+  HandshakeRejection.[ ContractMismatch.ContractDigest ]
+  HandshakeReceipt.[ Greeted.ContractDigest  GreetingRefused.HandshakeRejection ]
   ExchangeFault.[ GreetingExpected  GreetingRepeated  ExchangeInUse  UnknownExchange  Unanswerable.ExchangeId  ExchangeLimit  UnreadableQuery  Lagged ]
   Conclusion.[ Completed  Faulted.ExchangeFault ]
   Ending.[ Closed Failed ] ]

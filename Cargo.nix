@@ -277,14 +277,14 @@ rec {
       };
       "ethos-zero" = rec {
         crateName = "ethos-zero";
-        version = "30.0.0";
+        version = "22.0.0";
         edition = "2024";
         crateBin = [];
         workspace_member = null;
         src = pkgs.fetchgit {
           url = "https://github.com/LiGoldragon/ethos-zero";
-          rev = "b97d9526909a1ecebf61339f5723eaca53de5dca";
-          sha256 = "0ixkiwrwiyahwnljc9cd2464l2i5a7jknac6hfdig78chjmpcpmc";
+          rev = "1976e45fe1edfd5676cb33919dba1ec20c785a02";
+          sha256 = "12b6np5n8knlpv2rb98g0m04n6xxaprd8n5hy4wgw658h5vg216j";
         };
         libName = "ethos_zero";
         dependencies = [
@@ -1125,7 +1125,7 @@ rec {
       };
       "signal" = rec {
         crateName = "signal";
-        version = "12.0.0";
+        version = "11.1.0";
         edition = "2024";
         links = "signal";
         src = lib.cleanSourceWith { filter = sourceFilter;  src = ./.; };
