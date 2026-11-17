@@ -3,8 +3,8 @@ use std::pin::Pin;
 
 use futures::StreamExt;
 use signal::{
-    ByteViewable, ComponentKind, Frame, FrameCapacity, FrameReading, FrameWriting, HostName,
-    NetworkEndpoint, NetworkPort, Restorable, Signal, Signalizable, Stream,
+    ByteViewable, ComponentKind, Following, Frame, FrameCapacity, FrameReading, FrameWriting,
+    HostName, NetworkEndpoint, NetworkPort, Restorable, Signal, Signalizable, Stream,
 };
 
 /// A subscription to the components a peer reaches: its state is the roster
@@ -59,6 +59,40 @@ fn a_stream_yields_its_frames_in_order() {
     let stream: Stream<Vec<ComponentKind>, NetworkEndpoint> = Stream::from(source);
     let yielded: Vec<ReachFrame> = futures::executor::block_on(stream.collect());
     assert_eq!(yielded, frames());
+}
+
+/// What a subscriber to the reached endpoints holds: each endpoint it has
+/// learned, in the order it learned them.
+#[derive(Clone, Debug, PartialEq)]
+struct Reach(Vec<NetworkEndpoint>);
+
+impl Following for Reach {
+    type Change = NetworkEndpoint;
+
+    fn after(mut state: Self, change: NetworkEndpoint) -> Self {
+        state.0.push(change);
+        state
+    }
+}
+
+#[test]
+fn a_subscriber_follows_the_frames_by_the_state_fold() {
+    let endpoint = |port| NetworkEndpoint {
+        host_name: HostName("mirror.test".into()),
+        network_port: NetworkPort(port),
+    };
+    let frames: Vec<Frame<Reach, NetworkEndpoint>> = vec![
+        Frame::Opened(Reach(vec![])),
+        Frame::Changed(endpoint(1)),
+        Frame::Changed(endpoint(2)),
+        Frame::Lagged(Reach(vec![endpoint(3)])),
+        Frame::Changed(endpoint(4)),
+    ];
+    let held = frames.into_iter().fold(None, |held, frame| match frame {
+        Frame::Opened(state) | Frame::Lagged(state) => Some(state),
+        Frame::Changed(change) => held.map(|state| Reach::after(state, change)),
+    });
+    assert_eq!(held, Some(Reach(vec![endpoint(3), endpoint(4)])));
 }
 
 #[cfg(feature = "datom")]

@@ -97,11 +97,21 @@ has no end of its own.
 value. The two are generic and so written once in Rust, as `Vector` is; every
 other type here is declared in `ethos/signal.ethos`.
 
+A subscription's state bears `Following`: `after` folds one change into the
+state and yields the state after it. The answering side folds each change it
+publishes, and the subscriber each `Changed` it receives, by the same fold, so
+the trait is part of what a subscription says. It is declared in
+`ethos/library.ethos`, a Library root, because a Signal root holds no traits
+section, and generated into `src/generated/library.rs`. It lives apart from
+`ethos/signal.ethos` so the contract digest, taken over that source, is
+unchanged.
+
 ## Authority and projection
 
-`ethos/signal.ethos` is the canonical schema source. `build.rs` generates
-from it with `ethos-zero` and asserts the result equals the checked-in
-`src/generated/signal.rs`, so the projection cannot drift from its source.
+`ethos/signal.ethos` is the canonical schema source, and `ethos/library.ethos`
+the source of the traits. `build.rs` generates from each with `ethos-zero` and
+asserts the result equals the checked-in `src/generated/signal.rs` and
+`src/generated/library.rs`, so neither projection can drift from its source.
 `ethos/interface.ethos` records the same identities as a role-free strict
 `Interface.{1 0 0}`; it is kept as authored Ethos and has no Rust
 projection.

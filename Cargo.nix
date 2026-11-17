@@ -1125,7 +1125,7 @@ rec {
       };
       "signal" = rec {
         crateName = "signal";
-        version = "11.1.0";
+        version = "11.2.0";
         edition = "2024";
         links = "signal";
         src = lib.cleanSourceWith { filter = sourceFilter;  src = ./.; };

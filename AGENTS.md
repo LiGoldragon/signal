@@ -7,10 +7,11 @@ This repository owns the portable rkyv Signal frame, the wire framing that
 carries it, and genuine cross-component vocabulary. It owns no operation
 roots, no Nexus actors, no storage, and no runtime policy.
 
-`ethos/signal.ethos` is the schema authority for the taxonomy. `build.rs`
-generates from it and asserts the result equals the checked-in
-`src/generated/signal.rs`; regenerate by writing the generator's output to
-that file. Rust names in the generated projection must remain encoded;
+`ethos/signal.ethos` is the schema authority for the taxonomy, and
+`ethos/library.ethos` for the traits (`Following`). `build.rs` generates from
+each and asserts the result equals the checked-in `src/generated/signal.rs`
+and `src/generated/library.rs`; regenerate by writing the generator's output
+to that file. Rust names in the generated projection must remain encoded;
 readable aliases create a competing authority and are forbidden.
 
 `ComponentKind` is closed and partitioned. Insert real components within

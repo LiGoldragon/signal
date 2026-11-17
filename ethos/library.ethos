@@ -1,0 +1,9 @@
+Library
+[]                                         ; imports: none
+[]                                         ; types: none
+[ Following.{ []                           ; traits: Following, a state a change folds into; no supertraits
+              [ Change ]                   ;   its associated type: the change it follows
+              []                           ;   no associated constants
+              [ after:{ [ Self Change ]    ;   after takes no self: the state and the change in,
+                        [ Self ] } ] } ]   ;     the state after the change out
+[]                                         ; associations: none

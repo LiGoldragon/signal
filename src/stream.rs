@@ -23,9 +23,14 @@
 //! A frame says only what an exchange does not already say: the end of a
 //! stream is the end of its exchange, and is no frame.
 //!
+//! The state of a subscription bears [`Following`](crate::Following): each
+//! change is folded into it with `Following::after`, by the answering side as
+//! it publishes and by the subscriber as it receives a `Changed`.
+//!
 //! [`Frame`] and [`Stream`] are generic over the subscription's state and
 //! change, so they are written here once, as `Vector` is in Rust; every
-//! other type of the layer is declared in `ethos/signal.ethos`. A `Frame` is
+//! other type of the layer is declared in `ethos/signal.ethos`, and
+//! `Following` in `ethos/library.ethos`. A `Frame` is
 //! a wire value and bears what every generated Output bears. A `Stream` is
 //! never a wire value: it lives in the answering process.
 
