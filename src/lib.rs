@@ -34,7 +34,6 @@ pub use portable::*;
 pub use stream::*;
 pub use taxonomy::*;
 
-
 /// The authored Ethos source of the shared taxonomy.
 pub const STANDARD_SIGNAL_SOURCE: &str = include_str!("../ethos/signal.ethos");
 /// The Rust projection generated from [`STANDARD_SIGNAL_SOURCE`].
